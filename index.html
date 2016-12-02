@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Données, indicateurs, graphiques</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+  <nav class="blue-grey darken-4" role="navigation">
+    <div class="nav-wrapper container">Données, indicateurs, graphiques
+	<!-- <ul class="right hide-on-med-and-down">
+             <li><a href="#">Navbar Link</a></li>
+	     </ul>
+
+	     <ul id="nav-mobile" class="side-nav">
+             <li><a href="#">Navbar Link</a></li>
+	     </ul> -->
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="section">
+
+	
+	<!-- - Tabs  -->
+	<div class="row">
+	    <div class="col s12">
+		<ul class="tabs tabs-fixed-width">
+		    <li class="tab col s3"><a class="active" href="#data">Données</a></li>
+		    <li class="tab col s3"><a href="#points">Points</a></li>
+		    <li class="tab col s3"><a href="#indicateurs">Indicateurs</a></li>
+		</ul>
+	    </div>
+	</div>
+
+	<!-- Formulaire données -->
+	<div class="row">
+	    <div id="data" class="col s12" action="#">
+		<ul class="collapsible" data-collapsible="accordion">
+		    <li>
+			<div class="collapsible-header grey lighten-4 active"><i class="material-icons">mode_edit</i>Données saisies manuellement</div>
+			<div class="collapsible-body">
+			    <div class="row">
+				<form action="">
+				<div class="input-field col s12 m9">
+				    <input id="data_manual" type="text" class="validate" placeholder="Ex : 125, 57, 198, 12, 45...">
+				    <label for="data_manual">Données séparées par des virgules</label>
+				</div>
+				<div class="input-field col s12 m3">
+				    <button class="btn waves-effect waves-light" type="submit" id="data_manual_submit">
+					Mettre à jour
+				    </button>
+				</div>
+				</form>
+			    </div>
+			</div>
+		    </li>
+		    <li>
+			<div class="collapsible-header grey lighten-4"><i class="material-icons">shuffle</i>Données générées aléatoirement</div>
+			<div class="collapsible-body">
+			    <div class="row">
+				<form action="">
+				    <div class="input-field col s12 m4">
+					<select>
+					    <option value="uniforme" selected>Loi uniforme</option>
+					    <option value="normale">Loi normale</option>
+					</select>
+					<label>Type de loi</label>
+				    </div>
+				    <div class="input-field col s12 m5">
+					<p class="range-field">
+					    <label for="nb_values">Nombre d'observations</label>
+					    <input type="range" id="nb_values" min="2" max="100" />
+					</p>
+				    </div>
+				    <div class="input-field col s12 m3">
+					<button class="btn waves-effect waves-light" type="submit" id="data_random_submit">
+					    Générer
+					</button>
+				    </div>
+				</form>
+			    </div>
+			</div>
+		    </li>
+		</ul>
+	    </div>
+	</div>
+
+
+	    
+	<!-- Formulaire points -->
+	<div class="row">
+	    <form id="points" class="col s12">
+		Points
+	    </form>
+	</div>
+
+	<!-- Formulaire indicateurs -->
+	<div class="row">
+	    <form id="indicateurs" class="col s12">
+		Indicateurs
+	    </form>
+	</div>
+	
+      <!-- Plot -->
+      <div class="row">
+          <div class="col s12">
+	      <div id="plot">
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/d3.min.js"></script>
+  <script src="js/plot-utils.js"></script>
+  <script src="js/plot-axes.js"></script>
+  <script src="js/plot-dots.js"></script>
+  <script src="js/plot-setup.js"></script>
+  <script src="js/init.js"></script>
+
+  </body>
+</html>

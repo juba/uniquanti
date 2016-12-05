@@ -85,7 +85,7 @@
 }
 
 #plot .dot {
-    cursor: default;
+    cursor: ew-resize;
 }
 
 #plot, #plot:focus {

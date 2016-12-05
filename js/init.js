@@ -33,50 +33,28 @@ function plot() {
     }
 
 
-    // Text labels dragging function
+    // Dots dragging function
     var dragging = false;
     drag = d3.drag()
 	.subject(function(d, i) {
-            var size = (d.size_var === undefined) ? settings.point_size : scales.size(d.size_var);
-            var dx = get_label_dx(d, i, settings, scales);
-            var dy = get_label_dy(d, i, settings, scales);
-            return {x:scales.x(d.x)+dx, y:scales.y(d.y)+dy};
+            return {x:scales.x(d.x)};
 	})
 	.on('start', function(d, i) {
-	    if (!d3.event.sourceEvent.shiftKey) {
-		dragging = true;
-		d3.select(this).style('fill', '#000');
-		var chart = d3.select(this).node().parentNode;
-		var size = (d.size_var === undefined) ? settings.point_size : scales.size(d.size_var);
-		var dx = get_label_dx(d, i, settings, scales);
-		var dy = get_label_dy(d, i, settings, scales);
-		d3.select(chart).append("svg:line")
-		    .attr("id", "scatterD3-drag-line")
-		    .attr("x1", scales.x(d.x)).attr("x2", scales.x(d.x) + dx)
-		    .attr("y1", scales.y(d.y)).attr("y2", scales.y(d.y) + dy)
-		    .style("stroke", "#000")
-		    .style("opacity", 0.3);
-	    }
+	    dragging = true;
+	    //d3.select(".tooltip").style("visibility", "hidden");
 	})
 	.on('drag', function(d) {
 	    if (dragging) {
 		var cx = d3.event.x - scales.x(d.x);
-		var cy = d3.event.y - scales.y(d.y);
-		d3.select(this)
-		    .attr('dx', cx + "px")
-		    .attr('dy', cy + "px");
-		d3.select("#scatterD3-drag-line")
-		    .attr('x2', scales.x(d.x) + cx)
-		    .attr("y2", scales.y(d.y) + cy);
-		d.lab_dx = cx;
-		d.lab_dy = cy;
+		d.x = scales.x.invert(d3.event.x);
+		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
+		d3.select(".tooltip").style("top", (d3.event.pageY+15)+"px").style("left",(d3.event.pageX+15)+"px");
 	    }
 	})
 	.on('end', function(d) {
 	    if (dragging){
-		d3.select(this).style('fill', scales.color(d.col_var));
-		d3.select("#scatterD3-drag-line").remove();
 		dragging = false;
+		d3.select(".tooltip").style("visibility", "visible");
 	    }
 	});
 
@@ -118,7 +96,8 @@ function plot() {
             dot.enter()
 		.append("path")
 		.call(function(sel) { dot_init(sel, scales); })
-		.call(function(sel) { dot_formatting(sel, scales); });
+		.call(function(sel) { dot_formatting(sel, scales); })
+		.call(drag);
 
             // Tools menu
 
@@ -222,7 +201,7 @@ function plot() {
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").call(function(sel) {dot_init(sel, scales);})
+	dot.enter().append("path").call(function(sel) {dot_init(sel, scales);}).call(drag)
 	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
@@ -412,13 +391,8 @@ if (tooltip.empty()) {
 var plot = plot().width(width).height(height).svg(svg);
 
 
-var data = [{key: 1, x: 10, y: 0},
-	    {key: 2, x: 25, y: 0},
-	    {key: 3, x: 57, y: 0},
-	    {key: 4, x: 65, y: 0},
-	    {key: 5, x: 44, y: 0},
-	    {key: 6, x: 87, y: 0},
-	    {key: 7, x: 8, y: 0}];
+var data = [{key: 1, x: 100, y: 0}];
+
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);

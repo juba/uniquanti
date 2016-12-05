@@ -1,20 +1,10 @@
-/* Custom Stylesheet */
-/**
- * Use this file to override Materialize files so you can update
- * the core Materialize files in the future
- *
- * Made By MaterializeCSS.com
- */
 
-.icon-block {
-  padding: 0 15px;
-}
-.icon-block .material-icons {
-	font-size: inherit;
+.sidebar {
+    font-size: 100%;
 }
 
-.collapsible-body {
-    padding: 2rem 2rem 0rem 2rem;
+.tab-content > .tab-pane {
+    padding-top: 1em;
 }
 
 .tooltip {

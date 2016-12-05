@@ -1,133 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-  <title>Données, indicateurs, graphiques</title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <!-- CSS  -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-</head>
-<body>
-  <nav class="blue-grey darken-4" role="navigation">
-    <div class="nav-wrapper container">Données, indicateurs, graphiques
-	<!-- <ul class="right hide-on-med-and-down">
-             <li><a href="#">Navbar Link</a></li>
-	     </ul>
+    <title>Données, indicateurs, graphiques</title>
 
-	     <ul id="nav-mobile" class="side-nav">
-             <li><a href="#">Navbar Link</a></li>
-	     </ul> -->
-      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
-    </div>
-  </nav>
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
 
-  <div class="container">
-    <div class="section">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
-	
-	<!-- - Tabs  -->
-	<div class="row">
-	    <div class="col s12">
-		<ul class="tabs tabs-fixed-width">
-		    <li class="tab col s3"><a class="active" href="#data">Données</a></li>
-		    <li class="tab col s3"><a href="#points">Points</a></li>
-		    <li class="tab col s3"><a href="#indicateurs">Indicateurs</a></li>
-		</ul>
-	    </div>
-	</div>
+  <body>
 
-	<!-- Formulaire données -->
-	<div class="row">
-	    <div id="data" class="col s12" action="#">
-		<ul class="collapsible" data-collapsible="accordion">
-		    <li>
-			<div class="collapsible-header grey lighten-4 active"><i class="material-icons">mode_edit</i>Données saisies manuellement</div>
-			<div class="collapsible-body">
-			    <div class="row">
-				<form action="">
-				<div class="input-field col s12 m9">
-				    <input id="data_manual" type="text" class="validate" placeholder="Ex : 125, 57, 198, 12, 45...">
-				    <label for="data_manual">Données séparées par des virgules</label>
-				</div>
-				<div class="input-field col s12 m3">
-				    <button class="btn waves-effect waves-light" type="submit" id="data_manual_submit">
-					Mettre à jour
-				    </button>
-				</div>
-				</form>
-			    </div>
-			</div>
-		    </li>
-		    <li>
-			<div class="collapsible-header grey lighten-4"><i class="material-icons">shuffle</i>Données générées aléatoirement</div>
-			<div class="collapsible-body">
-			    <div class="row">
-				<form action="">
-				    <div class="input-field col s12 m4">
-					<select>
-					    <option value="uniforme" selected>Loi uniforme</option>
-					    <option value="normale">Loi normale</option>
-					</select>
-					<label>Type de loi</label>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Données, indicateurs, graphiques</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+
+    <div class="container-fluid">
+    
+    <!-- - Tabs  -->
+    <div class="row">
+	<div class="col-md-3 sidebar">
+
+	    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+		<!-- Panel données -->
+		<div class="panel panel-default">
+		    <div class="panel-heading" role="tab" id="headingData">
+			<h4 class="panel-title">
+			    <a role="button" data-toggle="collapse" href="#collapseData" aria-expanded="true" aria-controls="collapseData">
+				Données
+			    </a>
+			</h4>
+		    </div>
+		    <div id="collapseData" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingData">
+			<div class="panel-body">
+
+
+			    <!-- Formulaire données -->
+			    <div>
+				<ul class="nav nav-tabs" role="tablist">
+				    <li role="presentation" class="active"><a href="#tab-data-manual" aria-controls="tab-data-manual" role="tab" data-toggle="tab">Manuelles</a></li>
+				    <li role="presentation"><a href="#tab-data-random" aria-controls="tab-data-random" role="tab" data-toggle="tab">Aléatoires</a></li>
+				</ul>
+				<div class="tab-content">
+				    <!-- Données manuelles -->
+				    <div role="tabpanel" class="tab-pane fade in active" id="tab-data-manual">
+					<div class="form-group">
+					    <label for="data_manual">Données séparées par des virgules</label>
+					    <input id="data_manual" type="text" class="form-control" placeholder="Ex : 125, 57, 198, 12, 45...">
+					</div>
+					<button type="submit" class="btn btn-primary btn-sm" id="data_manual_submit">Mettre à jour</button>
 				    </div>
-				    <div class="input-field col s12 m5">
-					<p class="range-field">
+				    <!-- Données aléatoires -->
+				    <div role="tabpanel" class="tab-pane fade" id="tab-data-random">
+					<div class="form-group">
+					    <label for="data-law">Type de loi</label>
+					    <select class="form-control" id="data_law">
+						<option value="uniforme" selected>Loi uniforme</option>
+						<option value="normale">Loi normale</option>
+					    </select>
+					</div>
+					<div class="form-group">
 					    <label for="nb_values">Nombre d'observations</label>
-					    <input type="range" id="nb_values" min="2" max="100" />
-					</p>
+					    <input type="number" class="form-control" id="nb_values" min="2" max="100" value="50" />
+					</div>
+					<button class="btn btn-primary btn-sm" id="data_random_submit">Générer</button>
+					
 				    </div>
-				    <div class="input-field col s12 m3">
-					<button class="btn waves-effect waves-light" type="submit" id="data_random_submit">
-					    Générer
-					</button>
-				    </div>
-				</form>
+				</div>
+
 			    </div>
+
+
 			</div>
-		    </li>
-		</ul>
+		    </div>
+		</div>
+
+		<!-- Panel points -->
+		<div class="panel panel-default">
+		    <div class="panel-heading" role="tab" id="headingPoints">
+			<h4 class="panel-title">
+			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapsePoints" aria-expanded="false" aria-controls="collapsePoints">
+				Points
+			    </a>
+			</h4>
+		    </div>
+		    <div id="collapsePoints" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPoints">
+			<div class="panel-body">
+
+			    Contenu points
+			    
+			</div>
+		    </div>
+		</div>
+
+		<!-- Panel indicateurs -->
+		<div class="panel panel-default">
+		    <div class="panel-heading" role="tab" id="headingIndicateurs">
+			<h4 class="panel-title">
+			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseIndicateurs" aria-expanded="false" aria-controls="collapseIndicateurs">
+				Indicateurs
+			    </a>
+			</h4>
+		    </div>
+		    <div id="collapseIndicateurs" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingIndicateurs">
+			<div class="panel-body">
+
+			    Contenu indicateurs
+			    
+			</div>
+		    </div>
+		</div>
 	    </div>
 	</div>
-
 
 	    
-	<!-- Formulaire points -->
-	<div class="row">
-	    <form id="points" class="col s12">
-		Points
-	    </form>
+    <!-- Plot -->
+        <div class="col-md-9">
+	    <div id="plot">
+            </div>
 	</div>
-
-	<!-- Formulaire indicateurs -->
-	<div class="row">
-	    <form id="indicateurs" class="col s12">
-		Indicateurs
-	    </form>
-	</div>
-	
-      <!-- Plot -->
-      <div class="row">
-          <div class="col s12">
-	      <div id="plot">
-        </div>
-      </div>
-
     </div>
 
-  </div>
 
-  <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/d3.min.js"></script>
-  <script src="js/plot-utils.js"></script>
-  <script src="js/plot-axes.js"></script>
-  <script src="js/plot-dots.js"></script>
-  <script src="js/plot-setup.js"></script>
-  <script src="js/init.js"></script>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/plot-utils.js"></script>
+    <script src="js/plot-axes.js"></script>
+    <script src="js/plot-dots.js"></script>
+    <script src="js/plot-setup.js"></script>
+    <script src="js/init.js"></script>
 
   </body>
 </html>

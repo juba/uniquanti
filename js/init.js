@@ -1,19 +1,3 @@
-(function($){
-    $(function(){
-
-	$('.button-collapse').sideNav();
-	
-	$(document).ready(function() {
-	    $('select').material_select();
-	});
-
-      
-    }); // end of document ready
-})(jQuery); // end of jQuery name space
-
-
-
-
 
 function plot() {
 
@@ -226,13 +210,9 @@ function plot() {
 
     // Update data with transitions
     function update_data() {
-
-	dims = setup_sizes(width, height, settings);
-	scales = setup_scales(dims, settings, data);
-
-	// Change axes labels
-	svg.select(".x-axis-label").text(settings.xlab);
-	svg.select(".y-axis-label").text(settings.ylab);
+	
+	dims = setup_sizes(width, height);
+	scales = setup_scales(dims, data);
 
 	var t0 = svg.transition().duration(1000);
 	t0.call(resize_plot);
@@ -302,27 +282,64 @@ function plot() {
     };
 
 
-    // Add controls handlers for shiny
-    chart.add_controls_handlers = function() {
-        // Zoom reset
-        d3.select("#" + settings.dom_id_reset_zoom)
-            .on("click", reset_zoom);
-
-        // SVG export
-        d3.select("#" + settings.dom_id_svg_export)
-            .on("click", function() { export_svg(this, svg, settings); });
-
-        // Lasso toggle
-        d3.select("#" + settings.dom_id_lasso_toggle)
-            .on("click", function () {lasso_toggle(svg, settings, scales, zoom);});
+    chart.update_data_manual = function() {
+	var manual_data = d3.select("#data_manual").node().value;
+	if (!manual_data.match(/^(\d+ *, *)*\d+ *$/)) {
+	    alert("Les données saisies sont invalides");
+	}
+	new_data = manual_data.split(/ *, */);
+	console.log(new_data);
+	new_data = new_data.map(function(val, i) {
+	    var d = {}; 
+	    d.key = i;
+	    d.x = parseFloat(val);
+	    d.y = 0;
+	    return d;
+	});
+	data = new_data;
+	console.log(new_data);
+	update_data();
     };
 
+    chart.update_data_random = function() {
+	var law = d3.select("#data_law").node();
+	law = law.options[law.selectedIndex].value;
+	var nbvals = d3.select("#nb_values").node().value;
+	var new_data = [];
+	switch (law) {
+	case "uniforme":
+	    new_data = d3.range(nbvals).map(d3.randomUniform(0,200));
+	    new_data = new_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.x = val;
+		d.y = 0;
+		return d;
+	    });
+	    break;
+	case "normale":
+	    new_data = d3.range(nbvals).map(d3.randomNormal(100,10));
+	    new_data = new_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.x = val;
+		d.y = 0;
+		return d;
+	    });
+	    break;
+	}
+	data = new_data;
+	update_data();
+    };
+    
+
+    
     // resize
     chart.resize = function() {
         resize_chart();
     };
 
-    // settings getter/setter
+    // data getter/setter
     chart.data = function(value, redraw) {
         if (!arguments.length) return data;
         data = value;
@@ -394,6 +411,7 @@ if (tooltip.empty()) {
 // Create plot instance
 var plot = plot().width(width).height(height).svg(svg);
 
+
 var data = [{key: 1, x: 10, y: 0},
 	    {key: 2, x: 25, y: 0},
 	    {key: 3, x: 57, y: 0},
@@ -404,3 +422,8 @@ var data = [{key: 1, x: 10, y: 0},
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);
+
+
+// Add controls handlers
+d3.select("#data_manual_submit").on("click", plot.update_data_manual);
+d3.select("#data_random_submit").on("click", plot.update_data_random);

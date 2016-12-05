@@ -12,6 +12,6 @@ function translation(d, scales) {
 // Create tooltip content function
 function tooltip_content(d) {
     var text = Array();
-    text.push("<b>Valeur : </b>" + d.x);
+    text.push("<b>Valeur : </b>" + d.x.toFixed(2));
     return text.join("<br />");
 }

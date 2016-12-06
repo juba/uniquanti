@@ -24,6 +24,10 @@ function plot() {
 	var chart_body = svg.select(".chart-body");
         chart_body.selectAll(".dot")
             .attr("transform", function(d) { return translation(d, scales); });
+	chart_body.selectAll(".line").call(function(sel) {
+	    line_formatting(sel, dims, scales);
+	});
+
     }
 
     // Reset zoom function
@@ -90,6 +94,19 @@ function plot() {
 		.attr("width", dims.width)
 		.attr("height", dims.height);
 
+	    // Horizontal line
+	    var lines = chart_body
+		.selectAll(".lines")
+		.data(data_lines);
+	    lines.enter()
+		.append("path")
+		.call(line_init)
+		.call(function(sel) {
+		    line_formatting(sel, dims, scales);
+		});
+	    
+	    
+	    
             // Add points
             var dot = chart_body
 		.selectAll(".dot")
@@ -199,6 +216,20 @@ function plot() {
 
 	var chart_body = svg.select(".chart-body");
 
+	// Add lines
+	var line = chart_body.selectAll(".line")
+	    .data(data_lines);
+	line.enter().append("path").call(line_init)
+	    .style("opacity", "0")
+	    .merge(line)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		line_formatting(sel, dims, scales);
+	    })
+	    .style("opacity", "1");
+	line.exit().transition().duration(1000).style("opacity", "0").remove();
+	
+
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
@@ -237,14 +268,13 @@ function plot() {
     // Dynamically resize chart elements
     function resize_chart () {
         // recompute sizes
-        dims = setup_sizes(width, height, settings);
-	dims = setup_legend_sizes(dims, scales, settings);
+        dims = setup_sizes(width, height);
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
         scales.y.range([dims.height, 0]);
         scales.y_orig.range([dims.height, 0]);
-	scales.xAxis = d3.axisBottom(scales.x).tickSize(-dims.height);
+	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
 	scales.yAxis = d3.axisLeft(scales.y).tickSize(-dims.width);
 
 	svg.call(resize_plot);
@@ -254,10 +284,8 @@ function plot() {
 		  d3.zoomTransform(svg.select(".root").node()));
 
         // Move menu
-        if (settings.menu) {
-            svg.select(".gear-menu")
-		.attr("transform", "translate(" + (width - 40) + "," + 10 + ")");
-        }
+        svg.select(".gear-menu")
+	    .attr("transform", "translate(" + (width - 40) + "," + 10 + ")");
 	
     };
 
@@ -315,8 +343,6 @@ function plot() {
 	data = new_data;
 	update_data();
     };
-    
-
     
     // resize
     chart.resize = function() {
@@ -397,6 +423,7 @@ var plot = plot().width(width).height(height).svg(svg);
 
 // Default data
 var data = [{key: 1, x: 50, y: 0}];
+var data_lines = [{slope: 0, intercept: 0}];
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);
@@ -404,3 +431,13 @@ d3.select("#plot").call(plot);
 // Add controls handlers
 d3.select("#data_manual_submit").on("click", plot.update_data_manual);
 d3.select("#data_random_submit").on("click", plot.update_data_random);
+
+window.onresize = function() {
+    var width = d3.select("#plot").node().getBoundingClientRect().width;
+    var height = 600;
+    svg
+	.attr("width", width)
+	.attr("height", height);
+    // resize chart
+    plot.width(width).height(height).svg(svg).resize();
+};

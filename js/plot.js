@@ -48,7 +48,8 @@ function plot() {
 		var cx = d3.event.x - scales.x(d.x);
 		d.x = scales.x.invert(d3.event.x);
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
-		d3.select(".tooltip").style("top", (d3.event.pageY+15)+"px").style("left",(d3.event.pageX+15)+"px");
+		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
+		    .html(tooltip_content(d));;
 	    }
 	})
 	.on('end', function(d) {

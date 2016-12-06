@@ -27,7 +27,12 @@ function plot() {
 	chart_body.selectAll(".line").call(function(sel) {
 	    line_formatting(sel, dims, scales);
 	});
-
+	chart_body.selectAll(".stats_symbol").call(function(sel) {
+	    stats_symbol_formatting(sel, scales);
+	});
+	chart_body.selectAll(".stats_label").call(function(sel) {
+	    stats_label_formatting(sel, scales);
+	});
     }
 
     // Reset zoom function
@@ -45,7 +50,6 @@ function plot() {
 	})
 	.on('start', function(d, i) {
 	    dragging = true;
-	    //d3.select(".tooltip").style("visibility", "hidden");
 	})
 	.on('drag', function(d) {
 	    if (dragging) {
@@ -53,13 +57,23 @@ function plot() {
 		d.x = scales.x.invert(d3.event.x);
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
 		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
-		    .html(tooltip_content(d));;
+		    .html(tooltip_content(d));
+		var stats_data = stats_compute(data);
+		d3.selectAll(".stats_symbol")
+		    .data(stats_data, key)
+		    .call(function(sel) {
+			stats_symbol_formatting(sel, scales);
+		    });
+		d3.selectAll(".stats_label")
+		    .data(stats_data, key)
+		    .call(function(sel) {
+			stats_label_formatting(sel, scales);
+		    });
 	    }
 	})
 	.on('end', function(d) {
 	    if (dragging){
 		dragging = false;
-		d3.select(".tooltip").style("visibility", "visible");
 	    }
 	});
 
@@ -105,8 +119,6 @@ function plot() {
 		    line_formatting(sel, dims, scales);
 		});
 	    
-	    
-	    
             // Add points
             var dot = chart_body
 		.selectAll(".dot")
@@ -117,6 +129,21 @@ function plot() {
 		.call(function(sel) { dot_formatting(sel, scales); })
 		.call(drag);
 
+	    // Add stats
+	    var stats_data = stats_compute(data);
+	    var stats_symbol = chart_body
+		.selectAll("stats_symbol")
+		.data(stats_data, key);
+	    stats_symbol.enter()
+		.append("path")
+		.call(function(sel) { stats_symbol_formatting(sel, scales); });
+	    var stats_label = chart_body
+		.selectAll("stats_label")
+		.data(stats_data, key);
+	    stats_label.enter()
+		.append("text")
+		.call(function(sel) { stats_label_formatting(sel, scales); });
+	    
             // Tools menu
 
 	    // Gear icon
@@ -237,6 +264,31 @@ function plot() {
 	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
+	// Add stats
+	var stats_data = stats_compute(data);
+	var stats_symbol = chart_body
+	    .selectAll(".stats_symbol")
+	    .data(stats_data, key);
+	stats_symbol.enter()
+	    .append("path")
+	    .style("opacity", 0)
+	    .merge(stats_symbol)
+	    .transition().duration(1000)
+	    .call(function(sel) { stats_symbol_formatting(sel, scales); })
+	    .style("opacity", 1);
+	stats_symbol.exit().transition().duration(1000).style("opacity", "0").remove();
+	var stats_label = chart_body
+	    .selectAll(".stats_label")
+	    .data(stats_data, key);
+	stats_label.enter()
+	    .append("text")
+	    .style("opacity", 0)
+	    .merge(stats_label)
+	    .transition().duration(1000)
+	    .call(function(sel) { stats_label_formatting(sel, scales); })
+	    .style("opacity", 1);
+	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
+	
 	// Reset zoom
 	svg.select(".root")
 	    .transition().delay(1000).duration(0)
@@ -272,8 +324,8 @@ function plot() {
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
-        scales.y.range([dims.height, 0]);
-        scales.y_orig.range([dims.height, 0]);
+        scales.y.range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4]);
+        scales.y_orig.range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4]);
 	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
 	scales.yAxis = d3.axisLeft(scales.y).tickSize(-dims.width);
 
@@ -295,6 +347,7 @@ function plot() {
 	var jitter = d3.select("#points_jitter").node().checked;
 	if (!manual_data.match(/^(\d+ *, *)*\d+ *$/)) {
 	    alert("Les données saisies sont invalides");
+	    return;
 	}
 	new_data = manual_data.split(/ *, */);
 	new_data = new_data.map(function(val, i) {
@@ -363,6 +416,10 @@ function plot() {
 	    });
 	}
 	data = new_data;
+	update_data();
+    };
+
+    chart.update_data = function() {
 	update_data();
     };
     
@@ -471,3 +528,7 @@ d3.select("#points_size").on("input change", plot.update_dots);
 d3.select("#points_opacity").on("input change", plot.update_dots);
 d3.select("#points_jitter").on("input change", plot.update_points_jitter);
 
+d3.select("#stats_mean").on("input change", plot.update_data);
+d3.select("#stats_median").on("input change", plot.update_data);
+d3.select("#stats_quartiles").on("input change", plot.update_data);
+d3.select("#stats_sd").on("input change", plot.update_data);

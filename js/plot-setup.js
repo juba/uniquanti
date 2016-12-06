@@ -57,8 +57,8 @@ function setup_scales (dims, data) {
 	.range([0, dims.width])
 	.domain([min_x - gap_x, max_x + gap_x]);
     scales.y = d3.scaleLinear()
-        .range([dims.height, 0])
-	.domain([min_y - gap_y, max_y + gap_y]);
+        .range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4])
+	.domain([-4, 2]);
     // Keep track of original scales
     scales.x_orig = scales.x;
     scales.y_orig = scales.y;

@@ -233,7 +233,7 @@ function plot() {
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").call(function(sel) {dot_init(sel, scales);}).call(drag)
+	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales);}).call(drag)
 	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
@@ -292,6 +292,7 @@ function plot() {
 
     chart.update_data_manual = function() {
 	var manual_data = d3.select("#data_manual").node().value;
+	var jitter = d3.select("#points_jitter").node().checked;
 	if (!manual_data.match(/^(\d+ *, *)*\d+ *$/)) {
 	    alert("Les données saisies sont invalides");
 	}
@@ -301,7 +302,7 @@ function plot() {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
-	    d.y = 0;
+	    d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
 	    return d;
 	});
 	data = new_data;
@@ -313,6 +314,7 @@ function plot() {
 	var law = d3.select("#data_law").node();
 	law = law.options[law.selectedIndex].value;
 	var nbvals = d3.select("#nb_values").node().value;
+	var jitter = d3.select("#points_jitter").node().checked;
 	var new_data = [];
 	switch (law) {
 	case "uniforme":
@@ -323,7 +325,7 @@ function plot() {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = 0;
+		d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
 		return d;
 	    });
 	    break;
@@ -335,11 +337,34 @@ function plot() {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = 0;
+		d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
 		return d;
 	    });
 	    break;
 	}
+	data = new_data;
+	update_data();
+    };
+
+    chart.update_dots = function() {
+	d3.selectAll(".dot").call(function(sel) {dot_formatting(sel, scales);});
+    };
+
+    chart.update_points_jitter = function() {
+	var jitter = d3.select("#points_jitter").node().checked;
+	var new_data = [];
+	if (jitter) {
+	    new_data = data.map(function(d) {
+		d.y = d3.randomUniform(-1, 1)();
+		return d;
+	    });
+	} else {
+	    new_data = data.map(function(d) {
+		d.y = 0;
+		return d;
+	    });
+	}
+	console.log(new_data);
 	data = new_data;
 	update_data();
     };
@@ -423,7 +448,10 @@ var plot = plot().width(width).height(height).svg(svg);
 
 // Default data
 var data = [{key: 1, x: 50, y: 0}];
-var data_lines = [{slope: 0, intercept: 0}];
+var data_lines = [{slope: 0,
+		   intercept: 0,
+		   stroke: "#CCC",
+		   stroke_dasharray: [3,3]}];
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);
@@ -441,3 +469,8 @@ window.onresize = function() {
     // resize chart
     plot.width(width).height(height).svg(svg).resize();
 };
+
+d3.select("#points_size").on("input change", plot.update_dots);
+d3.select("#points_opacity").on("input change", plot.update_dots);
+d3.select("#points_jitter").on("input change", plot.update_points_jitter);
+

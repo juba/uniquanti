@@ -119,7 +119,7 @@
 					</div>
 					<div class="form-group">
 					    <label for="nb_values">Nombre d'observations</label>
-					    <input type="number" class="form-control" id="nb_values" min="2" max="100" value="50" />
+					    <input type="number" class="form-control" id="nb_values" min="2" max="1000" value="100" />
 					</div>
 					<button class="btn btn-primary btn-sm" id="data_random_submit">Générer</button>
 					
@@ -144,9 +144,19 @@
 		    </div>
 		    <div id="collapsePoints" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPoints">
 			<div class="panel-body">
-
-			    Contenu points
-			    
+			    <div class="form-group">
+				<label for="points_size">Taille des points</label>
+				<input id="points_size" type="range" min="5" max="500" value="120" />
+			    </div>
+			    <div class="form-group">
+				<label for="points_opacity">Opacité des points</label>
+				<input id="points_opacity" type="range" min="0.01" max="1" value="0.8" step="0.01"/>
+			    </div>
+			    <div class="checkbox">
+				<label>
+				    <input id="points_jitter" type="checkbox" value=""> Agiter les points
+				</label>
+			    </div>
 			</div>
 		    </div>
 		</div>
@@ -162,9 +172,6 @@
 		    </div>
 		    <div id="collapseIndicateurs" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingIndicateurs">
 			<div class="panel-body">
-
-			    Contenu indicateurs
-			    
 			</div>
 		    </div>
 		</div>

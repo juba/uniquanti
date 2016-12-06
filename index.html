@@ -83,11 +83,39 @@
 				    <!-- Données aléatoires -->
 				    <div role="tabpanel" class="tab-pane fade" id="tab-data-random">
 					<div class="form-group">
-					    <label for="data-law">Type de loi</label>
+					    <label for="data_law">Type de loi</label>
 					    <select class="form-control" id="data_law">
 						<option value="uniforme" selected>Loi uniforme</option>
 						<option value="normale">Loi normale</option>
 					    </select>
+					</div>
+					<div class="form-horizontal" id="data_uniform_args">
+					    <div class="form-group">
+						<label for="data_uniform_min" class="col-sm-5 control-label">Minimum</label>
+						<div class="col-sm-7">
+						    <input type="number" class="form-control" id="data_uniform_min" value="0" />
+						</div>
+					    </div>
+					    <div class="form-group">
+						<label for="data_uniform_max" class="col-sm-5 control-label">Maximum</label>
+						<div class="col-sm-7">
+						    <input type="number" class="form-control" id="data_uniform_max" value="100" />
+						</div>
+					    </div>
+					</div>
+					<div class="form-horizontal" id="data_normal_args">
+					    <div class="form-group">
+						<label for="data_normal_mean" class="col-sm-5 control-label">Moyenne</label>
+						<div class="col-sm-7">
+					    	    <input type="number" class="form-control" id="data_normal_mean" value="50" />
+						</div>
+					    </div>
+					    <div class="form-group">
+						<label for="data_normal_sd" class="col-sm-5 control-label">Écart-type</label>
+						<div class="col-sm-7">
+						    <input type="number" class="form-control" id="data_normal_sd" value="5" />
+						</div>
+					    </div>
 					</div>
 					<div class="form-group">
 					    <label for="nb_values">Nombre d'observations</label>
@@ -161,11 +189,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/d3.min.js"></script>
+    <script src="js/init.js"></script>
     <script src="js/plot-utils.js"></script>
     <script src="js/plot-axes.js"></script>
     <script src="js/plot-dots.js"></script>
     <script src="js/plot-setup.js"></script>
-    <script src="js/init.js"></script>
+    <script src="js/plot.js"></script>
 
   </body>
 </html>

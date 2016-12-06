@@ -395,13 +395,11 @@ if (tooltip.empty()) {
 // Create plot instance
 var plot = plot().width(width).height(height).svg(svg);
 
-
-var data = [{key: 1, x: 100, y: 0}];
-
+// Default data
+var data = [{key: 1, x: 50, y: 0}];
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);
-
 
 // Add controls handlers
 d3.select("#data_manual_submit").on("click", plot.update_data_manual);

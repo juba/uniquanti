@@ -297,7 +297,6 @@ function plot() {
 	    alert("Les données saisies sont invalides");
 	}
 	new_data = manual_data.split(/ *, */);
-	console.log(new_data);
 	new_data = new_data.map(function(val, i) {
 	    var d = {}; 
 	    d.key = i;
@@ -306,7 +305,6 @@ function plot() {
 	    return d;
 	});
 	data = new_data;
-	console.log(new_data);
 	update_data();
     };
 
@@ -364,7 +362,6 @@ function plot() {
 		return d;
 	    });
 	}
-	console.log(new_data);
 	data = new_data;
 	update_data();
     };

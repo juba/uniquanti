@@ -501,7 +501,7 @@ if (tooltip.empty()) {
 var plot = plot().width(width).height(height).svg(svg);
 
 // Default data
-var data = [{key: 1, x: 50, y: 0}];
+var data = [];
 var data_lines = [{slope: 0,
 		   intercept: 0,
 		   stroke: "#CCC",
@@ -532,3 +532,7 @@ d3.select("#stats_mean").on("input change", plot.update_data);
 d3.select("#stats_median").on("input change", plot.update_data);
 d3.select("#stats_quartiles").on("input change", plot.update_data);
 d3.select("#stats_sd").on("input change", plot.update_data);
+
+d3.select("#x_manual").on("input change", plot.update_data);
+d3.select("#x_min").on("input change", plot.update_data);
+d3.select("#x_max").on("input change", plot.update_data);

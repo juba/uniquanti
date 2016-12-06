@@ -36,23 +36,33 @@ function setup_scales (dims, data) {
     var min_x, min_y, max_x, max_y, gap_x, gap_y;
     var scales = {};
 
-    min_x = d3.min(data, function(d) { return(d.x);} );
-    max_x = d3.max(data, function(d) { return(d.x);} );
-    gap_x = (max_x - min_x) * 0.2;
-    if (min_x == max_x) {
-	min_x = min_x * 0.8;
-	max_x = max_x * 1.2;
-	gap_x = 0;
-    }
-    min_y = d3.min(data, function(d) { return(d.y);} );
-    max_y = d3.max(data, function(d) { return(d.y);} );
-    gap_y = (max_y - min_y) * 0.2;
-    if (min_y == max_y) {
-	min_y = min_y * 0.8;
-	max_y = max_y * 1.2;
-	gap_y = 0.1;
-    }
+    if (data.length == 0) {data = [{x:100}];}
 
+    var x_manual = d3.select("#x_manual").node().checked;
+    if (x_manual) {
+	min_x = parseFloat(d3.select("#x_min").node().value);
+	max_x = parseFloat(d3.select("#x_max").node().value);
+	gap_x = 0;
+	gap_y = 0;
+    } else {
+	min_x = d3.min(data, function(d) { return(d.x);} );
+	max_x = d3.max(data, function(d) { return(d.x);} );
+	gap_x = (max_x - min_x) * 0.2;
+	if (min_x == max_x) {
+	    min_x = min_x * 0.8;
+	    max_x = max_x * 1.2;
+	    gap_x = 0;
+	}
+	min_y = d3.min(data, function(d) { return(d.y);} );
+	max_y = d3.max(data, function(d) { return(d.y);} );
+	gap_y = (max_y - min_y) * 0.2;
+	if (min_y == max_y) {
+	    min_y = min_y * 0.8;
+	    max_y = max_y * 1.2;
+	    gap_y = 0.1;
+	}
+    }
+	
     scales.x = d3.scaleLinear()
 	.range([0, dims.width])
 	.domain([min_x - gap_x, max_x + gap_x]);
@@ -67,11 +77,6 @@ function setup_scales (dims, data) {
         .tickSize(5);
     scales.yAxis = d3.axisLeft(scales.y)
         .tickSize(-dims.width);
-    // Opacity scale
-    scales.opacity = d3.scaleLinear()
-        .range([0.1, 1])
-        .domain([d3.min(data, function(d) { return(d.opacity_var);} ),
-                 d3.max(data, function(d) { return(d.opacity_var);} )]);
 
     return scales;
 }

@@ -36,7 +36,7 @@ function setup_scales (dims, data) {
     var min_x, min_y, max_x, max_y, gap_x, gap_y;
     var scales = {};
 
-    if (data.length == 0) {data = [{x:100}];}
+    if (data.length == 0) {data = [{x:50}];}
 
     var x_manual = d3.select("#x_manual").node().checked;
     if (x_manual) {

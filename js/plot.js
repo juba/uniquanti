@@ -7,6 +7,7 @@ function plot() {
 	settings = {},
 	scales = {},
 	data = [],
+	bins,
 	svg,
 	zoom, drag;
     
@@ -21,6 +22,8 @@ function plot() {
         scales.x = d3.event.transform.rescaleX(scales.x_orig);
         scales.xAxis = scales.xAxis.scale(scales.x);
         root.select(".x.axis").call(scales.xAxis);
+	root.select(".x.axis.hist").call(scales.xAxis);
+	
 	var chart_body = svg.select(".chart-body");
         chart_body.selectAll(".dot")
             .attr("transform", function(d) { return translation(d, scales); });
@@ -125,7 +128,7 @@ function plot() {
 		.data(data, key);
             dot.enter()
 		.append("path")
-		.call(function(sel) { dot_init(sel, scales); })
+		.call(function(sel) { dot_init(sel, scales, settings); })
 		.call(function(sel) { dot_formatting(sel, scales, settings); })
 		.call(drag);
 
@@ -241,6 +244,32 @@ function plot() {
 	var t0 = svg.transition().duration(1000);
 	t0.call(resize_plot);
 
+	var root = svg.select(".root");
+
+	if (settings.hist_show && svg.select(".x.axis.hist").empty()) {
+	    root.append("g")
+		.attr("class", "x axis hist")
+		.attr("transform", "translate(0, 400)")
+		.style("font-size", "11px")
+	    	.style("opacity", 0)
+		.call(scales.xAxis)
+		.transition().duration(1000)
+	    	.style("opacity", 1);
+	    root.append("g")
+		.attr("class", "y axis hist")
+		.style("font-size", "11px")
+	    	.style("opacity", 0)
+		.call(scales.yAxis_hist)
+	    	.transition().duration(1000)
+	    	.style("opacity", 1);
+	}
+	if (!settings.hist_show) {
+	    root.selectAll(".x.axis.hist, .y.axis.hist")
+		.transition().duration(1000)
+	    	.style("opacity", 0)
+		.remove();
+	}
+    
 	var chart_body = svg.select(".chart-body");
 
 	// Add lines
@@ -260,8 +289,8 @@ function plot() {
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales);}).call(drag)
-	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
+	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(drag)
+	    .merge(dot).call(function(sel) {dot_init(sel, scales, settings);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
 	// Add stats
@@ -288,7 +317,26 @@ function plot() {
 	    .call(function(sel) { stats_label_formatting(sel, scales); })
 	    .style("opacity", 1);
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
-	
+
+	// Add histogram
+	var bar = chart_body
+	    .selectAll(".bar")
+	    .data(scales.bins, key);
+	if (settings.hist_show) {
+	    bar.enter().append("rect")
+		.attr("class", "bar")
+	    	.style("opacity", 0)
+		.call(function(sel) {bar_init(sel, scales, settings);})
+		.merge(bar)
+		.transition().duration(1000)
+		.style("opacity", 1)
+		.call(function(sel) {bar_formatting(sel, scales, settings);});
+	}
+	bar.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+    
 	// Reset zoom
 	svg.select(".root")
 	    .transition().delay(1000).duration(0)
@@ -316,19 +364,21 @@ function plot() {
         svg_sel.select(".x-axis-label")
 	    .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")");
 	svg_sel.select(".x.axis").call(scales.xAxis);
-	svg_sel.select(".y.axis.points").call(scales.yAxis_hist);
+	if (settings.hist_show) {
+	    svg_sel.select(".x.axis.hist").call(scales.xAxis);
+	    svg_sel.select(".y.axis.hist").call(scales.yAxis_hist);
+	}
     }
     
     // Dynamically resize chart elements
     function resize_chart () {
-	var graph = settings.graph;
         // recompute sizes
         dims = setup_sizes(width, height);
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
-        scales.y_points.range(graph ? [400, 700] : [0, 000]);
-        scales.y_points_orig.range(graph ? [400, 700] : [0, 300]);
+        scales.y_points.range(settings.graph ? [700, 400] : [300, 0]);
+        scales.y_points_orig.range(settings.graph ? [700, 400] : [300, 0]);
 	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
 	scales.yAxis_points = d3.axisLeft(scales.y_points).tickSize(-dims.width);
 
@@ -394,7 +444,10 @@ function plot() {
     };
 
     chart.update_dots = function() {
-	d3.selectAll(".dot").call(function(sel) {dot_formatting(sel, scales, settings);});
+	d3.selectAll(".dot").call(function(sel) {
+	    dot_init(sel, scales, settings);
+	    dot_formatting(sel, scales, settings);
+	});
     };
 
     chart.update_points_jitter = function() {
@@ -587,14 +640,10 @@ d3.select("#x_max").on("input change", function(d) {
 });
 d3.select("#hist_show").on("input change", function (d) {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var graph = d3.select("#hist_show").node().checked;
-    var height = graph ? 700 : 300;
-    svg
-	.attr("width", width)
-	.attr("height", height);
-    // resize chart
-    plot.width(width).height(height).svg(svg);
-    plot = plot.settings(generate_settings());
+    var settings = generate_settings();
+    var height = settings.graph ? 700 : 300;
+    plot = plot.settings(settings);
+    plot.width(width).height(height);
     plot.update_data();
 });
 d3.select("#hist_classes").on("input change", function(d) {

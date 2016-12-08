@@ -38,27 +38,20 @@ function setup_scales (dims, data, settings) {
 
     if (data.length == 0) {data = [{x:50}];}
 
+    min_x = d3.min(data, function(d) { return(d.x);} );
+    max_x = d3.max(data, function(d) { return(d.x);} );
+    
     if (settings.x_manual) {
 	min_x = parseFloat(settings.x_min);
 	max_x = parseFloat(settings.x_max);
 	gap_x = 0;
 	gap_y = 0;
     } else {
-	min_x = d3.min(data, function(d) { return(d.x);} );
-	max_x = d3.max(data, function(d) { return(d.x);} );
 	gap_x = (max_x - min_x) * 0.2;
 	if (min_x == max_x) {
 	    min_x = min_x * 0.8;
 	    max_x = max_x * 1.2;
 	    gap_x = 0;
-	}
-	min_y = d3.min(data, function(d) { return(d.y);} );
-	max_y = d3.max(data, function(d) { return(d.y);} );
-	gap_y = (max_y - min_y) * 0.2;
-	if (min_y == max_y) {
-	    min_y = min_y * 0.8;
-	    max_y = max_y * 1.2;
-	    gap_y = 0.1;
 	}
     }
 	
@@ -66,23 +59,33 @@ function setup_scales (dims, data, settings) {
 	.range([0, dims.width])
 	.domain([min_x - gap_x, max_x + gap_x]);
     scales.y_points = d3.scaleLinear()
-        .range(settings.graph ? [400, 700] : [0, 300])
-	.domain([3, -3.5]);
-    scales.y_hist = d3.scaleLinear()
-        .range([0, 400])
-	.domain([0, 100]);
+        .range(settings.graph ? [700, 400] : [300, 0])
+	.domain([-3.5, 3]);
     // Keep track of original scales
     scales.x_orig = scales.x;
     scales.y_points_orig = scales.y_points;
-    scales.y_hist_orig = scales.y_hist;
     // x and y axis functions
     scales.xAxis = d3.axisBottom(scales.x)
         .tickSize(5);
-   // scales.yAxis_points = d3.axisLeft(scales.y_points)
-   //     .tickSize(-dims.width);
-    scales.yAxis_hist = d3.axisLeft(scales.y_hist)
-        .tickSize(-dims.width);
-
+    // Histogram scales
+    if (settings.hist_show) {
+	scales.bins = d3.histogram()
+	    .domain([min_x, max_x])
+	    .thresholds(settings.hist_classes)
+	(data.map(function(d) {return d.x;}));
+	scales.y_hist = d3.scaleLinear()
+	    .domain([0, d3.max(scales.bins, function(d) { return d.length; })])
+            .range([400, 0]);
+	scales.y_hist_orig = scales.y_hist;
+	scales.yAxis_hist = d3.axisLeft(scales.y_hist)
+            .tickSize(5);
+	scales.bins.map(function(d, i) {
+	    d.key = i;
+	    return d;
+	});
+    } else {
+	scales.bins = [];
+    }
     
     return scales;
 }

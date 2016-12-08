@@ -69,22 +69,8 @@ function setup_scales (dims, data, settings) {
         .tickSize(5);
     // Histogram scales
     if (settings.hist_show) {
-	scales.bins = d3.histogram()
-	    .domain([min_x, max_x])
-	    .thresholds(settings.hist_classes)
-	(data.map(function(d) {return d.x;}));
-	scales.y_hist = d3.scaleLinear()
-	    .domain([0, d3.max(scales.bins, function(d) { return d.length; })])
-            .range([400, 0]);
-	scales.y_hist_orig = scales.y_hist;
-	scales.yAxis_hist = d3.axisLeft(scales.y_hist)
-            .tickSize(5);
-	scales.bins.map(function(d, i) {
-	    d.key = i;
-	    return d;
-	});
-    } else {
-	scales.bins = [];
+	bins = compute_bins(data, settings);
+	scales = compute_hist_scales(scales, bins);
     }
     
     return scales;

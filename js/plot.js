@@ -9,7 +9,7 @@ function plot() {
 	data = [],
 	bins,
 	svg,
-	zoom, drag;
+	zoom, points_drag;
     
     // Zoom behavior
     zoom = d3.zoom()
@@ -36,6 +36,10 @@ function plot() {
 	chart_body.selectAll(".stats_label").call(function(sel) {
 	    stats_label_formatting(sel, scales);
 	});
+	chart_body.selectAll(".bar").call(function(sel) {
+	    bar_formatting(sel, scales, bins);
+	});
+
     }
 
     // Reset zoom function
@@ -46,16 +50,16 @@ function plot() {
 
 
     // Dots dragging function
-    var dragging = false;
-    drag = d3.drag()
+    var points_dragging = false;
+    points_drag = d3.drag()
 	.subject(function(d, i) {
             return {x:scales.x(d.x)};
 	})
 	.on('start', function(d, i) {
-	    dragging = true;
+	    points_dragging = true;
 	})
 	.on('drag', function(d) {
-	    if (dragging) {
+	    if (points_dragging) {
 		var cx = d3.event.x - scales.x(d.x);
 		d.x = scales.x.invert(d3.event.x);
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
@@ -72,11 +76,24 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
+		if (settings.hist_show) {
+		    bins = compute_bins(data, settings);
+		    scales = compute_hist_scales(scales, bins);
+		    d3.selectAll(".bar")
+			.data(bins, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    bar_formatting(sel, scales, bins);
+			});
+		    d3.select(".y.axis.hist")
+		    	.transition().duration(100).ease(d3.easeLinear)
+			.call(scales.yAxis_hist);
+		}
 	    }
 	})
 	.on('end', function(d) {
-	    if (dragging){
-		dragging = false;
+	    if (points_dragging){
+		points_dragging = false;
 	    }
 	});
 
@@ -130,7 +147,7 @@ function plot() {
 		.append("path")
 		.call(function(sel) { dot_init(sel, scales, settings); })
 		.call(function(sel) { dot_formatting(sel, scales, settings); })
-		.call(drag);
+		.call(points_drag);
 
 	    // Add stats
 	    var stats_data = stats_compute(data, settings);
@@ -246,6 +263,7 @@ function plot() {
 
 	var root = svg.select(".root");
 
+	// Histogram axes
 	if (settings.hist_show && svg.select(".x.axis.hist").empty()) {
 	    root.append("g")
 		.attr("class", "x axis hist")
@@ -289,7 +307,7 @@ function plot() {
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(drag)
+	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(points_drag)
 	    .merge(dot).call(function(sel) {dot_init(sel, scales, settings);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
@@ -319,9 +337,10 @@ function plot() {
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
 
 	// Add histogram
+	bins = compute_bins(data, settings);
 	var bar = chart_body
 	    .selectAll(".bar")
-	    .data(scales.bins, key);
+	    .data(bins, key);
 	if (settings.hist_show) {
 	    bar.enter().append("rect")
 		.attr("class", "bar")
@@ -329,11 +348,12 @@ function plot() {
 		.call(function(sel) {bar_init(sel, scales, settings);})
 		.merge(bar)
 		.transition().duration(1000)
-		.style("opacity", 1)
-		.call(function(sel) {bar_formatting(sel, scales, settings);});
+		.call(function(sel) {bar_formatting(sel, scales, bins);})
+		.style("opacity", 1);
 	}
 	bar.exit()
 	    .transition().duration(1000)
+	    .attr("width", 0)
 	    .style("opacity", 0)
 	    .remove();
     
@@ -406,7 +426,9 @@ function plot() {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
-	    d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
+	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
+	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+	    d.y = settings.jitter ? y : 0;
 	    return d;
 	});
 	data = new_data;
@@ -423,7 +445,9 @@ function plot() {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
+		var defined_y = data[i] !== undefined && data[i].y !== undefined;
+		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+		d.y = settings.jitter ? y : 0;
 		return d;
 	    });
 	    break;
@@ -434,7 +458,9 @@ function plot() {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
+		var defined_y = data[i] !== undefined && data[i].y !== undefined;
+		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+		d.y = settings.jitter ? y : 0;
 		return d;
 	    });
 	    break;

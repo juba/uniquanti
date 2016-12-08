@@ -1,6 +1,26 @@
+* {
+    font-family: Roboto, Open Sans, Droid Sans, Helvetica, Verdana, sans-serif;   
+}
 
 .sidebar {
-    font-size: 100%;
+    font-size: 12px;
+}
+
+.sidebar .form-control {
+    font-size: 13px;
+    padding: 4px 6px;
+    height: 30px;
+}
+
+
+.sidebar h4 {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.sidebar .nav-tabs a {
+    font-size: 13px;
+    padding: 8px 12px;
 }
 
 .tab-content > .tab-pane {
@@ -16,7 +36,6 @@
     border-radius: 2px;
     box-shadow: 0px 0px 7px 1px #a6a6a6;
     opacity: 0.95;
-    font-family: Open Sans, Droid Sans, Helvetica, Verdana, sans-serif;
     font-size: 10px;
     z-index: 10;
 }

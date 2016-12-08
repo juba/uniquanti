@@ -1,6 +1,5 @@
 // Create and draw x and y axes
-function add_axes(selection, dims, scales) {
-
+function add_axes(selection, dims, settings, scales) {
     // x axis
     selection.append("g")
         .attr("class", "x axis")

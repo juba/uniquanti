@@ -31,17 +31,16 @@ function setup_sizes (width, height) {
 }
 
 // Compute and setup scales
-function setup_scales (dims, data) {
+function setup_scales (dims, data, settings) {
 
     var min_x, min_y, max_x, max_y, gap_x, gap_y;
     var scales = {};
 
     if (data.length == 0) {data = [{x:50}];}
 
-    var x_manual = d3.select("#x_manual").node().checked;
-    if (x_manual) {
-	min_x = parseFloat(d3.select("#x_min").node().value);
-	max_x = parseFloat(d3.select("#x_max").node().value);
+    if (settings.x_manual) {
+	min_x = parseFloat(settings.x_min);
+	max_x = parseFloat(settings.x_max);
 	gap_x = 0;
 	gap_y = 0;
     } else {
@@ -66,18 +65,25 @@ function setup_scales (dims, data) {
     scales.x = d3.scaleLinear()
 	.range([0, dims.width])
 	.domain([min_x - gap_x, max_x + gap_x]);
-    scales.y = d3.scaleLinear()
-        .range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4])
-	.domain([-4, 2]);
+    scales.y_points = d3.scaleLinear()
+        .range(settings.graph ? [400, 700] : [0, 300])
+	.domain([3, -3.5]);
+    scales.y_hist = d3.scaleLinear()
+        .range([0, 400])
+	.domain([0, 100]);
     // Keep track of original scales
     scales.x_orig = scales.x;
-    scales.y_orig = scales.y;
+    scales.y_points_orig = scales.y_points;
+    scales.y_hist_orig = scales.y_hist;
     // x and y axis functions
     scales.xAxis = d3.axisBottom(scales.x)
         .tickSize(5);
-    scales.yAxis = d3.axisLeft(scales.y)
+   // scales.yAxis_points = d3.axisLeft(scales.y_points)
+   //     .tickSize(-dims.width);
+    scales.yAxis_hist = d3.axisLeft(scales.y_hist)
         .tickSize(-dims.width);
 
+    
     return scales;
 }
 

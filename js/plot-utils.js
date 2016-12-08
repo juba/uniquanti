@@ -6,7 +6,7 @@ function css_clean(s) {
 
 // Default translation function for points and labels
 function translation(d, scales) {
-     return "translate(" + scales.x(d.x) + "," + scales.y(d.y) + ")";
+     return "translate(" + scales.x(d.x) + "," + scales.y_points(d.y) + ")";
 }
 
 // Create tooltip content function

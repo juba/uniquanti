@@ -1,5 +1,10 @@
 // Initial dot attributes
 function dot_init (selection, scales) {
+    selection
+	.style("fill", "rgb(31, 119, 180)")
+        .attr("class", function(d,i) {
+	    return "dot"; 
+        });
     // tooltips when hovering points
     var tooltip = d3.select(".tooltip");
     selection.on("mouseover", function(d, i){
@@ -21,18 +26,12 @@ function dot_init (selection, scales) {
 }
 
 // Apply format to dot
-function dot_formatting(selection, scales) {
-    var size = d3.select("#points_size").node().value;
-    var opacity = d3.select("#points_opacity").node().value;
+function dot_formatting(selection, scales, settings) {
     var sel = selection
         .attr("transform", function(d) { return translation(d, scales); })
     // fill color
-        .style("fill", "rgb(31, 119, 180)")
-	.style("opacity", opacity)
+	.style("opacity", settings.points_opacity)
     // symbol and size
-        .attr("d", d3.symbol().size(size))
-        .attr("class", function(d,i) {
-	    return "dot"; 
-        });
+        .attr("d", d3.symbol().size(settings.points_size));
     return sel;
 }

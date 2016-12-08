@@ -58,7 +58,7 @@ function plot() {
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
 		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
 		    .html(tooltip_content(d));
-		var stats_data = stats_compute(data);
+		var stats_data = stats_compute(data, settings);
 		d3.selectAll(".stats_symbol")
 		    .data(stats_data, key)
 		    .call(function(sel) {
@@ -87,7 +87,7 @@ function plot() {
         selection.each(function() {
 
             dims = setup_sizes(width, height);
-            scales = setup_scales(dims, data);
+            scales = setup_scales(dims, data, settings);
 
             // Root chart element and axes
             var root = svg.append("g")
@@ -100,7 +100,7 @@ function plot() {
 		.attr("width", dims.width)
 		.attr("height", dims.height);
 
-            root.call(function(sel) { add_axes(sel, dims, scales); });
+            root.call(function(sel) { add_axes(sel, dims, settings, scales); });
 
             // chart body
             var chart_body = root.append("svg")
@@ -126,11 +126,11 @@ function plot() {
             dot.enter()
 		.append("path")
 		.call(function(sel) { dot_init(sel, scales); })
-		.call(function(sel) { dot_formatting(sel, scales); })
+		.call(function(sel) { dot_formatting(sel, scales, settings); })
 		.call(drag);
 
 	    // Add stats
-	    var stats_data = stats_compute(data);
+	    var stats_data = stats_compute(data, settings);
 	    var stats_symbol = chart_body
 		.selectAll("stats_symbol")
 		.data(stats_data, key);
@@ -224,7 +224,7 @@ function plot() {
         if (old_settings.point_size != settings.point_size ||
 	    old_settings.point_opacity != settings.point_opacity) {
             svg.selectAll(".dot").transition()
-		.call(function(sel) { dot_formatting(sel, scales); });
+		.call(function(sel) { dot_formatting(sel, scales, settings); });
 	}
 	var menu_parent = d3.select(svg.node().parentNode);
 	menu_parent.style("position", "relative");
@@ -236,7 +236,7 @@ function plot() {
     function update_data() {
 	
 	dims = setup_sizes(width, height);
-	scales = setup_scales(dims, data);
+	scales = setup_scales(dims, data, settings);
 
 	var t0 = svg.transition().duration(1000);
 	t0.call(resize_plot);
@@ -261,11 +261,11 @@ function plot() {
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
 	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales);}).call(drag)
-	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales);});
+	    .merge(dot).call(function(sel) {dot_init(sel, scales);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
 	// Add stats
-	var stats_data = stats_compute(data);
+	var stats_data = stats_compute(data, settings);
 	var stats_symbol = chart_body
 	    .selectAll(".stats_symbol")
 	    .data(stats_data, key);
@@ -297,37 +297,40 @@ function plot() {
     };
 
     // Dynamically resize plot area
-    function resize_plot(selection) {
-	// Change svg attributes
-        selection.selectAll(".root")
+    function resize_plot(svg_sel) {
+	// Change svg_sel attributes
+        svg_sel.attr("width", dims.svg_width)
+            .attr("height", dims.svg_height);
+        svg_sel.selectAll(".root")
             .attr("width", dims.width)
             .attr("height", dims.height);
-	selection.selectAll(".root")
+	svg_sel.selectAll(".root")
 	    .select("rect")
             .attr("width", dims.width)
             .attr("height", dims.height);
-        selection.selectAll(".chart-body")
+        svg_sel.selectAll(".chart-body")
             .attr("width", dims.width)
             .attr("height", dims.height);
-	selection.select(".x.axis")
+	svg_sel.select(".x.axis")
 	    .attr("transform", "translate(0," + dims.height + ")");
-        selection.select(".x-axis-label")
+        svg_sel.select(".x-axis-label")
 	    .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")");
-	selection.select(".x.axis").call(scales.xAxis);
-	selection.select(".y.axis").call(scales.yAxis);
+	svg_sel.select(".x.axis").call(scales.xAxis);
+	svg_sel.select(".y.axis.points").call(scales.yAxis_hist);
     }
     
     // Dynamically resize chart elements
     function resize_chart () {
+	var graph = settings.graph;
         // recompute sizes
         dims = setup_sizes(width, height);
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
-        scales.y.range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4]);
-        scales.y_orig.range([dims.height / 2 + dims.height / 4, dims.height / 2 - dims.height / 4]);
+        scales.y_points.range(graph ? [400, 700] : [0, 000]);
+        scales.y_points_orig.range(graph ? [400, 700] : [0, 300]);
 	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
-	scales.yAxis = d3.axisLeft(scales.y).tickSize(-dims.width);
+	scales.yAxis_points = d3.axisLeft(scales.y_points).tickSize(-dims.width);
 
 	svg.call(resize_plot);
 
@@ -343,18 +346,17 @@ function plot() {
 
 
     chart.update_data_manual = function() {
-	var manual_data = d3.select("#data_manual").node().value;
-	var jitter = d3.select("#points_jitter").node().checked;
-	if (!manual_data.match(/^(\d+ *, *)*\d+ *$/)) {
+	var data_string = settings.data_manual;
+	if (!data_string.match(/^(\d+ *, *)*\d+ *$/)) {
 	    alert("Les données saisies sont invalides");
 	    return;
 	}
-	new_data = manual_data.split(/ *, */);
+	var new_data = data_string.split(/ *, */);
 	new_data = new_data.map(function(val, i) {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
-	    d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
+	    d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
 	    return d;
 	});
 	data = new_data;
@@ -362,33 +364,27 @@ function plot() {
     };
 
     chart.update_data_random = function() {
-	var law = d3.select("#data_law").node();
-	law = law.options[law.selectedIndex].value;
-	var nbvals = d3.select("#nb_values").node().value;
-	var jitter = d3.select("#points_jitter").node().checked;
 	var new_data = [];
-	switch (law) {
+	switch (settings.data_law) {
 	case "uniforme":
-	    var min = d3.select("#data_uniform_min").node().value;
-	    var max = d3.select("#data_uniform_max").node().value;
-	    new_data = d3.range(nbvals).map(d3.randomUniform(min,max));
+	    new_data = d3.range(settings.data_nbvalues)
+		.map(d3.randomUniform(settings.data_uniform_min, settings.data_uniform_max));
 	    new_data = new_data.map(function(val, i) {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
+		d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
 		return d;
 	    });
 	    break;
 	case "normale":
-	    var mean = d3.select("#data_normal_mean").node().value;
-	    var sd = d3.select("#data_normal_sd").node().value;
-	    new_data = d3.range(nbvals).map(d3.randomNormal(mean,sd));
+	    new_data = d3.range(settings.data_nbvalues)
+		.map(d3.randomNormal(settings.data_normal_mean, settings.data_normal_sd));
 	    new_data = new_data.map(function(val, i) {
 		var d = {}; 
 		d.key = i;
 		d.x = val;
-		d.y = jitter ? d3.randomUniform(-1, 1)() : 0;
+		d.y = settings.jitter ? d3.randomUniform(-1, 1)() : 0;
 		return d;
 	    });
 	    break;
@@ -398,13 +394,12 @@ function plot() {
     };
 
     chart.update_dots = function() {
-	d3.selectAll(".dot").call(function(sel) {dot_formatting(sel, scales);});
+	d3.selectAll(".dot").call(function(sel) {dot_formatting(sel, scales, settings);});
     };
 
     chart.update_points_jitter = function() {
-	var jitter = d3.select("#points_jitter").node().checked;
 	var new_data = [];
-	if (jitter) {
+	if (settings.jitter) {
 	    new_data = data.map(function(d) {
 		d.y = d3.randomUniform(-1, 1)();
 		return d;
@@ -477,10 +472,39 @@ function plot() {
 
 // PLOT INIT
 
-var width = d3.select("#plot").node().getBoundingClientRect().width;
-var height = 600;
+
+function generate_settings() {
+    var law = d3.select("#data_law").node();
+    law = law.options[law.selectedIndex].value;
+    var settings = {
+	data_manual: d3.select("#data_manual").node().value,
+	data_law: law,
+	data_nbvalues: d3.select("#nb_values").node().value,
+	data_uniform_min: d3.select("#data_uniform_min").node().value,
+	data_uniform_max: d3.select("#data_uniform_max").node().value,
+	data_normal_mean: d3.select("#data_normal_mean").node().value,
+	data_normal_sd: d3.select("#data_normal_sd").node().value,
+	points_size: d3.select("#points_size").node().value,
+	points_opacity: d3.select("#points_opacity").node().value,
+	jitter: d3.select("#points_jitter").node().checked,
+	stats_mean: d3.select("#stats_mean").node().checked,
+	stats_median: d3.select("#stats_median").node().checked,
+	stats_quartiles: d3.select("#stats_quartiles").node().checked,
+	stats_sd: d3.select("#stats_sd").node().checked,
+	x_manual: d3.select("#x_manual").node().checked,
+	x_min: d3.select("#x_min").node().value,
+	x_max: d3.select("#x_max").node().value,
+	hist_show: d3.select("#hist_show").node().checked,
+	hist_classes: d3.select("#hist_classes").node().value,
+	graph: d3.select("#hist_show").node().checked
+    };
+    return settings;
+};
 
 var svg = d3.select("#plot").append("svg");
+var width = d3.select("#plot").node().getBoundingClientRect().width;
+var settings = generate_settings();
+var height = settings.graph ? 700 : 300;
 svg.attr("width", width)
     .attr("height", height)
     .append("style")
@@ -499,6 +523,7 @@ if (tooltip.empty()) {
 
 // Create plot instance
 var plot = plot().width(width).height(height).svg(svg);
+plot = plot.settings(settings);
 
 // Default data
 var data = [];
@@ -511,28 +536,82 @@ plot = plot.data(data, true);
 d3.select("#plot").call(plot);
 
 // Add controls handlers
-d3.select("#data_manual_submit").on("click", plot.update_data_manual);
-d3.select("#data_random_submit").on("click", plot.update_data_random);
+d3.select("#data_manual_submit").on("click", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data_manual();
+});
+d3.select("#data_random_submit").on("click", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data_random();
+});
+d3.select("#points_size").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_dots();
+});
+d3.select("#points_opacity").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_dots();
+});
+d3.select("#points_jitter").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_points_jitter();
+});
+d3.select("#stats_mean").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#stats_median").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#stats_quartiles").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#stats_sd").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+
+d3.select("#x_manual").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#x_min").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#x_max").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#hist_show").on("input change", function (d) {
+    var width = d3.select("#plot").node().getBoundingClientRect().width;
+    var graph = d3.select("#hist_show").node().checked;
+    var height = graph ? 700 : 300;
+    svg
+	.attr("width", width)
+	.attr("height", height);
+    // resize chart
+    plot.width(width).height(height).svg(svg);
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#hist_classes").on("input change", function(d) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+
+
+// Window resize
 
 window.onresize = function() {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var height = 600;
+    var graph = d3.select("#hist_show").node().checked;
+    var height = graph ? 700 : 300;
     svg
 	.attr("width", width)
 	.attr("height", height);
     // resize chart
     plot.width(width).height(height).svg(svg).resize();
 };
-
-d3.select("#points_size").on("input change", plot.update_dots);
-d3.select("#points_opacity").on("input change", plot.update_dots);
-d3.select("#points_jitter").on("input change", plot.update_points_jitter);
-
-d3.select("#stats_mean").on("input change", plot.update_data);
-d3.select("#stats_median").on("input change", plot.update_data);
-d3.select("#stats_quartiles").on("input change", plot.update_data);
-d3.select("#stats_sd").on("input change", plot.update_data);
-
-d3.select("#x_manual").on("input change", plot.update_data);
-d3.select("#x_min").on("input change", plot.update_data);
-d3.select("#x_max").on("input change", plot.update_data);

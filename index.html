@@ -211,7 +211,19 @@
 		    </div>
 		    <div id="collapseGraphiques" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGraphiques">
 			<div class="panel-body">
-
+			    <div class="checkbox">
+				<label>
+				    <input id="hist_show" type="checkbox"> Histogramme
+				</label>
+			    </div>
+			    <div class="form-horizontal" id="data_uniform_args">
+				<div class="form-group">
+				    <label for="hist_classes" class="col-sm-7 control-label">Nombre de classes</label>
+				    <div class="col-sm-5">
+					<input type="number" class="form-control" id="hist_classes" min="2" max="100" value="6" />
+				    </div>
+				</div>
+			    </div>
 			</div>
 		    </div>
 		</div>

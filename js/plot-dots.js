@@ -1,16 +1,13 @@
 // Initial dot attributes
-function dot_init (selection, scales) {
+function dot_init (selection, scales, settings) {
     selection
-	.style("fill", "rgb(31, 119, 180)")
-        .attr("class", function(d,i) {
-	    return "dot"; 
-        });
+	.style("fill", "rgb(31, 119, 180)");
     // tooltips when hovering points
     var tooltip = d3.select(".tooltip");
     selection.on("mouseover", function(d, i){
         d3.select(this)
             .transition().duration(150)
-            .attr("d", d3.symbol().size(450));
+            .attr("d", d3.symbol().size(600));
 	tooltip.style("visibility", "visible")
 	    .html(tooltip_content(d));
     });
@@ -20,7 +17,7 @@ function dot_init (selection, scales) {
     selection.on("mouseout", function(){
         d3.select(this)
             .transition().duration(150)
-            .attr("d", d3.symbol().size(100));
+            .attr("d", d3.symbol().size(settings.points_size));
         tooltip.style("visibility", "hidden");
     });
 }

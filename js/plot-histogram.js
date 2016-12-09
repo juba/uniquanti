@@ -8,8 +8,8 @@ function compute_bins(data, settings) {
     var breaks = [];
     var min_x = d3.min(data, function(d) { return(d.x);} );
     var max_x = d3.max(data, function(d) { return(d.x);} );
-    var len = (max_x - min_x) / parseInt(settings.hist_classes);
-    for (var i = min_x; i < max_x; i += len) {
+    var len = (max_x - min_x) / (parseInt(settings.hist_classes)) * 1.01;
+    for (var i = min_x + len; i <= max_x; i += len) {
 	breaks.push(i);
     }
 
@@ -21,6 +21,8 @@ function compute_bins(data, settings) {
 	d.key = i;
 	return d;
     });
+    console.log(breaks);
+    console.log(bins);
 
     return bins;
 }
@@ -42,7 +44,7 @@ function compute_hist_scales(scales, bins, settings) {
     scales.y_graph_orig = scales.y_graph;
     scales.yAxis_graph = d3.axisLeft(scales.y_graph)
         .tickSize(5);
-
+    
     return scales;
 }
 
@@ -51,8 +53,7 @@ function bar_init(selection, scales) {
     selection
 	.style("fill", "#e0c879")
     	.attr("height", function(d) { return 400 - scales.y_graph(d.length); })
-	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; })
-	.attr("x", 1);
+	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; });
     return selection;
 }
 

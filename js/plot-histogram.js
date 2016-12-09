@@ -4,13 +4,17 @@
 function compute_bins(data, settings) {
 
     if (settings.graph_type != "hist") return [];
-    
+
     var breaks = [];
-    var min_x = d3.min(data, function(d) { return(d.x);} );
-    var max_x = d3.max(data, function(d) { return(d.x);} );
-    var len = (max_x - min_x) / (parseInt(settings.hist_classes)) * 1.01;
-    for (var i = min_x + len; i <= max_x; i += len) {
-	breaks.push(i);
+    if (settings.hist_exact) {
+	var min_x = d3.min(data, function(d) { return(d.x);} );
+	var max_x = d3.max(data, function(d) { return(d.x);} );
+	var len = (max_x - min_x) / (parseInt(settings.hist_classes)) * 1.01;
+	for (var i = min_x + len; i <= max_x; i += len) {
+	    breaks.push(i);
+	}
+    } else {
+	breaks = settings.hist_classes;
     }
 
     var bins = d3.histogram()
@@ -21,8 +25,6 @@ function compute_bins(data, settings) {
 	d.key = i;
 	return d;
     });
-    console.log(breaks);
-    console.log(bins);
 
     return bins;
 }

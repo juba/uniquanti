@@ -57,6 +57,10 @@ function plot() {
 	chart_body.selectAll(".boxplot-outlier").call(function(sel) {
 	    boxplot_outlier_formatting(sel, scales, settings);
 	});
+	chart_body.selectAll(".kde").call(function(sel) {
+	    kde_formatting(sel, scales);
+	});
+
     }
 
     // Reset zoom function
@@ -154,7 +158,19 @@ function plot() {
 		    outliers.exit()
 			.remove();
 		}
-
+		if (settings.graph_type == "kde") {
+		    kde_data = compute_kde_data(data, settings, scales);
+		    scales = compute_kde_scales(scales, kde_data, settings);
+		    d3.selectAll(".kde")
+			.data([kde_data])
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    kde_formatting(sel, scales, bins);
+			});
+		    d3.select(".y.axis.graph")
+		    	.transition().duration(100).ease(d3.easeLinear)
+			.call(scales.yAxis_graph);
+		}
 	    }
 	})
 	.on('end', function(d) {
@@ -291,18 +307,22 @@ function plot() {
 	dims = setup_sizes(width, height);
 	scales = setup_scales(dims, data, settings);
 	bins = compute_bins(data, settings);
+	var kde_data = compute_kde_data(data, settings, scales);
 	if (settings.graph_type == "hist") {
 	    scales = compute_hist_scales(scales, bins, settings);
 	}
 	if (settings.graph_type == "boxplot") {
 	    scales = compute_boxplot_scales(scales, bins, settings);
 	}
+	if (settings.graph_type == "kde") {
+	    scales = compute_kde_scales(scales, kde_data, settings);
+	}
 	
-
 	var root = svg.select(".root");
 
-	// Histogram axes
-	if (settings.graph_type == "hist" && svg.select(".y.axis.graph").empty()) {
+	// Histogram and density axes
+	if ((settings.graph_type == "hist" || settings.graph_type == "kde")
+	    && svg.select(".y.axis.graph").empty()) {
 	    root.append("g")
 		.attr("class", "x axis graph")
 		.attr("transform", "translate(0, 400)")
@@ -523,6 +543,29 @@ function plot() {
 	    .style("opacity", 0)
 	    .remove();
 
+	// Add density
+	var kde = chart_body
+	    .selectAll(".kde")
+	    .data([kde_data]);
+	if (settings.graph_type == "kde") {
+	    kde.enter().append("path")
+		.attr("class", "kde")
+	    	.style("opacity", 0)
+	    	.call(function(sel) {kde_init(sel, scales);})
+		.merge(kde)
+	    	.transition().duration(1000)
+	    	.call(function(sel) {kde_formatting(sel, scales);})
+	    	.style("opacity", 1);
+	}
+	if (kde_data.length == 0) {
+	    kde.transition().duration(1000)
+		.attr("width", 0)
+		.style("opacity", 0)
+		.remove();
+	}
+
+
+	
 	// Reset zoom
 	svg.select(".root")
 	    .transition().delay(1000).duration(0)
@@ -747,6 +790,7 @@ function generate_settings() {
 	hist_exact: d3.select("#hist_exact").node().checked,
 	hist_percent: d3.select("#hist_percent").node().checked,
 	hist_labels: d3.select("#hist_labels").node().checked,
+	kde_scale: parseInt(d3.select("#kde_scale").node().value),
 	graph: graph_type != "none"
     };
     return settings;
@@ -809,43 +853,11 @@ d3.select("#points_jitter").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_points_jitter();
 });
-d3.select("#stats_mean").on("input change", function(e) {
+d3.select("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#stats_median").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#stats_quartiles").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#stats_sd").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#x_manual").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#x_min").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#x_max").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#y_manual").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#y_min").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_data();
-});
-d3.select("#y_max").on("input change", function(e) {
+d3.select("#x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
@@ -858,6 +870,10 @@ d3.select("#graph_type").on("input change", function (e) {
     plot.update_data();
 });
 d3.selectAll("#hist_classes, #hist_exact, #hist_percent, #hist_labels").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.selectAll("#kde_scale").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });

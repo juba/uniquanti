@@ -17,9 +17,16 @@ function compute_kde_data(data, settings, scales) {
     }
 
     var kde = kernelDensityEstimator(epanechnikovKernel(settings.kde_scale), scales.x.ticks(100));
-    return kde(data.map(function(d) {return d.x;}));
+    var kde_data = kde(data.map(function(d) {return d.x;}));
+    return kde_data;
 }
 
+function add_kde_extremes(kde_data, scales) {
+    var domain = scales.x.domain();
+    kde_data.push([domain[1],0]);
+    kde_data.unshift([domain[0],0]);
+    return kde_data;
+}
 
 // Compute histogram y scale
 function compute_kde_scales(scales, kde_data, settings) {
@@ -32,7 +39,7 @@ function compute_kde_scales(scales, kde_data, settings) {
 	    .domain([min_y, max_y]);
     } else {
 	scales.y_graph
-	    .domain([0, d3.max(kde_data.map(function(d) {return d[1];}))])
+	    .domain([0, d3.max(kde_data.map(function(d) {return d[1];})) * 1.1])
 	    .nice();
     }
 
@@ -45,8 +52,9 @@ function compute_kde_scales(scales, kde_data, settings) {
 
 // Path drawing function
 var kde_line = d3.line()
-	.x(function(d) { return scales.x(d[0]); })
-	.y(function(d) { return scales.y_graph(d[1]); });
+    .x(function(d) { return scales.x(d[0]); })
+    .y(function(d) { return scales.y_graph(d[1]); });
+
 
 // Initial path attributes
 function kde_init(selection, scales) {

@@ -159,8 +159,10 @@ function plot() {
 			.remove();
 		}
 		if (settings.graph_type == "kde") {
-		    kde_data = compute_kde_data(data, settings, scales);
+		    var kde_data = compute_kde_data(data, settings, scales);
 		    scales = compute_kde_scales(scales, kde_data, settings);
+		    kde_data = add_kde_extremes(kde_data, scales);
+		    console.log(kde_data);
 		    d3.selectAll(".kde")
 			.data([kde_data])
 			.transition().duration(100).ease(d3.easeLinear)
@@ -316,6 +318,7 @@ function plot() {
 	}
 	if (settings.graph_type == "kde") {
 	    scales = compute_kde_scales(scales, kde_data, settings);
+	    kde_data = add_kde_extremes(kde_data, scales);
 	}
 	
 	var root = svg.select(".root");

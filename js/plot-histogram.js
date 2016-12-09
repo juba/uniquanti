@@ -44,7 +44,7 @@ function compute_hist_scales(scales, bins, settings) {
 	    .domain([min_y, max_y]);
     } else {
 	scales.y_graph
-	    .domain([0, d3.max(bins, function(d) { return d.val; })])
+	    .domain([0, d3.max(bins, function(d) { return d.val; }) * 1.1])
 	    .nice();
     }
 

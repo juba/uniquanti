@@ -23,6 +23,10 @@ function compute_bins(data, settings) {
 
     bins.map(function(d, i) {
 	d.key = i;
+	d.val = d.length;
+	if (settings.hist_percent) {
+	    d.val = d.val / data.length * 100;
+	}
 	return d;
     });
 
@@ -40,9 +44,10 @@ function compute_hist_scales(scales, bins, settings) {
 	    .domain([min_y, max_y]);
     } else {
 	scales.y_graph
-	    .domain([0, d3.max(bins, function(d) { return d.length; })])
+	    .domain([0, d3.max(bins, function(d) { return d.val; })])
 	    .nice();
     }
+
     scales.y_graph_orig = scales.y_graph;
     scales.yAxis_graph = d3.axisLeft(scales.y_graph)
         .tickSize(5);
@@ -54,36 +59,64 @@ function compute_hist_scales(scales, bins, settings) {
 function bar_init(selection, scales) {
     selection
 	.style("fill", "#e0c879")
-    	.attr("height", function(d) { return 400 - scales.y_graph(d.length); })
-	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; });
+    	.attr("height", function(d) { return 400 - scales.y_graph(d.val); })
+	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.val) + ")"; });
     return selection;
 }
 
 // Apply format to bar
 function bar_formatting(selection, scales, bins) {
     var w = 0;
-    if (bins[0] !== undefined) {
-	w = scales.x(bins[0].x1) - scales.x(bins[0].x0) - 1;
+    if (bins[1] !== undefined) {
+	w = scales.x(bins[1].x1) - scales.x(bins[1].x0) - 1;
     }
     selection
-      	.attr("width", w)
+      	.attr("width", function(d,i) {
+	    if (i == 0) {
+		return scales.x(d.x1) - scales.x(d.x0) - 1;
+	    } else {
+		return w;
+	    }
+	})
 	.attr("height", function(d) {
-	    return 400 - scales.y_graph(d.length); })
-	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; });
+	    return 400 - scales.y_graph(d.val); })
+	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.val) + ")"; });
 }
 
+// Initial bar label attributes
+function bar_label_init(selection, scales) {
+    selection
+	.style("fill", "#fff")
+    	.style("font-size", "10px")
+    	.attr("text-anchor", "middle")
+	.attr("dy", "1.5em")
+    	.attr("x", function(d) {
+	    return scales.x(d.x0) + (scales.x(d.x1) - scales.x(d.x0)) / 2;
+	})
+    	.attr("y", function(d) {
+	    return scales.y_graph(d.val);
+	});
+    return selection;
+}
 
 // Apply format to bar label
 function bar_label_formatting(selection, scales, settings) {
     selection
-	.append("text")
-	.attr("dy", ".75em")
-	.attr("y", 6)
-	.attr("x", (scales.x(scales.bins[0].x1) - scales.x(scales.bins[0].x0)) / 2)
-	.style("font-size", "10px")
-	.style("fill", "#fff")
-	.attr("text-anchor", "middle")
-	.text(function(d) { return d.length; });
+	.attr("x", function(d) {
+	    return scales.x(d.x0) + (scales.x(d.x1) - scales.x(d.x0)) / 2;
+	})
+    	.attr("y", function(d) {
+	    return scales.y_graph(d.val);
+	})
+	.text(function(d) {
+	    if (settings.hist_percent) {
+		return d.val.toFixed(1) + "%";
+	    }
+	    return d.val;
+	})
+	.style("opacity", function(d) {
+	    return d.val == 0 ? 0 : 1;
+	});
     return selection;
 }
 

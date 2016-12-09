@@ -22,7 +22,7 @@ function plot() {
         scales.x = d3.event.transform.rescaleX(scales.x_orig);
         scales.xAxis = scales.xAxis.scale(scales.x);
         root.select(".x.axis").call(scales.xAxis);
-	root.select(".x.axis.hist").call(scales.xAxis);
+	root.select(".x.axis.graph").call(scales.xAxis);
 	
 	var chart_body = svg.select(".chart-body");
         chart_body.selectAll(".dot")
@@ -39,7 +39,9 @@ function plot() {
 	chart_body.selectAll(".bar").call(function(sel) {
 	    bar_formatting(sel, scales, bins);
 	});
-
+	chart_body.selectAll(".bar-label").call(function(sel) {
+	    bar_label_formatting(sel, scales, settings);
+	});
     }
 
     // Reset zoom function
@@ -85,7 +87,13 @@ function plot() {
 			.call(function(sel) {
 			    bar_formatting(sel, scales, bins);
 			});
-		    d3.select(".y.axis.hist")
+		    d3.selectAll(".bar-label")
+			.data(bins, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    bar_label_formatting(sel, scales, settings);
+			});
+		    d3.select(".y.axis.graph")
 		    	.transition().duration(100).ease(d3.easeLinear)
 			.call(scales.yAxis_graph);
 		}
@@ -197,23 +205,6 @@ function plot() {
 		.on("click", function() { export_svg(this, svg, settings); })
 		.html("Export to SVG");
 	    
-	    if (settings.lasso) {
-                menu.append("li")
-		    .append("a")
-		    .attr("class", "lasso-entry")
-		    .on("click", function () {lasso_toggle(svg, settings, scales, zoom);})
-		    .html("Toggle lasso on");
-	    }
-	    
-                var label_export = menu.append("li")
-		    .attr("class", "label-export");
-	    label_export.append("a")
-		.on("click", function() { export_labels_position(this, data, settings, scales); })
-		    .html("Export labels positions");
-	    if (!settings.has_labels) {
-		label_export.style("display", "none");
-	    }
-	    
 	    gear.on("click", function(d, i){
                 var menu = d3.select("#plot-menu");
                 var gear = svg.select(".gear-menu");
@@ -236,50 +227,29 @@ function plot() {
     }
 
 
-    // Update chart with transitions
-    function update_settings(old_settings) {
-	var chart_body = svg.select(".chart-body");
-        if (old_settings.labels_size != settings.labels_size)
-            svg.selectAll(".point-label").transition().style("font-size", settings.labels_size + "px");
-        if (old_settings.point_size != settings.point_size ||
-	    old_settings.point_opacity != settings.point_opacity) {
-            svg.selectAll(".dot").transition()
-		.call(function(sel) { dot_formatting(sel, scales, settings); });
-	}
-	var menu_parent = d3.select(svg.node().parentNode);
-	menu_parent.style("position", "relative");
-	var menu = menu_parent.select(".plot-menu");
-	menu.attr("id", "plot-menu");
-    };
-
     // Update data with transitions
     function update_data() {
 	
 	dims = setup_sizes(width, height);
 	scales = setup_scales(dims, data, settings);
-
-	var t0 = svg.transition().duration(1000);
-	t0.call(resize_plot);
+	bins = compute_bins(data, settings);
+	if (settings.graph_type == "hist") {
+	    scales = compute_hist_scales(scales, bins, settings);
+	}
 
 	var root = svg.select(".root");
 
 	// Histogram axes
-	if (settings.graph_type == "hist" && svg.select(".x.axis.graph").empty()) {
+	if (settings.graph_type == "hist" && svg.select(".y.axis.graph").empty()) {
 	    root.append("g")
 		.attr("class", "x axis graph")
 		.attr("transform", "translate(0, 400)")
 		.style("font-size", "11px")
-	    	.style("opacity", 0)
-		.call(scales.xAxis)
-		.transition().duration(1000)
-	    	.style("opacity", 1);
+	    	.style("opacity", 0);
 	    root.append("g")
 		.attr("class", "y axis graph")
 		.style("font-size", "11px")
-	    	.style("opacity", 0)
-		.call(scales.yAxis_graph)
-	    	.transition().duration(1000)
-	    	.style("opacity", 1);
+	    	.style("opacity", 0);
 	}
 	if (!settings.graph) {
 	    root.selectAll(".x.axis.graph, .y.axis.graph")
@@ -287,7 +257,10 @@ function plot() {
 	    	.style("opacity", 0)
 		.remove();
 	}
-    
+
+	var t0 = svg.transition().duration(1000);
+	t0.call(resize_plot);
+
 	var chart_body = svg.select(".chart-body");
 
 	// Add lines
@@ -337,7 +310,6 @@ function plot() {
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
 
 	// Add histogram
-	bins = compute_bins(data, settings);
 	var bar = chart_body
 	    .selectAll(".bar")
 	    .data(bins, key);
@@ -356,6 +328,26 @@ function plot() {
 	    .attr("width", 0)
 	    .style("opacity", 0)
 	    .remove();
+	// Histogram labels
+	var labels_data = settings.hist_labels ? bins : [];
+	var bar_labels = chart_body
+	    .selectAll(".bar-label")
+	    .data(labels_data, key);
+	if (settings.graph_type == "hist" && settings.hist_labels) {
+	    bar_labels.enter().append("text")
+		.attr("class", "bar-label")
+	    	.style("opacity", 0)
+		.call(function(sel) {bar_label_init(sel, scales);})
+		.merge(bar_labels)
+		.transition().duration(1000)
+		.call(function(sel) {bar_label_formatting(sel, scales, settings);});
+	}
+	bar_labels.exit()
+	    .transition().duration(1000)
+	    .attr("width", 0)
+	    .style("opacity", 0)
+	    .remove();
+	
     
 	// Reset zoom
 	svg.select(".root")
@@ -385,8 +377,12 @@ function plot() {
 	    .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")");
 	svg_sel.select(".x.axis").call(scales.xAxis);
 	if (settings.graph) {
-	    svg_sel.select(".x.axis.hist").call(scales.xAxis);
-	    svg_sel.select(".y.axis.hist").call(scales.yAxis_graph);
+	    svg_sel.select(".x.axis.graph")
+		.call(scales.xAxis)
+		.style("opacity", 1);
+	    svg_sel.select(".y.axis.graph")
+		.call(scales.yAxis_graph)
+	    	.style("opacity", 1);
 	}
     }
     
@@ -513,13 +509,7 @@ function plot() {
     // settings getter/setter
     chart.settings = function(value) {
         if (!arguments.length) return settings;
-        if (Object.keys(settings).length === 0) {
-            settings = value;
-        } else {
-            var old_settings = settings;
-            settings = value;
-            update_settings(old_settings);
-        }
+        settings = value;
         return chart;
     };
 
@@ -703,8 +693,9 @@ d3.selectAll("#hist_classes, #hist_exact, #hist_percent, #hist_labels").on("inpu
 
 window.onresize = function() {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var graph = d3.select("#hist_show").node().checked;
-    var height = graph ? 700 : 300;
+    var graph_type = d3.select("#graph_type").node();
+    graph_type = graph_type.options[graph_type.selectedIndex].value;
+    var height = graph_type != "none" ? 700 : 300;
     svg
 	.attr("width", width)
 	.attr("height", height);

@@ -67,11 +67,6 @@ function setup_scales (dims, data, settings) {
     // x and y axis functions
     scales.xAxis = d3.axisBottom(scales.x)
         .tickSize(5);
-    // Histogram scales
-    if (settings.graph_type == "hist") {
-	bins = compute_bins(data, settings);
-	scales = compute_hist_scales(scales, bins, settings);
-    }
     
     return scales;
 }

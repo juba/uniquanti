@@ -42,6 +42,21 @@ function plot() {
 	chart_body.selectAll(".bar-label").call(function(sel) {
 	    bar_label_formatting(sel, scales, settings);
 	});
+	chart_body.selectAll(".boxplot-box").call(function(sel) {
+	    boxplot_box_formatting(sel, scales, settings);
+	});
+	chart_body.selectAll(".boxplot-median").call(function(sel) {
+	    boxplot_median_formatting(sel, scales, settings);
+	});
+	chart_body.selectAll(".boxplot-whisker").call(function(sel) {
+	    boxplot_whisker_formatting(sel, scales, settings);
+	});
+	chart_body.selectAll(".boxplot-whisker-bar").call(function(sel) {
+	    boxplot_whisker_bar_formatting(sel, scales, settings);
+	});
+	chart_body.selectAll(".boxplot-outlier").call(function(sel) {
+	    boxplot_outlier_formatting(sel, scales, settings);
+	});
     }
 
     // Reset zoom function
@@ -97,6 +112,49 @@ function plot() {
 		    	.transition().duration(100).ease(d3.easeLinear)
 			.call(scales.yAxis_graph);
 		}
+		if (settings.graph_type == "boxplot") {
+		    var boxplot_stats = compute_boxplot_stats(data, settings);
+		    var data_median = compute_boxplot_median(boxplot_stats, settings);
+		    d3.selectAll(".boxplot-median")
+			.data(data_median, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    boxplot_median_formatting(sel, scales);
+			});
+		    var data_box = compute_boxplot_box(boxplot_stats, settings);
+		    d3.selectAll(".boxplot-box")
+			.data(data_box, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    boxplot_box_formatting(sel, scales);
+			});
+		    var data_whiskers = compute_boxplot_whiskers(boxplot_stats, settings);
+		    d3.selectAll(".boxplot-whisker")
+			.data(data_whiskers, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    boxplot_whisker_formatting(sel, scales);
+			});
+		    d3.selectAll(".boxplot-whisker-bar")
+			.data(data_whiskers, key)
+			.transition().duration(100).ease(d3.easeLinear)
+			.call(function(sel) {
+			    boxplot_whisker_bar_formatting(sel, scales);
+			});
+		    var data_outliers = compute_boxplot_outliers(boxplot_stats, settings);
+		    var chart_body = d3.select(".chart-body");
+		    var outliers = chart_body.selectAll(".boxplot-outlier")
+			.data(data_outliers, key);
+		    outliers.enter().append("circle")
+			.attr("class", "boxplot-outlier")
+			.call(function(sel) {boxplot_outlier_init(sel, scales);})
+			.merge(outliers)
+			.call(function(sel) {boxplot_outlier_formatting(sel, scales);})
+			.style("opacity", 1);
+		    outliers.exit()
+			.remove();
+		}
+
 	    }
 	})
 	.on('end', function(d) {
@@ -236,6 +294,10 @@ function plot() {
 	if (settings.graph_type == "hist") {
 	    scales = compute_hist_scales(scales, bins, settings);
 	}
+	if (settings.graph_type == "boxplot") {
+	    scales = compute_boxplot_scales(scales, bins, settings);
+	}
+	
 
 	var root = svg.select(".root");
 
@@ -251,6 +313,22 @@ function plot() {
 		.style("font-size", "11px")
 	    	.style("opacity", 0);
 	}
+	// Boxplot axes
+	if (settings.graph_type == "boxplot" && svg.select(".x.axis.graph").empty()) {
+	    root.append("g")
+		.attr("class", "x axis graph")
+		.attr("transform", "translate(0, 400)")
+		.style("font-size", "11px")
+	    	.style("opacity", 0);
+	}
+	// Remove y axis for boxplot
+	if (settings.graph_type == "boxplot") {
+	    root.selectAll(".y.axis.graph")
+		.transition().duration(1000)
+	    	.style("opacity", 0)
+		.remove();
+	}
+	// Remove axes if no graph
 	if (!settings.graph) {
 	    root.selectAll(".x.axis.graph, .y.axis.graph")
 		.transition().duration(1000)
@@ -347,8 +425,104 @@ function plot() {
 	    .attr("width", 0)
 	    .style("opacity", 0)
 	    .remove();
-	
-    
+
+	// Boxplot
+	var boxplot_stats = compute_boxplot_stats(data, settings);
+	// Boxplot box
+	var data_box = compute_boxplot_box(boxplot_stats, settings);
+	var box = chart_body
+	    .selectAll(".boxplot-box")
+	    .data(data_box, key);
+	if (settings.graph_type == "boxplot") {
+	    box.enter().append("rect")
+		.attr("class", "boxplot-box")
+	    	.style("opacity", 0)
+		.call(function(sel) {boxplot_box_init(sel, scales);})
+		.merge(box)
+		.transition().duration(1000)
+		.call(function(sel) {boxplot_box_formatting(sel, scales);})
+		.style("opacity", 1);
+	}
+	box.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+	// Median line
+	var data_median = compute_boxplot_median(boxplot_stats, settings);
+	var median = chart_body
+	    .selectAll(".boxplot-median")
+	    .data(data_median, key);
+	if (settings.graph_type == "boxplot") {
+	    median.enter().append("line")
+		.attr("class", "boxplot-median")
+	    	.style("opacity", 0)
+		.call(function(sel) {boxplot_median_init(sel, scales);})
+		.merge(median)
+		.transition().duration(1000)
+		.call(function(sel) {boxplot_median_formatting(sel, scales);})
+		.style("opacity", 1);
+	}
+	median.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+	// Boxplot whiskers
+	var data_whiskers = compute_boxplot_whiskers(boxplot_stats, settings);
+	var whiskers = chart_body
+	    .selectAll(".boxplot-whisker")
+	    .data(data_whiskers, key);
+	if (settings.graph_type == "boxplot") {
+	    whiskers.enter().append("line")
+		.attr("class", "boxplot-whisker")
+	    	.style("opacity", 0)
+		.call(function(sel) {boxplot_whisker_init(sel, scales);})
+		.merge(whiskers)
+		.transition().duration(1000)
+		.call(function(sel) {boxplot_whisker_formatting(sel, scales);})
+		.style("opacity", 1);
+	}
+	whiskers.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+	// Boxplot whiskers bars
+	var whiskers_bars = chart_body
+	    .selectAll(".boxplot-whisker-bar")
+	    .data(data_whiskers, key);
+	if (settings.graph_type == "boxplot") {
+	    whiskers_bars.enter().append("line")
+		.attr("class", "boxplot-whisker-bar")
+	    	.style("opacity", 0)
+		.call(function(sel) {boxplot_whisker_bar_init(sel, scales);})
+		.merge(whiskers_bars)
+		.transition().duration(1000)
+		.call(function(sel) {boxplot_whisker_bar_formatting(sel, scales);})
+		.style("opacity", 1);
+	}
+	whiskers_bars.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+	// Boxplot outliers
+	var data_outliers = compute_boxplot_outliers(boxplot_stats, settings);
+	var outliers = chart_body
+	    .selectAll(".boxplot-outlier")
+	    .data(data_outliers, key);
+	if (settings.graph_type == "boxplot") {
+	    outliers.enter().append("circle")
+		.attr("class", "boxplot-outlier")
+	    	.style("opacity", 0)
+		.call(function(sel) {boxplot_outlier_init(sel, scales);})
+		.merge(outliers)
+		.transition().duration(1000)
+		.call(function(sel) {boxplot_outlier_formatting(sel, scales);})
+		.style("opacity", 1);
+	}
+	outliers.exit()
+	    .transition().duration(1000)
+	    .style("opacity", 0)
+	    .remove();
+
 	// Reset zoom
 	svg.select(".root")
 	    .transition().delay(1000).duration(0)

@@ -27,6 +27,9 @@
 	    case 'hist':
 		$("#graph_hist_args").show();
 		break;
+	    case 'boxplot':
+		$("#graph_hist_args").hide();
+		break;
 	    }
 	});
 	

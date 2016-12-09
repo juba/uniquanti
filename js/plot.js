@@ -343,9 +343,8 @@ function plot() {
 	}
 	// Remove y axis for boxplot
 	if (settings.graph_type == "boxplot") {
+	    console.log("remove");
 	    root.selectAll(".y.axis.graph")
-		.transition().duration(1000)
-	    	.style("opacity", 0)
 		.remove();
 	}
 	// Remove axes if no graph
@@ -853,11 +852,11 @@ d3.select("#points_jitter").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_points_jitter();
 });
-d3.select("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
+d3.selectAll("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
+d3.selectAll("#x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });

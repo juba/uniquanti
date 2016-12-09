@@ -2,6 +2,7 @@
     $(function() {
 	$("#data_normal_args").hide();
 	$("#graph_hist_args").hide();
+	$("#graph_kde_args").hide();
 	$("#x_limits").hide();
 	$("#y_limits").hide();
 	
@@ -23,11 +24,18 @@
 	    switch($(this).val()) {
 	    case 'none':
 		$("#graph_hist_args").hide();
+		$("#graph_kde_args").hide();
 		break;
 	    case 'hist':
 		$("#graph_hist_args").show();
+		$("#graph_kde_args").hide();
 		break;
 	    case 'boxplot':
+		$("#graph_hist_args").hide();
+		$("#graph_kde_args").hide();
+		break;
+	    case 'kde':
+		$("#graph_kde_args").show();
 		$("#graph_hist_args").hide();
 		break;
 	    }

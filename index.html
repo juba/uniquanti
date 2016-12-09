@@ -220,6 +220,7 @@
 				    <option value="none" selected>Aucun</option>
 				    <option value="hist">Histogramme</option>
 				    <option value="boxplot">Boxplot</option>
+				    <option value="kde">Estimation de densité</option>
 				</select>
 			    </div>
 			    <div class="form-horizontal" id="graph_hist_args">
@@ -243,6 +244,14 @@
 				    <label>
 					<input id="hist_labels" type="checkbox" checked> Afficher les labels
 				    </label>
+				</div>
+			    </div>
+			    <div class="form-horizontal" id="graph_kde_args">
+				<div class="form-group">
+				    <label for="kde_scale" class="col-sm-7 control-label">Bande passante</label>
+				    <div class="col-sm-5">
+					<input type="number" class="form-control" id="kde_scale" min="1" max="100" value="7" />
+				    </div>
 				</div>
 			    </div>
 			</div>
@@ -336,6 +345,7 @@
     <script src="js/plot-stats.js"></script>
     <script src="js/plot-histogram.js"></script>
     <script src="js/plot-boxplot.js"></script>
+    <script src="js/plot-kde.js"></script>
     <script src="js/plot.js"></script>
 
   </body>

@@ -682,6 +682,26 @@ function plot() {
 	update_data();
     };
 
+    chart.update_data_dataset = function() {
+	var new_data;
+	switch (settings.data_dataset) {
+	case "life_expectancy_2014":
+	    var csv_data = d3.csvParse(dataset_life_expectancy_2014());
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.lab = val.Country;
+		d.x = parseFloat(val.life_exp_2014);
+		var defined_y = data[i] !== undefined && data[i].y !== undefined;
+		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+		d.y = settings.jitter ? y : 0;
+		return d;
+	    });
+	}
+	data = new_data;
+	update_data();
+    };
+    
     chart.update_dots = function() {
 	d3.selectAll(".dot").call(function(sel) {
 	    dot_init(sel, scales, settings);
@@ -764,6 +784,8 @@ function generate_settings() {
     law = law.options[law.selectedIndex].value;
     var graph_type = d3.select("#graph_type").node();
     graph_type = graph_type.options[graph_type.selectedIndex].value;
+    var dataset = d3.select("#data_dataset").node();
+    dataset = dataset.options[dataset.selectedIndex].value;
     var settings = {
 	data_manual: d3.select("#data_manual").node().value,
 	data_law: law,
@@ -772,6 +794,7 @@ function generate_settings() {
 	data_uniform_max: d3.select("#data_uniform_max").node().value,
 	data_normal_mean: d3.select("#data_normal_mean").node().value,
 	data_normal_sd: d3.select("#data_normal_sd").node().value,
+	data_dataset: dataset,
 	points_size: d3.select("#points_size").node().value,
 	points_opacity: d3.select("#points_opacity").node().value,
 	jitter: d3.select("#points_jitter").node().checked,
@@ -840,6 +863,11 @@ d3.select("#form_random_data").on("submit", function(e) {
     d3.event.preventDefault();
     plot = plot.settings(generate_settings());
     plot.update_data_random();
+});
+d3.select("#form_dataset").on("submit", function(e) {
+    d3.event.preventDefault();
+    plot = plot.settings(generate_settings());
+    plot.update_data_dataset();
 });
 d3.select("#points_size").on("input change", function(e) {
     plot = plot.settings(generate_settings());

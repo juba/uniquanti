@@ -67,7 +67,7 @@ function bar_init(selection, scales) {
 // Apply format to bar
 function bar_formatting(selection, scales, bins) {
     var w = 0;
-    if (bins[1] !== undefined) {
+    if (bins !== undefined && bins[1] !== undefined) {
 	w = scales.x(bins[1].x1) - scales.x(bins[1].x0) - 1;
     }
     selection

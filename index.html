@@ -71,6 +71,7 @@
 				<ul class="nav nav-tabs" role="tablist">
 				    <li role="presentation" class="active"><a href="#tab-data-manual" aria-controls="tab-data-manual" role="tab" data-toggle="tab">Manuelles</a></li>
 				    <li role="presentation"><a href="#tab-data-random" aria-controls="tab-data-random" role="tab" data-toggle="tab">Aléatoires</a></li>
+				    <li role="presentation"><a href="#tab-dataset" aria-controls="tab-dataset" role="tab" data-toggle="tab">Jeu de données</a></li>
 				</ul>
 				<div class="tab-content">
 				    <!-- Données manuelles -->
@@ -128,6 +129,19 @@
 					    <button class="btn btn-primary btn-sm" type="submit" id="data_random_submit">Générer</button>
 					</form>
 				    </div>
+				    <!-- Jeux de données -->
+				    <div role="tabpanel" class="tab-pane fade in" id="tab-dataset">
+					<form id="form_dataset" action="#">
+					    <div class="form-group">
+						<label for="data_dataset">Type de loi</label>
+						<select class="form-control" id="data_dataset">
+						    <option value="life_expectancy_2014" selected>Espérance de vie 2014</option>
+						</select>
+					    </div>
+					    <button type="submit" class="btn btn-primary btn-sm" id="data_dataset_submit">Charger</button>
+					</form>
+				    </div>
+
 				</div>
 
 			    </div>
@@ -331,7 +345,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/d3.min.js"></script>
+    <!-- init jquery js -->
     <script src="js/init.js"></script>
+    <!-- datasets js -->
+    <script src="data/life_expectancy_2014.js"></script>
+    <!-- plot js -->
     <script src="js/plot-utils.js"></script>
     <script src="js/plot-export.js"></script>
     <script src="js/plot-axes.js"></script>
@@ -343,6 +361,6 @@
     <script src="js/plot-boxplot.js"></script>
     <script src="js/plot-kde.js"></script>
     <script src="js/plot.js"></script>
-
+    
   </body>
 </html>

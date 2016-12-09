@@ -3,7 +3,7 @@
 // Compute bins
 function compute_bins(data, settings) {
 
-    if (!settings.hist_show) return [];
+    if (settings.graph_type != "hist") return [];
     
     var breaks = [];
     var min_x = d3.min(data, function(d) { return(d.x);} );

@@ -76,7 +76,7 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
-		if (settings.hist_show) {
+		if (settings.graph_type == "hist") {
 		    bins = compute_bins(data, settings);
 		    scales = compute_hist_scales(scales, bins, settings);
 		    d3.selectAll(".bar")
@@ -264,9 +264,9 @@ function plot() {
 	var root = svg.select(".root");
 
 	// Histogram axes
-	if (settings.hist_show && svg.select(".x.axis.hist").empty()) {
+	if (settings.graph_type == "hist" && svg.select(".x.axis.graph").empty()) {
 	    root.append("g")
-		.attr("class", "x axis hist")
+		.attr("class", "x axis graph")
 		.attr("transform", "translate(0, 400)")
 		.style("font-size", "11px")
 	    	.style("opacity", 0)
@@ -274,15 +274,15 @@ function plot() {
 		.transition().duration(1000)
 	    	.style("opacity", 1);
 	    root.append("g")
-		.attr("class", "y axis hist")
+		.attr("class", "y axis graph")
 		.style("font-size", "11px")
 	    	.style("opacity", 0)
 		.call(scales.yAxis_graph)
 	    	.transition().duration(1000)
 	    	.style("opacity", 1);
 	}
-	if (!settings.hist_show) {
-	    root.selectAll(".x.axis.hist, .y.axis.hist")
+	if (!settings.graph) {
+	    root.selectAll(".x.axis.graph, .y.axis.graph")
 		.transition().duration(1000)
 	    	.style("opacity", 0)
 		.remove();
@@ -341,7 +341,7 @@ function plot() {
 	var bar = chart_body
 	    .selectAll(".bar")
 	    .data(bins, key);
-	if (settings.hist_show) {
+	if (settings.graph_type == "hist") {
 	    bar.enter().append("rect")
 		.attr("class", "bar")
 	    	.style("opacity", 0)
@@ -682,7 +682,7 @@ d3.select("#y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#hist_show").on("input change", function (e) {
+d3.select("#graph_type").on("input change", function (e) {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
     var settings = generate_settings();
     var height = settings.graph ? 700 : 300;

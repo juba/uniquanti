@@ -1,8 +1,10 @@
 (function ($) {
     $(function() {
 	$("#data_normal_args").hide();
+	$("#graph_hist_args").hide();
 	$("#x_limits").hide();
 	$("#y_limits").hide();
+	
 	
 	$("#data_law").on("change", function() {
 	    switch($(this).val()) {
@@ -17,6 +19,17 @@
 	    }
 	});
 
+	$("#graph_type").on("change", function() {
+	    switch($(this).val()) {
+	    case 'none':
+		$("#graph_hist_args").hide();
+		break;
+	    case 'hist':
+		$("#graph_hist_args").show();
+		break;
+	    }
+	});
+	
 	$("#x_manual").on("change", function() {
 	    if($(this).prop('checked')) {
 		$("#x_limits").show();

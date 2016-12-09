@@ -615,56 +615,58 @@ plot = plot.data(data, true);
 d3.select("#plot").call(plot);
 
 // Add controls handlers
-d3.select("#data_manual_submit").on("click", function(d) {
+d3.select("#form_manual_data").on("submit", function(e) {
+    d3.event.preventDefault();
     plot = plot.settings(generate_settings());
     plot.update_data_manual();
 });
-d3.select("#data_random_submit").on("click", function(d) {
+d3.select("#form_random_data").on("submit", function(e) {
+    d3.event.preventDefault();
     plot = plot.settings(generate_settings());
     plot.update_data_random();
 });
-d3.select("#points_size").on("input change", function(d) {
+d3.select("#points_size").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_dots();
 });
-d3.select("#points_opacity").on("input change", function(d) {
+d3.select("#points_opacity").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_dots();
 });
-d3.select("#points_jitter").on("input change", function(d) {
+d3.select("#points_jitter").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_points_jitter();
 });
-d3.select("#stats_mean").on("input change", function(d) {
+d3.select("#stats_mean").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#stats_median").on("input change", function(d) {
+d3.select("#stats_median").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#stats_quartiles").on("input change", function(d) {
+d3.select("#stats_quartiles").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#stats_sd").on("input change", function(d) {
+d3.select("#stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
 
-d3.select("#x_manual").on("input change", function(d) {
+d3.select("#x_manual").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#x_min").on("input change", function(d) {
+d3.select("#x_min").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#x_max").on("input change", function(d) {
+d3.select("#x_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-d3.select("#hist_show").on("input change", function (d) {
+d3.select("#hist_show").on("input change", function (e) {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
     var settings = generate_settings();
     var height = settings.graph ? 700 : 300;
@@ -672,7 +674,7 @@ d3.select("#hist_show").on("input change", function (d) {
     plot.width(width).height(height);
     plot.update_data();
 });
-d3.select("#hist_classes").on("input change", function(d) {
+d3.select("#hist_classes").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });

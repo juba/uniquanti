@@ -26,13 +26,21 @@ function compute_bins(data, settings) {
 }
 
 // Compute histogram y scale
-function compute_hist_scales(scales, bins) {
-    scales.y_hist = d3.scaleLinear()
-	.domain([0, d3.max(bins, function(d) { return d.length; })])
-	.nice()
-        .range([400, 0]);
-    scales.y_hist_orig = scales.y_hist;
-    scales.yAxis_hist = d3.axisLeft(scales.y_hist)
+function compute_hist_scales(scales, bins, settings) {
+    scales.y_graph = d3.scaleLinear()
+	.range([400, 0]);
+    if (settings.y_manual) {
+	var min_y = parseFloat(settings.y_min);
+	var max_y = parseFloat(settings.y_max);
+	scales.y_graph
+	    .domain([min_y, max_y]);
+    } else {
+	scales.y_graph
+	    .domain([0, d3.max(bins, function(d) { return d.length; })])
+	    .nice();
+    }
+    scales.y_graph_orig = scales.y_graph;
+    scales.yAxis_graph = d3.axisLeft(scales.y_graph)
         .tickSize(5);
 
     return scales;
@@ -41,9 +49,9 @@ function compute_hist_scales(scales, bins) {
 // Initial bar attributes
 function bar_init(selection, scales) {
     selection
-	.style("fill", "#FF386D")
-    	.attr("height", function(d) { return 400 - scales.y_hist(d.length); })
-	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_hist(d.length) + ")"; })
+	.style("fill", "#e0c879")
+    	.attr("height", function(d) { return 400 - scales.y_graph(d.length); })
+	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; })
 	.attr("x", 1);
     return selection;
 }
@@ -57,8 +65,8 @@ function bar_formatting(selection, scales, bins) {
     selection
       	.attr("width", w)
 	.attr("height", function(d) {
-	    return 400 - scales.y_hist(d.length); })
-	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_hist(d.length) + ")"; });
+	    return 400 - scales.y_graph(d.length); })
+	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.length) + ")"; });
 }
 
 

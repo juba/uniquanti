@@ -78,7 +78,7 @@ function plot() {
 		    });
 		if (settings.hist_show) {
 		    bins = compute_bins(data, settings);
-		    scales = compute_hist_scales(scales, bins);
+		    scales = compute_hist_scales(scales, bins, settings);
 		    d3.selectAll(".bar")
 			.data(bins, key)
 			.transition().duration(100).ease(d3.easeLinear)
@@ -87,7 +87,7 @@ function plot() {
 			});
 		    d3.select(".y.axis.hist")
 		    	.transition().duration(100).ease(d3.easeLinear)
-			.call(scales.yAxis_hist);
+			.call(scales.yAxis_graph);
 		}
 	    }
 	})
@@ -277,7 +277,7 @@ function plot() {
 		.attr("class", "y axis hist")
 		.style("font-size", "11px")
 	    	.style("opacity", 0)
-		.call(scales.yAxis_hist)
+		.call(scales.yAxis_graph)
 	    	.transition().duration(1000)
 	    	.style("opacity", 1);
 	}
@@ -384,9 +384,9 @@ function plot() {
         svg_sel.select(".x-axis-label")
 	    .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")");
 	svg_sel.select(".x.axis").call(scales.xAxis);
-	if (settings.hist_show) {
+	if (settings.graph) {
 	    svg_sel.select(".x.axis.hist").call(scales.xAxis);
-	    svg_sel.select(".y.axis.hist").call(scales.yAxis_hist);
+	    svg_sel.select(".y.axis.hist").call(scales.yAxis_graph);
 	}
     }
     
@@ -555,6 +555,8 @@ function plot() {
 function generate_settings() {
     var law = d3.select("#data_law").node();
     law = law.options[law.selectedIndex].value;
+    var graph_type = d3.select("#graph_type").node();
+    graph_type = graph_type.options[graph_type.selectedIndex].value;
     var settings = {
 	data_manual: d3.select("#data_manual").node().value,
 	data_law: law,
@@ -573,9 +575,12 @@ function generate_settings() {
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
 	x_max: d3.select("#x_max").node().value,
-	hist_show: d3.select("#hist_show").node().checked,
+	y_manual: d3.select("#y_manual").node().checked,
+	y_min: d3.select("#y_min").node().value,
+	y_max: d3.select("#y_max").node().value,
+	graph_type: graph_type,
 	hist_classes: d3.select("#hist_classes").node().value,
-	graph: d3.select("#hist_show").node().checked
+	graph: graph_type != "none"
     };
     return settings;
 };
@@ -653,7 +658,6 @@ d3.select("#stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });
-
 d3.select("#x_manual").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
@@ -663,6 +667,18 @@ d3.select("#x_min").on("input change", function(e) {
     plot.update_data();
 });
 d3.select("#x_max").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#y_manual").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#y_min").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
+});
+d3.select("#y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });

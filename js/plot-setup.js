@@ -70,7 +70,7 @@ function setup_scales (dims, data, settings) {
     // Histogram scales
     if (settings.hist_show) {
 	bins = compute_bins(data, settings);
-	scales = compute_hist_scales(scales, bins);
+	scales = compute_hist_scales(scales, bins, settings);
     }
     
     return scales;

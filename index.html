@@ -124,7 +124,7 @@
 					    </div>
 					    <div class="form-group">
 						<label for="nb_values">Nombre d'observations</label>
-						<input type="number" class="form-control" id="nb_values" min="2" max="1000" value="100" />
+						<input type="number" class="form-control" id="nb_values" min="2" max="5000" value="100" />
 					    </div>
 					    <button class="btn btn-primary btn-sm" type="submit" id="data_random_submit">Générer</button>
 					</form>
@@ -133,7 +133,7 @@
 				    <div role="tabpanel" class="tab-pane fade in" id="tab-dataset">
 					<form id="form_dataset" action="#">
 					    <div class="form-group">
-						<label for="data_dataset">Type de loi</label>
+						<label for="data_dataset">Jeu de données</label>
 						<select class="form-control" id="data_dataset">
 						    <option value="life_expectancy_2014" selected>Espérance de vie 2014</option>
 						</select>
@@ -174,6 +174,11 @@
 			    <div class="checkbox">
 				<label>
 				    <input id="points_jitter" type="checkbox" value=""> Agiter les points
+				</label>
+			    </div>
+			    <div class="checkbox" id="dataset_show_labels">
+				<label>
+				    <input id="show_labels" type="checkbox" value=""> Afficher les labels
 				</label>
 			    </div>
 			</div>

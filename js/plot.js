@@ -27,6 +27,9 @@ function plot() {
 	var chart_body = svg.select(".chart-body");
         chart_body.selectAll(".dot")
             .attr("transform", function(d) { return translation(d, scales); });
+	chart_body.selectAll(".label").call(function(sel) {
+	    label_formatting(sel, scales, settings);
+	});
 	chart_body.selectAll(".line").call(function(sel) {
 	    line_formatting(sel, dims, scales);
 	});
@@ -86,6 +89,9 @@ function plot() {
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
 		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
 		    .html(tooltip_content(d));
+		d3.selectAll(".label").call(function(sel) {
+		    label_formatting(sel, scales, settings);
+		});
 		var stats_data = stats_compute(data, settings);
 		d3.selectAll(".stats_symbol")
 		    .data(stats_data, key)
@@ -374,14 +380,24 @@ function plot() {
 	    .style("opacity", "1");
 	line.exit().transition().duration(1000).style("opacity", "0").remove();
 	
-
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
 	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(points_drag)
-	    .merge(dot).call(function(sel) {dot_init(sel, scales, settings);}).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
+	    .merge(dot).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
+	// Add labels
+	var data_labels = (!settings.show_labels || data[0].lab === undefined) ? [] : data;
+	var label = chart_body.selectAll(".label")
+	    .data(data_labels, key);
+	if (settings.show_labels) {
+	    label.enter().append("text").attr("class", "label").call(function(sel) {label_init(sel, scales, settings);})
+		.merge(label).transition().duration(1000).call(function(sel) {label_formatting(sel, scales, settings);});
+	}
+	label.exit().transition().duration(1000).style("opacity", 0).remove();
+
+	
 	// Add stats
 	var stats_data = stats_compute(data, settings);
 	var stats_symbol = chart_body
@@ -798,6 +814,7 @@ function generate_settings() {
 	points_size: d3.select("#points_size").node().value,
 	points_opacity: d3.select("#points_opacity").node().value,
 	jitter: d3.select("#points_jitter").node().checked,
+	show_labels: d3.select("#show_labels").node().checked,
 	stats_mean: d3.select("#stats_mean").node().checked,
 	stats_median: d3.select("#stats_median").node().checked,
 	stats_quartiles: d3.select("#stats_quartiles").node().checked,
@@ -880,6 +897,10 @@ d3.select("#points_opacity").on("input change", function(e) {
 d3.select("#points_jitter").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_points_jitter();
+});
+d3.selectAll("#show_labels").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_data();
 });
 d3.selectAll("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());

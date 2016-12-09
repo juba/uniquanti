@@ -580,6 +580,9 @@ function generate_settings() {
 	y_max: d3.select("#y_max").node().value,
 	graph_type: graph_type,
 	hist_classes: d3.select("#hist_classes").node().value,
+	hist_exact: d3.select("#hist_exact").node().checked,
+	hist_percent: d3.select("#hist_percent").node().checked,
+	hist_labels: d3.select("#hist_labels").node().checked,
 	graph: graph_type != "none"
     };
     return settings;
@@ -690,7 +693,7 @@ d3.select("#graph_type").on("input change", function (e) {
     plot.width(width).height(height);
     plot.update_data();
 });
-d3.select("#hist_classes").on("input change", function(e) {
+d3.selectAll("#hist_classes, #hist_exact, #hist_percent, #hist_labels").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data();
 });

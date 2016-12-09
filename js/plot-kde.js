@@ -50,12 +50,6 @@ function compute_kde_scales(scales, kde_data, settings) {
     return scales;
 }
 
-// Path drawing function
-var kde_line = d3.line()
-    .x(function(d) { return scales.x(d[0]); })
-    .y(function(d) { return scales.y_graph(d[1]); });
-
-
 // Initial path attributes
 function kde_init(selection, scales) {
     selection
@@ -63,6 +57,7 @@ function kde_init(selection, scales) {
     	.style("stroke-linejoin", "round")
     	.style("fill", "FFF5F5")
 	.attr("d", d3.line()
+	      .curve(d3.curveBasis)
 	      .x(function(d) { return scales.x(d[0]); })
 	      .y(function(d) { return scales.y_graph(d[1]); }));
     return selection;
@@ -72,6 +67,7 @@ function kde_init(selection, scales) {
 function kde_formatting(selection, scales) {
     selection
     	.attr("d", d3.line()
+	      .curve(d3.curveBasis)
 	      .x(function(d) { return scales.x(d[0]); })
 	      .y(function(d) { return scales.y_graph(d[1]); }));
 }

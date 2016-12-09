@@ -792,7 +792,7 @@ function generate_settings() {
 	hist_exact: d3.select("#hist_exact").node().checked,
 	hist_percent: d3.select("#hist_percent").node().checked,
 	hist_labels: d3.select("#hist_labels").node().checked,
-	kde_scale: parseInt(d3.select("#kde_scale").node().value),
+	kde_scale: d3.select("#kde_scale").node().value,
 	graph: graph_type != "none"
     };
     return settings;

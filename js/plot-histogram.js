@@ -58,7 +58,7 @@ function compute_hist_scales(scales, bins, settings) {
 // Initial bar attributes
 function bar_init(selection, scales) {
     selection
-	.style("fill", "#e0c879")
+	.style("fill", "#ffa200")
     	.attr("height", function(d) { return 400 - scales.y_graph(d.val); })
 	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.val) + ")"; });
     return selection;

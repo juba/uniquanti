@@ -77,7 +77,7 @@ function boxplot_box_init(selection, scales) {
         .attr("y", scales.y_graph(2))
         .attr("height", scales.y_graph(-2) - scales.y_graph(2))
 	.style("stroke", "#000")
-	.style("fill", "#fe419c");
+	.style("fill", "#F4f4f4");
     return selection;
 }
 

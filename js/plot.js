@@ -13,7 +13,7 @@ function plot() {
     
     // Zoom behavior
     zoom = d3.zoom()
-        .scaleExtent([0, 32])
+        .scaleExtent([0, 256])
         .on("zoom", zoomed);
     
     // Zoom function
@@ -714,8 +714,21 @@ function plot() {
 		return d;
 	    });
 	    break;
-	case "densite_departements_2015":
-	    csv_data = d3.csvParse(dataset_densite_departements_2015());
+	case "population_departements_2013":
+	    csv_data = d3.csvParse(dataset_population_departements_2013());
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.lab = val.Departement;
+		d.x = parseFloat(val.Population);
+		var defined_y = data[i] !== undefined && data[i].y !== undefined;
+		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+		d.y = settings.jitter ? y : 0;
+		return d;
+	    });
+	    break;
+	case "densite_departements_2013":
+	    csv_data = d3.csvParse(dataset_densite_departements_2013());
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
 		d.key = i;

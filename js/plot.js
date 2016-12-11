@@ -699,10 +699,10 @@ function plot() {
     };
 
     chart.update_data_dataset = function() {
-	var new_data;
+	var csv_data, new_data;
 	switch (settings.data_dataset) {
 	case "life_expectancy_2014":
-	    var csv_data = d3.csvParse(dataset_life_expectancy_2014());
+	    csv_data = d3.csvParse(dataset_life_expectancy_2014());
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
 		d.key = i;
@@ -713,6 +713,20 @@ function plot() {
 		d.y = settings.jitter ? y : 0;
 		return d;
 	    });
+	    break;
+	case "densite_departements_2015":
+	    csv_data = d3.csvParse(dataset_densite_departements_2015());
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.lab = val.Departement;
+		d.x = parseFloat(val.Densite);
+		var defined_y = data[i] !== undefined && data[i].y !== undefined;
+		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+		d.y = settings.jitter ? y : 0;
+		return d;
+	    });
+	    break;
 	}
 	data = new_data;
 	update_data();

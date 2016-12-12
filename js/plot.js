@@ -75,7 +75,9 @@ function plot() {
 
     // Dots dragging function
     var points_dragging = false;
-    points_drag = d3.drag()
+    points_drag = function() {
+	if(!settings.allow_dragging) return function() {};
+	return d3.drag()
 	.subject(function(d, i) {
             return {x:scales.x(d.x)};
 	})
@@ -186,6 +188,7 @@ function plot() {
 		points_dragging = false;
 	    }
 	});
+    };
 
 
     // Key function to identify rows when interactively filtering
@@ -228,31 +231,6 @@ function plot() {
 		.call(function(sel) {
 		    line_formatting(sel, dims, scales);
 		});
-	    
-            // Add points
-            var dot = chart_body
-		.selectAll(".dot")
-		.data(data, key);
-            dot.enter()
-		.append("path")
-		.call(function(sel) { dot_init(sel, scales, settings); })
-		.call(function(sel) { dot_formatting(sel, scales, settings); })
-		.call(points_drag);
-
-	    // Add stats
-	    var stats_data = stats_compute(data, settings);
-	    var stats_symbol = chart_body
-		.selectAll("stats_symbol")
-		.data(stats_data, key);
-	    stats_symbol.enter()
-		.append("path")
-		.call(function(sel) { stats_symbol_formatting(sel, scales); });
-	    var stats_label = chart_body
-		.selectAll("stats_label")
-		.data(stats_data, key);
-	    stats_label.enter()
-		.append("text")
-		.call(function(sel) { stats_label_formatting(sel, scales); });
 	    
             // Tools menu
 
@@ -310,7 +288,7 @@ function plot() {
 
 
     // Update data with transitions
-    function update_data() {
+    function update_plot() {
 	
 	dims = setup_sizes(width, height);
 	scales = setup_scales(dims, data, settings);
@@ -384,7 +362,7 @@ function plot() {
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(points_drag)
+	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(points_drag())
 	    .merge(dot).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
@@ -663,7 +641,8 @@ function plot() {
 	});
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
-	update_data();
+	settings.allow_dragging = true;
+	update_plot();
     };
 
     chart.update_data_random = function() {
@@ -698,7 +677,8 @@ function plot() {
 	}
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
-	update_data();
+	settings.allow_dragging = true;
+	update_plot();
     };
 
     chart.update_data_dataset = function() {
@@ -751,7 +731,8 @@ function plot() {
 	    d3.select("#points_show_labels").style("display", "hidden");
 	}
 	data = new_data;
-	update_data();
+	settings.allow_dragging = false;
+	update_plot();
     };
     
     chart.update_dots = function() {
@@ -775,11 +756,11 @@ function plot() {
 	    });
 	}
 	data = new_data;
-	update_data();
+	update_plot();
     };
 
-    chart.update_data = function() {
-	update_data();
+    chart.update_plot = function() {
+	update_plot();
     };
     
     // resize
@@ -791,7 +772,7 @@ function plot() {
     chart.data = function(value, redraw) {
         if (!arguments.length) return data;
         data = value;
-        if (!redraw) update_data();
+        if (!redraw) update_plot();
         return chart;
     };
 
@@ -867,6 +848,7 @@ function generate_settings() {
 	hist_percent: d3.select("#hist_percent").node().checked,
 	hist_labels: d3.select("#hist_labels").node().checked,
 	kde_scale: d3.select("#kde_scale").node().value,
+	allow_dragging: true,
 	graph: graph_type != "none"
     };
     return settings;
@@ -936,15 +918,15 @@ d3.select("#points_jitter").on("input change", function(e) {
 });
 d3.selectAll("#show_labels").on("input change", function(e) {
     plot = plot.settings(generate_settings());
-    plot.update_data();
+    plot.update_plot();
 });
 d3.selectAll("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
     plot = plot.settings(generate_settings());
-    plot.update_data();
+    plot.update_plot();
 });
 d3.selectAll("#x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
-    plot.update_data();
+    plot.update_plot();
 });
 d3.select("#graph_type").on("input change", function (e) {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
@@ -952,15 +934,15 @@ d3.select("#graph_type").on("input change", function (e) {
     var height = settings.graph ? 700 : 300;
     plot = plot.settings(settings);
     plot.width(width).height(height);
-    plot.update_data();
+    plot.update_plot();
 });
 d3.selectAll("#hist_classes, #hist_exact, #hist_percent, #hist_labels").on("input change", function(e) {
     plot = plot.settings(generate_settings());
-    plot.update_data();
+    plot.update_plot();
 });
 d3.selectAll("#kde_scale").on("input change", function(e) {
     plot = plot.settings(generate_settings());
-    plot.update_data();
+    plot.update_plot();
 });
 
 

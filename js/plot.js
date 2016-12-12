@@ -661,6 +661,7 @@ function plot() {
 	    return d;
 	});
 	data = new_data;
+	d3.select("#points_show_labels").style("display", "none");
 	update_data();
     };
 
@@ -695,11 +696,12 @@ function plot() {
 	    break;
 	}
 	data = new_data;
+	d3.select("#points_show_labels").style("display", "none");
 	update_data();
     };
 
     chart.update_data_dataset = function() {
-	var new_data, csv_data;
+	var new_data, csv_data, labels;
 	var id = settings.data_dataset;
 	switch(id) {
 	case "life_expectancy_2014":
@@ -707,36 +709,46 @@ function plot() {
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
 		d.lab = val.Country;
+		d.key = d.lab;
 		d.x = parseFloat(val.life_exp_2014);
 		return d;
 	    });
+	    labels = true;
 	    break;
 	case "population_departements_2013":
 	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
 		d.lab = val.Departement;
+		d.key = d.lab;
 		d.x = parseInt(val.Population);
 		return d;
 	    });
+	    labels = true;
 	    break;
 	case "densite_departements_2013":
 	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
 		d.lab = val.Departement;
+		d.key = d.lab;
 		d.x = parseFloat(val.Densite);
 		return d;
 	    });
+	    labels = true;
 	    break;
 	}
 	new_data = new_data.map(function(d, i) {
-	    d.key = d.lab;
 	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
 	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
 	    d.y = settings.jitter ? y : 0;
 	    return d;
 	});
+	if (labels) {
+	    d3.select("#points_show_labels").style("display", "block");
+	} else {
+	    d3.select("#points_show_labels").style("display", "hidden");
+	}
 	data = new_data;
 	update_data();
     };

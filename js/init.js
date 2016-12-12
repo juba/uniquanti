@@ -5,6 +5,7 @@
 	$("#graph_kde_args").hide();
 	$("#x_limits").hide();
 	$("#y_limits").hide();
+	$("#points_show_labels").hide();
 	
 	
 	$("#data_law").on("change", function() {

@@ -718,6 +718,27 @@ function plot() {
 	    });
 	    labels = true;
 	    break;
+	case "kung_heights":
+	    csv_data = d3.csvParse(datasets(id));
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.x = parseFloat(val.height);
+		return d;
+	    });
+	    labels = false;
+	    break;
+	case "age_meres_2015":
+	    csv_data = d3.csvParse(datasets(id));
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.x = parseInt(val.age);
+		return d;
+	    });
+	    labels = false;
+	    break;
+
 	}
 	new_data = new_data.map(function(d, i) {
 	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
@@ -728,7 +749,7 @@ function plot() {
 	if (labels) {
 	    d3.select("#points_show_labels").style("display", "block");
 	} else {
-	    d3.select("#points_show_labels").style("display", "hidden");
+	    d3.select("#points_show_labels").style("display", "none");
 	}
 	data = new_data;
 	settings.allow_dragging = false;

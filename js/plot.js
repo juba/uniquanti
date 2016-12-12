@@ -699,48 +699,44 @@ function plot() {
     };
 
     chart.update_data_dataset = function() {
-	var csv_data, new_data;
-	switch (settings.data_dataset) {
+	var new_data, csv_data;
+	var id = settings.data_dataset;
+	switch(id) {
 	case "life_expectancy_2014":
-	    csv_data = d3.csvParse(dataset_life_expectancy_2014());
+	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
-		d.key = i;
 		d.lab = val.Country;
 		d.x = parseFloat(val.life_exp_2014);
-		var defined_y = data[i] !== undefined && data[i].y !== undefined;
-		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-		d.y = settings.jitter ? y : 0;
 		return d;
 	    });
 	    break;
 	case "population_departements_2013":
-	    csv_data = d3.csvParse(dataset_population_departements_2013());
+	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
-		d.key = i;
 		d.lab = val.Departement;
-		d.x = parseFloat(val.Population);
-		var defined_y = data[i] !== undefined && data[i].y !== undefined;
-		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-		d.y = settings.jitter ? y : 0;
+		d.x = parseInt(val.Population);
 		return d;
 	    });
 	    break;
 	case "densite_departements_2013":
-	    csv_data = d3.csvParse(dataset_densite_departements_2013());
+	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
-		d.key = i;
 		d.lab = val.Departement;
 		d.x = parseFloat(val.Densite);
-		var defined_y = data[i] !== undefined && data[i].y !== undefined;
-		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-		d.y = settings.jitter ? y : 0;
 		return d;
 	    });
 	    break;
 	}
+	new_data = new_data.map(function(d, i) {
+	    d.key = d.lab;
+	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
+	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
+	    d.y = settings.jitter ? y : 0;
+	    return d;
+	});
 	data = new_data;
 	update_data();
     };

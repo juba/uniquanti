@@ -34,21 +34,28 @@ function compute_bins(data, settings) {
 }
 
 // Compute histogram y scale
-function compute_hist_scales(scales, bins, settings) {
-    scales.y_graph = d3.scaleLinear()
-	.range([400, 0]);
+function compute_hist_scales(scales, bins, settings, dragging) {
+
     if (settings.y_manual) {
 	var min_y = parseFloat(settings.y_min);
 	var max_y = parseFloat(settings.y_max);
-	scales.y_graph
+	scales.y_graph = d3.scaleLinear()
+	    .range([400, 0])
 	    .domain([min_y, max_y]);
     } else {
-	scales.y_graph
-	    .domain([0, d3.max(bins, function(d) { return d.val; }) * 1.1])
+	var y_max = d3.max(bins, function(d) { return d.val; });
+	var domain_max = y_max * 1.2;
+	if (dragging) {
+	    var current_max = scales.y_graph.domain()[1];
+	    if (y_max <= current_max) domain_max = current_max;
+	} 
+	scales.y_graph = d3.scaleLinear()
+	    .range([400, 0])
+	    .domain([0, domain_max])
 	    .nice();
     }
 
-    scales.y_graph_orig = scales.y_graph;
+    scales.y_graph_orig = scales.y_graph.copy();
     scales.yAxis_graph = d3.axisLeft(scales.y_graph)
         .tickSize(5);
     
@@ -58,7 +65,7 @@ function compute_hist_scales(scales, bins, settings) {
 // Initial bar attributes
 function bar_init(selection, scales) {
     selection
-	.style("fill", "#ffa200")
+	.style("fill", "#fd9f00")
     	.attr("height", function(d) { return 400 - scales.y_graph(d.val); })
 	.attr("transform", function(d) { return "translate(" + scales.x(d.x0) + "," + scales.y_graph(d.val) + ")"; });
     return selection;

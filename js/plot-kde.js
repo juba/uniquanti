@@ -29,17 +29,24 @@ function add_kde_extremes(kde_data, scales) {
 }
 
 // Compute histogram y scale
-function compute_kde_scales(scales, kde_data, settings) {
-    scales.y_graph = d3.scaleLinear()
-	.range([400, 0]);
+function compute_kde_scales(scales, kde_data, settings, dragging) {
+
     if (settings.y_manual) {
 	var min_y = parseFloat(settings.y_min);
 	var max_y = parseFloat(settings.y_max);
-	scales.y_graph
+	scales.y_graph = d3.scaleLinear()
+	    .range([400, 0])
 	    .domain([min_y, max_y]);
     } else {
-	scales.y_graph
-	    .domain([0, d3.max(kde_data.map(function(d) {return d[1];})) * 1.1])
+	var y_max = d3.max(kde_data.map(function(d) {return d[1];}));
+	var domain_max = y_max * 1.2;
+	if (dragging) {
+	    var current_max = scales.y_graph.domain()[1];
+	    if (y_max <= current_max) domain_max = current_max;
+	} 
+	scales.y_graph = d3.scaleLinear()
+	    .range([400, 0])
+	    .domain([0, domain_max])
 	    .nice();
     }
 

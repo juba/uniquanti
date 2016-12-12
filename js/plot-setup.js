@@ -13,7 +13,7 @@ function custom_scheme10 () {
 function setup_sizes (width, height) {
 
     var dims = {},
-	margins = {top: 5, right: 10, bottom: 20, left: 30};
+	margins = {top: 5, right: 10, bottom: 20, left: 40};
 
     dims.svg_width = width;
     dims.svg_height = height;

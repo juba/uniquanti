@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Univariate quantitative variable analysis</title>
+    <title>Données, indicateurs, graphiques</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,11 +42,11 @@
         <div id="navbar" class="navbar-collapse collapse">
 	    <ul class="nav navbar-nav">
 		<li class="active"><a href="#">App</a></li>
-		<li><a href="about.html">About</a></li>
+		<li><a href="about-fr.html">À propos</a></li>
             </ul>
 	    <ul class="nav navbar-nav navbar-right">
-		<li class="active"><a href="#">en</a></li>
-		<li><a href="index-fr.html">fr</a></li>
+		<li><a href="index.html">en</a></li>
+		<li class="active"><a href="#">fr</a></li>
             </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -67,7 +67,7 @@
 			<h4 class="panel-title">
 			    <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
 			    <a role="button" data-toggle="collapse" href="#collapseData" aria-expanded="true" aria-controls="collapseData">
-				 Data
+				 Données
 			    </a>
 			</h4>
 		    </div>
@@ -78,29 +78,29 @@
 			    <!-- Formulaire données -->
 			    <div>
 				<ul class="nav nav-tabs" role="tablist">
-				    <li role="presentation" class="active"><a href="#tab-data-manual" aria-controls="tab-data-manual" role="tab" data-toggle="tab">Manual</a></li>
-				    <li role="presentation"><a href="#tab-data-random" aria-controls="tab-data-random" role="tab" data-toggle="tab">Random</a></li>
-				    <li role="presentation"><a href="#tab-dataset" aria-controls="tab-dataset" role="tab" data-toggle="tab">Dataset</a></li>
+				    <li role="presentation" class="active"><a href="#tab-data-manual" aria-controls="tab-data-manual" role="tab" data-toggle="tab">Manuelles</a></li>
+				    <li role="presentation"><a href="#tab-data-random" aria-controls="tab-data-random" role="tab" data-toggle="tab">Aléatoires</a></li>
+				    <li role="presentation"><a href="#tab-dataset" aria-controls="tab-dataset" role="tab" data-toggle="tab">Jeu de données</a></li>
 				</ul>
 				<div class="tab-content">
 				    <!-- Données manuelles -->
 				    <div role="tabpanel" class="tab-pane fade in active" id="tab-data-manual">
 					<form id="form_manual_data" action="#">
 					    <div class="form-group">
-						<label for="data_manual">Number separated by commas</label>
+						<label for="data_manual">Données séparées par des virgules</label>
 						<input id="data_manual" type="text" class="form-control" placeholder="Ex : 125, 57, 198, 12, 45...">
 					    </div>
-					    <button type="submit" class="btn btn-primary btn-sm" id="data_manual_submit">Update</button>
+					    <button type="submit" class="btn btn-primary btn-sm" id="data_manual_submit">Mettre à jour</button>
 					</form>
 				    </div>
 				    <!-- Données aléatoires -->
 				    <div role="tabpanel" class="tab-pane fade" id="tab-data-random">
 					<form id="form_random_data" action="#">
 					    <div class="form-group">
-						<label for="data_law">Distribution</label>
+						<label for="data_law">Type de loi</label>
 						<select class="form-control" id="data_law">
-						    <option value="uniforme" selected>Uniform</option>
-						    <option value="normale">Normal</option>
+						    <option value="uniforme" selected>Loi uniforme</option>
+						    <option value="normale">Loi normale</option>
 						</select>
 					    </div>
 					    <div class="form-horizontal" id="data_uniform_args">
@@ -119,39 +119,39 @@
 					    </div>
 					    <div class="form-horizontal" id="data_normal_args">
 						<div class="form-group">
-						    <label for="data_normal_mean" class="col-sm-5 control-label">Mean</label>
+						    <label for="data_normal_mean" class="col-sm-5 control-label">Moyenne</label>
 						    <div class="col-sm-7">
 					    		<input type="number" class="form-control" id="data_normal_mean" value="50" />
 						    </div>
 						</div>
 						<div class="form-group">
-						    <label for="data_normal_sd" class="col-sm-5 control-label">Standard deviation</label>
+						    <label for="data_normal_sd" class="col-sm-5 control-label">Écart-type</label>
 						    <div class="col-sm-7">
 							<input type="number" class="form-control" id="data_normal_sd" value="5" />
 						    </div>
 						</div>
 					    </div>
 					    <div class="form-group">
-						<label for="nb_values">Number of observations</label>
+						<label for="nb_values">Nombre d'observations</label>
 						<input type="number" class="form-control" id="nb_values" min="2" max="5000" value="100" />
 					    </div>
-					    <button class="btn btn-primary btn-sm" type="submit" id="data_random_submit">Generate</button>
+					    <button class="btn btn-primary btn-sm" type="submit" id="data_random_submit">Générer</button>
 					</form>
 				    </div>
 				    <!-- Jeux de données -->
 				    <div role="tabpanel" class="tab-pane fade in" id="tab-dataset">
 					<form id="form_dataset" action="#">
 					    <div class="form-group">
-						<label for="data_dataset">Dataset</label>
+						<label for="data_dataset">Jeu de données</label>
 						<select class="form-control" id="data_dataset">
-						    <option value="life_expectancy_2014" selected>Life expectancy by country (2014)</option>
-						    <option value="age_meres_2015">Mother age at child birth (France, 2015)</option>
-						    <option value="population_departements_2013">Departments population (France, 2013)</option>
-						    <option value="densite_departements_2013">Departments population density (ppl/km²) (France, 2013)</option>
-						    <option value="kung_heights">!Kung people heights (late 60's)</option>
+						    <option value="life_expectancy_2014" selected>Espérance de vie par pays (2014)</option>
+						    <option value="age_meres_2015">Âge de la mère à la naissance (2015)</option>
+						    <option value="population_departements_2013">Population par département (2013)</option>
+						    <option value="densite_departements_2013">Densité (hab/km²) par département (2013)</option>
+						    <option value="kung_heights">Tailles de personnes de l'ethnie !Kung (années 60)</option>
 						</select>
 					    </div>
-					    <button type="submit" class="btn btn-primary btn-sm" id="data_dataset_submit">Load</button>
+					    <button type="submit" class="btn btn-primary btn-sm" id="data_dataset_submit">Charger</button>
 					</form>
 				    </div>
 
@@ -177,21 +177,21 @@
 		    <div id="collapsePoints" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingPoints">
 			<div class="panel-body">
 			    <div class="form-group">
-				<label for="points_size">Points size</label>
+				<label for="points_size">Taille des points</label>
 				<input id="points_size" type="range" min="5" max="500" value="120" />
 			    </div>
 			    <div class="form-group">
-				<label for="points_opacity">Points opacity</label>
+				<label for="points_opacity">Opacité des points</label>
 				<input id="points_opacity" type="range" min="0.01" max="1" value="0.8" step="0.01"/>
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="points_jitter" type="checkbox" value=""> Jitter
+				    <input id="points_jitter" type="checkbox" value=""> Agiter les points
 				</label>
 			    </div>
 			    <div class="checkbox" id="points_show_labels">
 				<label>
-				    <input id="show_labels" type="checkbox" value=""> Show labels
+				    <input id="show_labels" type="checkbox" value=""> Afficher les labels
 				</label>
 			    </div>
 			</div>
@@ -204,7 +204,7 @@
 			<h4 class="panel-title">
 			    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
 			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseIndicateurs" aria-expanded="false" aria-controls="collapseIndicateurs">
-				 Statistics
+				 Indicateurs
 			    </a>
 			</h4>
 		    </div>
@@ -212,12 +212,12 @@
 			<div class="panel-body">
 			    <div class="checkbox">
 				<label>
-				    <input id="stats_mean" type="checkbox"> Mean
+				    <input id="stats_mean" type="checkbox"> Moyenne
 				</label>
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="stats_median" type="checkbox"> Median
+				    <input id="stats_median" type="checkbox"> Médiane
 				</label>
 			    </div>
 			    <div class="checkbox">
@@ -227,7 +227,7 @@
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="stats_sd" type="checkbox"> Standard deviation
+				    <input id="stats_sd" type="checkbox"> Écart-type
 				</label>
 			    </div>
 			</div>
@@ -240,47 +240,47 @@
 			<h4 class="panel-title">
 			    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
 			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseGraphiques" aria-expanded="false" aria-controls="collapseGraphiques">
-				 Graphics
+				 Graphiques
 			    </a>
 			</h4>
 		    </div>
 		    <div id="collapseGraphiques" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGraphiques">
 			<div class="panel-body">
 			    <div class="form-group">
-				<label for="graph_type">Graphic to display</label>
+				<label for="graph_type">Graphique à afficher</label>
 				<select class="form-control" id="graph_type">
-				    <option value="none" selected>None</option>
-				    <option value="hist">Histogram</option>
+				    <option value="none" selected>Aucun</option>
+				    <option value="hist">Histogramme</option>
 				    <option value="boxplot">Boxplot</option>
-				    <option value="kde">Density estimator</option>
+				    <option value="kde">Estimation de densité</option>
 				</select>
 			    </div>
 			    <div class="form-horizontal" id="graph_hist_args">
 				<div class="form-group">
-				    <label for="hist_classes" class="col-sm-7 control-label">Number of bins</label>
+				    <label for="hist_classes" class="col-sm-7 control-label">Nombre de classes</label>
 				    <div class="col-sm-5">
 					<input type="number" class="form-control" id="hist_classes" min="2" max="1000" value="20" />
 				    </div>
 				</div>
 				<div class="checkbox col-sm-12">
 				    <label>
-					<input id="hist_exact" type="checkbox" checked> Exact bins
+					<input id="hist_exact" type="checkbox" checked> Classes exactes
 				    </label>
 				</div>
 				<div class="checkbox col-sm-12">
 				    <label>
-					<input id="hist_percent" type="checkbox"> Percentages
+					<input id="hist_percent" type="checkbox"> Pourcentages
 				    </label>
 				</div>
 				<div class="checkbox col-sm-12">
 				    <label>
-					<input id="hist_labels" type="checkbox" checked> Show values
+					<input id="hist_labels" type="checkbox" checked> Afficher les valeurs
 				    </label>
 				</div>
 			    </div>
 			    <div class="form-horizontal" id="graph_kde_args">
 				<div class="form-group">
-				    <label for="kde_scale" class="col-sm-7 control-label">Bandwidth</label>
+				    <label for="kde_scale" class="col-sm-7 control-label">Bande passante</label>
 				    <div class="col-sm-5">
 					<input type="number" class="form-control" id="kde_scale" min="0" value="7" />
 				    </div>
@@ -305,7 +305,7 @@
 			<div class="panel-body">
 			    <div class="checkbox">
 				<label>
-				    <input id="x_manual" type="checkbox"> Manual x limits
+				    <input id="x_manual" type="checkbox"> Limites manuelles pour x
 				</label>
 			    </div>
 			    <div class="form-horizontal" id="x_limits">
@@ -324,7 +324,7 @@
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="y_manual" type="checkbox"> Manual y limits
+				    <input id="y_manual" type="checkbox"> Limites manuelles pour y
 				</label>
 			    </div>
 			    <div class="form-horizontal" id="y_limits">
@@ -367,8 +367,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/lib/l10n.js"></script>
-    <script>String.locale = "en";</script>
-    <script src="js/l10n/localizations.js"></script>
+    <script>String.locale = "fr";</script>
+    <script src="js/l10n/localizations.js"></script>    
     <script src="js/lib/d3.min.js"></script>
     <!-- init jquery js -->
     <script src="js/init.js"></script>

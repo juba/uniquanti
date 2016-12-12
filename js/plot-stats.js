@@ -7,7 +7,7 @@ function stats_compute(data, settings) {
 		    y: 0.5 + delta,
 		    col: "#540d6e",
 		    type: "quant",
-		    lab: "Médiane",
+		    lab: ":median:".toLocaleString(),
 		    key: "median"});
     };
     if (settings.stats_quartiles) {
@@ -30,7 +30,7 @@ function stats_compute(data, settings) {
 		    y: -1.1 - delta,
 		    col: "#fe5276",
 		    type: "sd",
-		    lab: "Écart-type",
+		    lab: ":sd:".toLocaleString(),
 		    key: "sd"});
     };
     if (settings.stats_mean) {
@@ -38,7 +38,7 @@ function stats_compute(data, settings) {
 		    y: -0.6 - delta,
 		    col: "#bb1236",
 		    type: "mean",
-		    lab: "Moyenne",
+		    lab: ":mean:".toLocaleString(),
 		    key: "mean"});
     };
     return stats;

@@ -8,7 +8,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Données, indicateurs, graphiques</title>
+	<title>Uniquanti</title>
 
 	<!-- Bootstrap core CSS -->
 	<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -36,12 +36,16 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		    </button>
-		    <a class="navbar-brand" href="index.html">Données, indicateurs, graphiques</a>
+		    <div class="navbar-brand" href="#"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span></div>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 		    <ul class="nav navbar-nav">
 			<li><a href="index.html">App</a></li>
-			<li class="active"><a href="#">À propos</a></li>
+			<li class="active"><a href="#">About</a></li>
+		    </ul>
+		    <ul class="nav navbar-nav navbar-right">
+			<li class="active"><a href="#">en</a></li>
+			<li><a href="about-fr.html">fr</a></li>
 		    </ul>
 		</div><!--/.nav-collapse -->
 	    </div>
@@ -51,9 +55,59 @@
 	<div class="container-fluid">
 	    
 	    <div class="row">
-		<div class="col-xs-12">
+		<div class="col-sm-8 col-sm-offset-2 ">
 
+		    <h2>About</h2>
 
+		    <p>The goal of this app is to provide an interactive interface to help learn and teach basic quantitative variables univariate analysis and visualization.</p>
+		    <p>You can display basic statistics and visualizations, you can then play around with parameters, zoom, pan, drag data points, and everything should be updated dynamically with transitions.</p>
+
+		    <h3>Data sources</h3>
+		    <p>Data can be manually typed, randomly generated from several distributions, or you can load a simple included dataset. Note that when a dataset is loaded, you won't be able to drag the points (as you shouldn't be able to do that in a real analysis).</p>
+		    <p>List of included datasets :</p>
+		    <table class="table table-striped">
+			<thead><tr><th>Title</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
+			<tbody>
+			    <tr>
+				<td>Life expectancy by country</td>
+				<td>Life expectancy at birth, by country, in 2014</td>
+				<td></td>
+				<td><a href="http://data.worldbank.org/indicator/SP.DYN.LE00.IN">World bank</a></td>
+			    </tr>
+			    <tr>
+				<td>Mother age at child birth</td>
+				<td>Sample of 2000 mother ages at child birth, in France, in 2015. Only ages from 18 to 45 (included) are taken into account.</td>
+				<td>An example of integer-only quantitative variable, following a slightly skewed normal distribution.</td>
+				<td><a href="https://www.insee.fr/fr/statistiques/2406436">Insee</a></td>
+			    </tr>
+			    <tr>
+				<td>Departments population</td>
+				<td>Population of each french department in 2013</td>
+				<td></td>
+				<td><a href="https://fr.wikipedia.org/wiki/Liste_des_d%C3%A9partements_fran%C3%A7ais_class%C3%A9s_par_population_et_superficie">Wikipedia</a></td>
+			    </tr>
+			    <tr>
+				<td>Departments population density</td>
+				<td>Population density of each french department (in people per km²) in 2013</td>
+				<td>An example of the influence of outliers on statistics and visualization.</td>
+				<td><a href="https://fr.wikipedia.org/wiki/Liste_des_d%C3%A9partements_fran%C3%A7ais_class%C3%A9s_par_population_et_superficie">Wikipedia</a></td>
+			    </tr>
+			    <tr>
+				<td>!Kung people heights</td>
+				<td>Heights (in cm) from partial census data for the Dobe area !Kung San, compiled from interviews conducted by Nancy Howell in the late 1960s.</td>
+				<td>A bimodal dataset due to men and women heights having different distributions.</td>
+				<td><a href="https://github.com/rmcelreath/rethinking/blob/master/data/Howell1.csv"><em>Statistical rethinking</em> book dataset</td>
+			    </tr>
+			</tbody>
+		    </table>
+
+		    <h3>Links and credits</h3>
+
+		    <ul>
+			<li>The source code of this app is freely available <a href="https://github.com/juba/uniquanti">on Github</a> under an MIT license.</li>
+			<li>Interface powered by <a href="https://getbootstrap.com">Bootstrap</a></li>
+			<li>Graphics powered by <a href="https://d3js.org/">D3.js</a></li>
+		    </ul>
 
 		</div>
 	    </div>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Données, indicateurs, graphiques</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap theme -->
+	<link href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="css/style.css" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+    </head>
+
+    <body>
+
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-inverse navbar-static-top">
+	    <div class="container-fluid">
+		<div class="navbar-header">
+		    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		    </button>
+		    <div class="navbar-brand" href="#"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span></div>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+		    <ul class="nav navbar-nav">
+			<li><a href="index-fr.html">App</a></li>
+			<li class="active"><a href="#">À propos</a></li>
+		    </ul>
+		    <ul class="nav navbar-nav navbar-right">
+			<li><a href="about.html">en</a></li>
+			<li class="active"><a href="#">fr</a></li>
+		    </ul>
+		</div><!--/.nav-collapse -->
+	    </div>
+	</nav>
+
+
+	<div class="container-fluid">
+	    
+	    <div class="row">
+		<div class="col-sm-8 col-sm-offset-2 ">
+		    
+		    <h2>À propos</h2>
+
+		    <p>Cette application à visée pédagogique a pour objectif de permettre la manipulation et l'exploration univariée interactive de variables quantitatives.</p>
+		    <p>Elle permet l'affichage de différents indicateurs et représentations graphiques de base, avec la possibilité de modifier les paramètres, zoomer sur le graphique, déplacer les points de données. Chaque action entraîne une mise à jour interactive et animée de l'ensemble des résultats affichés.</p>
+		    
+		    <h3>Sources de données</h3>
+		    <p>Les données peuvent être saisies manuellent, générées aléatoirement selon différentes distributions, ou chargées à partir de l'un des jeux de données inclus. À noter que lorsqu'un jeu de données est chargé, il n'est plus possible de déplacer les points.</p>
+		    <p>Liste des jeux de données :</p>
+		    <table class="table table-striped">
+			<thead><tr><th>Nom</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
+			<tbody>
+			    <tr>
+				<td>Espérance de vie par pays</td>
+				<td>Espérance de vie à la naissance, par pays, en 2014</td>
+				<td></td>
+				<td><a href="http://data.worldbank.org/indicator/SP.DYN.LE00.IN">Banque mondiale</a></td>
+			    </tr>
+			    <tr>
+				<td>Âge de la mère à la naissance de l'enfant</td>
+				<td>Échantillon aléatoire de 2000 âges de la mère au moment de la naissance de l'enfant d'après les données d'État-civil pour la France en 2015. À noter que seuls les âges compris entre 18 et 45 ans (inclus) sont pris en compte.</td>
+				<td>Exemple de variable quantitative avec uniquement des valeurs entières, et qui suit quasiment une loi normale.</td>
+				<td><a href="https://www.insee.fr/fr/statistiques/2406436">Insee</a></td>
+			    </tr>
+			    <tr>
+				<td>Population des départements</td>
+				<td>Population des départements français en 2013</td>
+				<td></td>
+				<td><a href="https://fr.wikipedia.org/wiki/Liste_des_d%C3%A9partements_fran%C3%A7ais_class%C3%A9s_par_population_et_superficie">Wikipedia</a></td>
+			    </tr>
+			    <tr>
+				<td>Densité de population des départements</td>
+				<td>Densité de population des départments français en 2013 (en hab/km²)</td>
+				<td>Exemple permettant de voir l'influence de valeurs extrêmes sur les indicateurs et les grpahiques.</td>
+				<td><a href="https://fr.wikipedia.org/wiki/Liste_des_d%C3%A9partements_fran%C3%A7ais_class%C3%A9s_par_population_et_superficie">Wikipedia</a></td>
+			    </tr>
+			    <tr>
+				<td>Taille de personnes de l'ethnie !Kung</td>
+				<td>Taille (en cm) d'après un recensement partiel des membres de l'ethnie !Kung (Namibie), d'après des entretiens par Nancy Howell à la fin des années 1960.</td>
+				<td>Exemple de variable bimodale due aux distributions différentes des tailles des hommes et des femmes.</td>
+				<td><a href="https://github.com/rmcelreath/rethinking/blob/master/data/Howell1.csv">Jeu de données du livre <em>Statistical rethinking</em></td>
+			    </tr>
+			</tbody>
+		    </table>
+		    
+		    <h3>Liens et crédits</h3>
+		    
+		    <ul>
+			<li>Le code source de cette application est disponible <a href="https://github.com/juba/uniquanti">sur Github</a> sous licence MIT.</li>
+			<li>Interface créée avec <a href="https://getbootstrap.com">Bootstrap</a></li>
+			<li>Graphiques générés avec <a href="https://d3js.org/">D3.js</a></li>
+		    </ul>
+		    
+		</div>
+	    </div>
+	</div> <!-- /container -->
+
+
+		<!-- Bootstrap core JavaScript
+		     ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+		
+    </body>
+</html>

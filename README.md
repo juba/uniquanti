@@ -23,3 +23,4 @@ real analysis).
 
 - [Bootstrap](https://getbootstrap.com/)
 - [d3.js](https://d3js.org)
+- [simple-statistics](https://github.com/simple-statistics/simple-statistics)

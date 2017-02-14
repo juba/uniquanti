@@ -49,3 +49,32 @@ function label_formatting (selection, scales, settings) {
     selection
         .attr("transform", function(d) { return translation(d, scales) + "rotate(-45)"; });
 }
+
+function x_rug_init (selection, scales, settings) {
+    selection
+	.style("stroke", "rgb(31, 119, 180)")
+    	.style("stroke-width", "1")
+    	.style("opacity", settings.points_opacity)
+	.attr("d", "M 0 0 L 0 -10");
+}
+
+function x_rug_formatting (selection, scales, settings) {
+    selection
+	.attr("transform", function(d) {
+	    return "translate(" + scales.x(d.x) + "," + (scales.y(scales.y.domain()[0])) + ")";
+	});
+}
+
+function y_rug_init (selection, scales, settings) {
+    selection
+	.style("stroke", "rgb(31, 119, 180)")
+    	.style("opacity", settings.points_opacity)
+	.attr("d", "M 0 0 L 10 0");
+}
+
+function y_rug_formatting (selection, scales, settings) {
+    selection
+	.attr("transform", function(d) {
+	    return "translate(" + 0 + "," + scales.y(d.y) + ")";
+	});
+}

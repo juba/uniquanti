@@ -20,13 +20,21 @@ function plot() {
     function zoomed(reset) {
 	var root = svg.select(".root");
         scales.x = d3.event.transform.rescaleX(scales.x_orig);
+	scales.y = d3.event.transform.rescaleY(scales.y_orig);
         scales.xAxis = scales.xAxis.scale(scales.x);
+	scales.yAxis = scales.yAxis.scale(scales.y);
         root.select(".x.axis").call(scales.xAxis);
-	root.select(".x.axis.graph").call(scales.xAxis);
+	root.select(".y.axis").call(scales.yAxis);
 	
 	var chart_body = svg.select(".chart-body");
         chart_body.selectAll(".dot")
             .attr("transform", function(d) { return translation(d, scales); });
+	chart_body.selectAll(".xrug").call(function(sel) {
+	    x_rug_formatting(sel, scales, settings);
+	});
+	chart_body.selectAll(".yrug").call(function(sel) {
+	    y_rug_formatting(sel, scales, settings);
+	});
 	chart_body.selectAll(".label").call(function(sel) {
 	    label_formatting(sel, scales, settings);
 	});
@@ -39,31 +47,6 @@ function plot() {
 	chart_body.selectAll(".stats_label").call(function(sel) {
 	    stats_label_formatting(sel, scales);
 	});
-	chart_body.selectAll(".bar").call(function(sel) {
-	    bar_formatting(sel, scales, bins);
-	});
-	chart_body.selectAll(".bar-label").call(function(sel) {
-	    bar_label_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".boxplot-box").call(function(sel) {
-	    boxplot_box_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".boxplot-median").call(function(sel) {
-	    boxplot_median_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".boxplot-whisker").call(function(sel) {
-	    boxplot_whisker_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".boxplot-whisker-bar").call(function(sel) {
-	    boxplot_whisker_bar_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".boxplot-outlier").call(function(sel) {
-	    boxplot_outlier_formatting(sel, scales, settings);
-	});
-	chart_body.selectAll(".kde").call(function(sel) {
-	    kde_formatting(sel, scales);
-	});
-
     }
 
     // Reset zoom function
@@ -87,12 +70,20 @@ function plot() {
 	.on('drag', function(d) {
 	    if (points_dragging) {
 		var cx = d3.event.x - scales.x(d.x);
+		var cy = d3.event.y - scales.y(d.y);
 		d.x = scales.x.invert(d3.event.x);
+		d.y = scales.y.invert(d3.event.y);
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
 		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
 		    .html(tooltip_content(d));
 		d3.selectAll(".label").call(function(sel) {
 		    label_formatting(sel, scales, settings);
+		});
+		d3.selectAll(".xrug").call(function(sel) {
+		    x_rug_formatting(sel, scales, settings);
+		});
+		d3.selectAll(".yrug").call(function(sel) {
+		    y_rug_formatting(sel, scales, settings);
 		});
 		var stats_data = stats_compute(data, settings);
 		d3.selectAll(".stats_symbol")
@@ -105,82 +96,6 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
-		if (settings.graph_type == "hist") {
-		    bins = compute_bins(data, settings);
-		    scales = compute_hist_scales(scales, bins, settings, points_dragging);
-		    d3.selectAll(".bar")
-			.data(bins, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    bar_formatting(sel, scales, bins);
-			});
-		    d3.selectAll(".bar-label")
-			.data(bins, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    bar_label_formatting(sel, scales, settings);
-			});
-		    
-		    d3.select(".y.axis.graph")
-		    	.transition().duration(100).ease(d3.easeLinear)
-			.call(scales.yAxis_graph);
-		}
-		if (settings.graph_type == "boxplot") {
-		    var boxplot_stats = compute_boxplot_stats(data, settings);
-		    var data_median = compute_boxplot_median(boxplot_stats, settings);
-		    d3.selectAll(".boxplot-median")
-			.data(data_median, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    boxplot_median_formatting(sel, scales);
-			});
-		    var data_box = compute_boxplot_box(boxplot_stats, settings);
-		    d3.selectAll(".boxplot-box")
-			.data(data_box, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    boxplot_box_formatting(sel, scales);
-			});
-		    var data_whiskers = compute_boxplot_whiskers(boxplot_stats, settings);
-		    d3.selectAll(".boxplot-whisker")
-			.data(data_whiskers, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    boxplot_whisker_formatting(sel, scales);
-			});
-		    d3.selectAll(".boxplot-whisker-bar")
-			.data(data_whiskers, key)
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    boxplot_whisker_bar_formatting(sel, scales);
-			});
-		    var data_outliers = compute_boxplot_outliers(boxplot_stats, settings);
-		    var chart_body = d3.select(".chart-body");
-		    var outliers = chart_body.selectAll(".boxplot-outlier")
-			.data(data_outliers, key);
-		    outliers.enter().append("circle")
-			.attr("class", "boxplot-outlier")
-			.call(function(sel) {boxplot_outlier_init(sel, scales);})
-			.merge(outliers)
-			.call(function(sel) {boxplot_outlier_formatting(sel, scales);})
-			.style("opacity", 1);
-		    outliers.exit()
-			.remove();
-		}
-		if (settings.graph_type == "kde") {
-		    var kde_data = compute_kde_data(data, settings, scales);
-		    scales = compute_kde_scales(scales, kde_data, settings, points_dragging);
-		    kde_data = add_kde_extremes(kde_data, scales);
-		    d3.selectAll(".kde")
-			.data([kde_data])
-			.transition().duration(100).ease(d3.easeLinear)
-			.call(function(sel) {
-			    kde_formatting(sel, scales, bins);
-			});
-		    d3.select(".y.axis.graph")
-		    	.transition().duration(100).ease(d3.easeLinear)
-			.call(scales.yAxis_graph);
-		}
 	    }
 	})
 	.on('end', function(d) {
@@ -199,7 +114,7 @@ function plot() {
     function chart(selection) {
         selection.each(function() {
 
-            dims = setup_sizes(width, height);
+            dims = setup_sizes(width, height, settings);
             scales = setup_scales(dims, data, settings);
 
             // Root chart element and axes
@@ -221,7 +136,7 @@ function plot() {
 		.attr("width", dims.width)
 		.attr("height", dims.height);
 
-	    // Horizontal line
+	    // Axes lines
 	    var lines = chart_body
 		.selectAll(".lines")
 		.data(data_lines);
@@ -290,56 +205,10 @@ function plot() {
     // Update data with transitions
     function update_plot() {
 	
-	dims = setup_sizes(width, height);
+	dims = setup_sizes(width, height, settings);
 	scales = setup_scales(dims, data, settings);
-	bins = compute_bins(data, settings);
-	var kde_data = compute_kde_data(data, settings, scales);
-	if (settings.graph_type == "hist") {
-	    scales = compute_hist_scales(scales, bins, settings);
-	}
-	if (settings.graph_type == "boxplot") {
-	    scales = compute_boxplot_scales(scales, bins, settings);
-	}
-	if (settings.graph_type == "kde") {
-	    scales = compute_kde_scales(scales, kde_data, settings);
-	    kde_data = add_kde_extremes(kde_data, scales);
-	}
 	
 	var root = svg.select(".root");
-
-	// Histogram and density axes
-	if ((settings.graph_type == "hist" || settings.graph_type == "kde")
-	    && svg.select(".y.axis.graph").empty()) {
-	    root.append("g")
-		.attr("class", "x axis graph")
-		.attr("transform", "translate(0, 400)")
-		.style("font-size", "11px")
-	    	.style("opacity", 0);
-	    root.append("g")
-		.attr("class", "y axis graph")
-		.style("font-size", "11px")
-	    	.style("opacity", 0);
-	}
-	// Boxplot axes
-	if (settings.graph_type == "boxplot" && svg.select(".x.axis.graph").empty()) {
-	    root.append("g")
-		.attr("class", "x axis graph")
-		.attr("transform", "translate(0, 400)")
-		.style("font-size", "11px")
-	    	.style("opacity", 0);
-	}
-	// Remove y axis for boxplot
-	if (settings.graph_type == "boxplot") {
-	    root.selectAll(".y.axis.graph")
-		.remove();
-	}
-	// Remove axes if no graph
-	if (!settings.graph) {
-	    root.selectAll(".x.axis.graph, .y.axis.graph")
-		.transition().duration(1000)
-	    	.style("opacity", 0)
-		.remove();
-	}
 
 	var t0 = svg.transition().duration(1000);
 	t0.call(resize_plot);
@@ -358,6 +227,10 @@ function plot() {
 	    })
 	    .style("opacity", "1");
 	line.exit().transition().duration(1000).style("opacity", "0").remove();
+
+	// Update axes labels
+	d3.select(".x-axis-label").text(settings.xlab);
+	d3.select(".y-axis-label").text(settings.ylab);
 	
 	// Add points
 	var dot = chart_body.selectAll(".dot")
@@ -366,6 +239,23 @@ function plot() {
 	    .merge(dot).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
+	// Add rugs
+	var data_rugs = settings.rugs ? data : [];
+	var xrug = chart_body.selectAll(".xrug")
+	    .data(data_rugs, key);
+	if (settings.rugs) {
+	    xrug.enter().append("path").attr("class", "xrug").call(function(sel) {x_rug_init(sel, scales, settings);})
+		.merge(xrug).transition().duration(1000).call(function(sel) {x_rug_formatting(sel, scales, settings);});
+	}
+	xrug.exit().transition().duration(1000).style("opacity", 0).remove();
+	var yrug = chart_body.selectAll(".yrug")
+	    .data(data_rugs, key);
+	if (settings.rugs) {
+	    yrug.enter().append("path").attr("class", "yrug").call(function(sel) {y_rug_init(sel, scales, settings);})
+		.merge(yrug).transition().duration(1000).call(function(sel) {y_rug_formatting(sel, scales, settings);});
+	}
+	yrug.exit().transition().duration(1000).style("opacity", 0).remove();
+	
 	// Add labels
 	var data_labels = (!settings.show_labels || data[0].lab === undefined) ? [] : data;
 	var label = chart_body.selectAll(".label")
@@ -402,164 +292,6 @@ function plot() {
 	    .style("opacity", 1);
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
 
-	// Add histogram
-	var bar = chart_body
-	    .selectAll(".bar")
-	    .data(bins, key);
-	if (settings.graph_type == "hist") {
-	    bar.enter().append("rect")
-		.attr("class", "bar")
-	    	.style("opacity", 0)
-		.call(function(sel) {bar_init(sel, scales, settings);})
-		.merge(bar)
-		.transition().duration(1000)
-		.call(function(sel) {bar_formatting(sel, scales, bins);})
-		.style("opacity", 1);
-	}
-	bar.exit()
-	    .transition().duration(1000)
-	    .attr("width", 0)
-	    .style("opacity", 0)
-	    .remove();
-	// Histogram labels
-	var labels_data = settings.hist_labels ? bins : [];
-	var bar_labels = chart_body
-	    .selectAll(".bar-label")
-	    .data(labels_data, key);
-	if (settings.graph_type == "hist" && settings.hist_labels) {
-	    bar_labels.enter().append("text")
-		.attr("class", "bar-label")
-	    	.style("opacity", 0)
-		.call(function(sel) {bar_label_init(sel, scales);})
-		.merge(bar_labels)
-		.transition().duration(1000)
-		.call(function(sel) {bar_label_formatting(sel, scales, settings);});
-	}
-	bar_labels.exit()
-	    .transition().duration(1000)
-	    .attr("width", 0)
-	    .style("opacity", 0)
-	    .remove();
-
-	// Boxplot
-	var boxplot_stats = compute_boxplot_stats(data, settings);
-	// Boxplot box
-	var data_box = compute_boxplot_box(boxplot_stats, settings);
-	var box = chart_body
-	    .selectAll(".boxplot-box")
-	    .data(data_box, key);
-	if (settings.graph_type == "boxplot") {
-	    box.enter().append("rect")
-		.attr("class", "boxplot-box")
-	    	.style("opacity", 0)
-		.call(function(sel) {boxplot_box_init(sel, scales);})
-		.merge(box)
-		.transition().duration(1000)
-		.call(function(sel) {boxplot_box_formatting(sel, scales);})
-		.style("opacity", 1);
-	}
-	box.exit()
-	    .transition().duration(1000)
-	    .style("opacity", 0)
-	    .remove();
-	// Median line
-	var data_median = compute_boxplot_median(boxplot_stats, settings);
-	var median = chart_body
-	    .selectAll(".boxplot-median")
-	    .data(data_median, key);
-	if (settings.graph_type == "boxplot") {
-	    median.enter().append("line")
-		.attr("class", "boxplot-median")
-	    	.style("opacity", 0)
-		.call(function(sel) {boxplot_median_init(sel, scales);})
-		.merge(median)
-		.transition().duration(1000)
-		.call(function(sel) {boxplot_median_formatting(sel, scales);})
-		.style("opacity", 1);
-	}
-	median.exit()
-	    .transition().duration(1000)
-	    .style("opacity", 0)
-	    .remove();
-	// Boxplot whiskers
-	var data_whiskers = compute_boxplot_whiskers(boxplot_stats, settings);
-	var whiskers = chart_body
-	    .selectAll(".boxplot-whisker")
-	    .data(data_whiskers, key);
-	if (settings.graph_type == "boxplot") {
-	    whiskers.enter().append("line")
-		.attr("class", "boxplot-whisker")
-	    	.style("opacity", 0)
-		.call(function(sel) {boxplot_whisker_init(sel, scales);})
-		.merge(whiskers)
-		.transition().duration(1000)
-		.call(function(sel) {boxplot_whisker_formatting(sel, scales);})
-		.style("opacity", 1);
-	}
-	whiskers.exit()
-	    .transition().duration(1000)
-	    .style("opacity", 0)
-	    .remove();
-	// Boxplot whiskers bars
-	var whiskers_bars = chart_body
-	    .selectAll(".boxplot-whisker-bar")
-	    .data(data_whiskers, key);
-	if (settings.graph_type == "boxplot") {
-	    whiskers_bars.enter().append("line")
-		.attr("class", "boxplot-whisker-bar")
-	    	.style("opacity", 0)
-		.call(function(sel) {boxplot_whisker_bar_init(sel, scales);})
-		.merge(whiskers_bars)
-		.transition().duration(1000)
-		.call(function(sel) {boxplot_whisker_bar_formatting(sel, scales);})
-		.style("opacity", 1);
-	}
-	whiskers_bars.exit()
-	    .transition().duration(1000)
-	    .style("opacity", 0)
-	    .remove();
-	// Boxplot outliers
-	var data_outliers = compute_boxplot_outliers(boxplot_stats, settings);
-	var outliers = chart_body
-	    .selectAll(".boxplot-outlier")
-	    .data(data_outliers, key);
-	if (settings.graph_type == "boxplot") {
-	    outliers.enter().append("circle")
-		.attr("class", "boxplot-outlier")
-	    	.style("opacity", 0)
-		.call(function(sel) {boxplot_outlier_init(sel, scales);})
-		.merge(outliers)
-		.transition().duration(1000)
-		.call(function(sel) {boxplot_outlier_formatting(sel, scales);})
-		.style("opacity", 1);
-	}
-	outliers.exit()
-	    .transition().duration(1000)
-	    .style("opacity", 0)
-	    .remove();
-
-	// Add density
-	var kde = chart_body
-	    .selectAll(".kde")
-	    .data([kde_data]);
-	if (settings.graph_type == "kde") {
-	    kde.enter().append("path")
-		.attr("class", "kde")
-	    	.style("opacity", 0)
-	    	.call(function(sel) {kde_init(sel, scales);})
-		.merge(kde)
-	    	.transition().duration(1000)
-	    	.call(function(sel) {kde_formatting(sel, scales);})
-	    	.style("opacity", 1);
-	}
-	if (kde_data.length == 0) {
-	    kde.transition().duration(1000)
-		.attr("width", 0)
-		.style("opacity", 0)
-		.remove();
-	}
-
-
 	
 	// Reset zoom
 	svg.select(".root")
@@ -588,27 +320,20 @@ function plot() {
         svg_sel.select(".x-axis-label")
 	    .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")");
 	svg_sel.select(".x.axis").call(scales.xAxis);
-	if (settings.graph) {
-	    svg_sel.select(".x.axis.graph")
-		.call(scales.xAxis)
-		.style("opacity", 1);
-	    svg_sel.select(".y.axis.graph")
-		.call(scales.yAxis_graph)
-	    	.style("opacity", 1);
-	}
+	svg_sel.select(".y.axis").call(scales.yAxis);
     }
     
     // Dynamically resize chart elements
     function resize_chart () {
         // recompute sizes
-        dims = setup_sizes(width, height);
+        dims = setup_sizes(width, height, settings);
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
-        scales.y_points.range(settings.graph ? [700, 400] : [300, 0]);
-        scales.y_points_orig.range(settings.graph ? [700, 400] : [300, 0]);
+        scales.y.range([700, 0]);
+        scales.y_orig.range([700, 0]);
 	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
-	scales.yAxis_points = d3.axisLeft(scales.y_points).tickSize(-dims.width);
+	scales.yAxis = d3.axisLeft(scales.y).tickSize(-dims.width);
 
 	svg.call(resize_plot);
 
@@ -624,60 +349,66 @@ function plot() {
 
 
     chart.update_data_manual = function() {
-	var data_string = settings.data_manual;
-	if (!data_string.match(/^(\d+ *, *)*\d+ *$/)) {
-	    alert("Les données saisies sont invalides");
+	var data_string_x = settings.data_manual_x;
+	var data_string_y = settings.data_manual_y;
+	if (!data_string_x.match(/^(\d+ *, *)*\d+ *$/) ||
+	   !data_string_y.match(/^(\d+ *, *)*\d+ *$/)) {
+	    alert("Invalid data");
 	    return;
 	}
-	var new_data = data_string.split(/ *, */);
-	new_data = new_data.map(function(val, i) {
+	var new_data_x = data_string_x.split(/ *, */);
+	var new_data_y = data_string_y.split(/ *, */);
+	new_data = new_data_x.map(function(val, i) {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
-	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
-	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-	    d.y = settings.jitter ? y : 0;
+	    var y = new_data_y[i];
+	    d.y = y === undefined ? 0 : parseFloat(y);
 	    return d;
 	});
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;
+	settings.xlab = "x";
+	settings.ylab = "y";
 	update_plot();
     };
 
     chart.update_data_random = function() {
-	var new_data = [];
-	switch (settings.data_law) {
+	var new_data_x = [];
+	var new_data_y = [];
+	switch (settings.data_law_x) {
 	case "uniforme":
-	    new_data = d3.range(settings.data_nbvalues)
-		.map(d3.randomUniform(settings.data_uniform_min, settings.data_uniform_max));
-	    new_data = new_data.map(function(val, i) {
-		var d = {}; 
-		d.key = i;
-		d.x = val;
-		var defined_y = data[i] !== undefined && data[i].y !== undefined;
-		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-		d.y = settings.jitter ? y : 0;
-		return d;
-	    });
+	    new_data_x = d3.range(settings.data_nbvalues)
+		.map(d3.randomUniform(settings.data_uniform_min_x, settings.data_uniform_max_x));
 	    break;
 	case "normale":
-	    new_data = d3.range(settings.data_nbvalues)
-		.map(d3.randomNormal(settings.data_normal_mean, settings.data_normal_sd));
-	    new_data = new_data.map(function(val, i) {
-		var d = {}; 
-		d.key = i;
-		d.x = val;
-		var defined_y = data[i] !== undefined && data[i].y !== undefined;
-		var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-		d.y = settings.jitter ? y : 0;
-		return d;
-	    });
+	    new_data_x = d3.range(settings.data_nbvalues)
+	    	.map(d3.randomNormal(settings.data_normal_mean_x, settings.data_normal_sd_x));
 	    break;
 	}
+	switch (settings.data_law_y) {
+	case "uniforme":
+	    new_data_y = d3.range(settings.data_nbvalues)
+		.map(d3.randomUniform(settings.data_uniform_min_y, settings.data_uniform_max_y));
+	    break;
+	case "normale":
+	    new_data_y = d3.range(settings.data_nbvalues)
+	    	.map(d3.randomNormal(settings.data_normal_mean_y, settings.data_normal_sd_y));
+	    break;
+	}
+	var new_data = new_data_x.map(function(val, i) {
+	    var d = {}; 
+	    d.key = i;
+	    d.x = parseFloat(val);
+	    d.y = parseFloat(new_data_y[i]);
+	    return d;
+	});
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;
+	settings.xlab = "x";
+	settings.ylab = "y";
 	update_plot();
     };
 
@@ -696,49 +427,6 @@ function plot() {
 	    });
 	    labels = true;
 	    break;
-	case "population_departements_2013":
-	    csv_data = d3.csvParse(datasets(id));
-	    new_data = csv_data.map(function(val, i) {
-		var d = {}; 
-		d.lab = val.Departement;
-		d.key = d.lab;
-		d.x = parseInt(val.Population);
-		return d;
-	    });
-	    labels = true;
-	    break;
-	case "densite_departements_2013":
-	    csv_data = d3.csvParse(datasets(id));
-	    new_data = csv_data.map(function(val, i) {
-		var d = {}; 
-		d.lab = val.Departement;
-		d.key = d.lab;
-		d.x = parseFloat(val.Densite);
-		return d;
-	    });
-	    labels = true;
-	    break;
-	case "kung_heights":
-	    csv_data = d3.csvParse(datasets(id));
-	    new_data = csv_data.map(function(val, i) {
-		var d = {}; 
-		d.key = i;
-		d.x = parseFloat(val.height);
-		return d;
-	    });
-	    labels = false;
-	    break;
-	case "age_meres_2015":
-	    csv_data = d3.csvParse(datasets(id));
-	    new_data = csv_data.map(function(val, i) {
-		var d = {}; 
-		d.key = i;
-		d.x = parseInt(val.age);
-		return d;
-	    });
-	    labels = false;
-	    break;
-
 	}
 	new_data = new_data.map(function(d, i) {
 	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
@@ -761,23 +449,6 @@ function plot() {
 	    dot_init(sel, scales, settings);
 	    dot_formatting(sel, scales, settings);
 	});
-    };
-
-    chart.update_points_jitter = function() {
-	var new_data = [];
-	if (settings.jitter) {
-	    new_data = data.map(function(d) {
-		d.y = d3.randomUniform(-1, 1)();
-		return d;
-	    });
-	} else {
-	    new_data = data.map(function(d) {
-		d.y = 0;
-		return d;
-	    });
-	}
-	data = new_data;
-	update_plot();
     };
 
     chart.update_plot = function() {
@@ -834,29 +505,39 @@ function plot() {
 
 
 function generate_settings() {
-    var law = d3.select("#data_law").node();
-    law = law.options[law.selectedIndex].value;
+    var law_x = d3.select("#data_law_x").node();
+    law_x = law_x.options[law_x.selectedIndex].value;
+    var law_y = d3.select("#data_law_y").node();
+    law_y = law_y.options[law_y.selectedIndex].value;
     var graph_type = d3.select("#graph_type").node();
     graph_type = graph_type.options[graph_type.selectedIndex].value;
     var dataset = d3.select("#data_dataset").node();
     dataset = dataset.options[dataset.selectedIndex].value;
     var settings = {
-	data_manual: d3.select("#data_manual").node().value,
-	data_law: law,
+	data_manual_x: d3.select("#data_manual_x").node().value,
+	data_manual_y: d3.select("#data_manual_y").node().value,
+	xlab: "x",
+	ylab: "y",
+	data_law_x: law_x,
+	data_law_y: law_y,
 	data_nbvalues: d3.select("#nb_values").node().value,
-	data_uniform_min: d3.select("#data_uniform_min").node().value,
-	data_uniform_max: d3.select("#data_uniform_max").node().value,
-	data_normal_mean: d3.select("#data_normal_mean").node().value,
-	data_normal_sd: d3.select("#data_normal_sd").node().value,
+	data_uniform_min_x: d3.select("#data_uniform_min_x").node().value,
+	data_uniform_max_x: d3.select("#data_uniform_max_x").node().value,
+	data_normal_mean_x: d3.select("#data_normal_mean_x").node().value,
+	data_normal_sd_x: d3.select("#data_normal_sd_x").node().value,
+	data_uniform_min_y: d3.select("#data_uniform_min_y").node().value,
+	data_uniform_max_y: d3.select("#data_uniform_max_y").node().value,
+	data_normal_mean_y: d3.select("#data_normal_mean_y").node().value,
+	data_normal_sd_y: d3.select("#data_normal_sd_y").node().value,
 	data_dataset: dataset,
 	points_size: d3.select("#points_size").node().value,
 	points_opacity: d3.select("#points_opacity").node().value,
-	jitter: d3.select("#points_jitter").node().checked,
 	show_labels: d3.select("#show_labels").node().checked,
+	rugs: d3.select("#show_rugs").node().checked,
 	stats_mean: d3.select("#stats_mean").node().checked,
-	stats_median: d3.select("#stats_median").node().checked,
-	stats_quartiles: d3.select("#stats_quartiles").node().checked,
 	stats_sd: d3.select("#stats_sd").node().checked,
+	stats_cov: d3.select("#stats_cov").node().checked,
+	fixed: d3.select("#coord_fixed").node().checked,
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
 	x_max: d3.select("#x_max").node().value,
@@ -864,13 +545,7 @@ function generate_settings() {
 	y_min: d3.select("#y_min").node().value,
 	y_max: d3.select("#y_max").node().value,
 	graph_type: graph_type,
-	hist_classes: d3.select("#hist_classes").node().value,
-	hist_exact: d3.select("#hist_exact").node().checked,
-	hist_percent: d3.select("#hist_percent").node().checked,
-	hist_labels: d3.select("#hist_labels").node().checked,
-	kde_scale: d3.select("#kde_scale").node().value,
-	allow_dragging: true,
-	graph: graph_type != "none"
+	allow_dragging: true
     };
     return settings;
 };
@@ -878,7 +553,7 @@ function generate_settings() {
 var svg = d3.select("#plot").append("svg");
 var width = d3.select("#plot").node().getBoundingClientRect().width;
 var settings = generate_settings();
-var height = settings.graph ? 700 : 300;
+var height = 700;
 svg.attr("width", width)
     .attr("height", height)
     .append("style")
@@ -903,8 +578,13 @@ plot = plot.settings(settings);
 var data = [];
 var data_lines = [{slope: 0,
 		   intercept: 0,
-		   stroke: "#CCC",
-		   stroke_dasharray: [3,3]}];
+		   stroke: "#555",
+		   stroke_dasharray: [3,3]},
+		  {slope: null,
+		   intercept: 0,
+		   stroke: "#555",
+		   stroke_dasharray: [3,3]}
+		 ];
 
 plot = plot.data(data, true);
 d3.select("#plot").call(plot);
@@ -933,19 +613,15 @@ d3.select("#points_opacity").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_dots();
 });
-d3.select("#points_jitter").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_points_jitter();
-});
-d3.selectAll("#show_labels").on("input change", function(e) {
+d3.selectAll("#show_rugs, #show_labels").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#stats_mean, #stats_median, #stats_quartiles, #stats_sd").on("input change", function(e) {
+d3.selectAll("#stats_mean, #stats_sd, #stats_cov").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
+d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
@@ -957,23 +633,12 @@ d3.select("#graph_type").on("input change", function (e) {
     plot.width(width).height(height);
     plot.update_plot();
 });
-d3.selectAll("#hist_classes, #hist_exact, #hist_percent, #hist_labels").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_plot();
-});
-d3.selectAll("#kde_scale").on("input change", function(e) {
-    plot = plot.settings(generate_settings());
-    plot.update_plot();
-});
-
 
 // Window resize
 
 window.onresize = function() {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var graph_type = d3.select("#graph_type").node();
-    graph_type = graph_type.options[graph_type.selectedIndex].value;
-    var height = graph_type != "none" ? 700 : 300;
+    var height = 700;
     svg
 	.attr("width", width)
 	.attr("height", height);

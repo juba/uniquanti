@@ -10,7 +10,7 @@ function custom_scheme10 () {
 }
 
 // Setup dimensions
-function setup_sizes (width, height) {
+function setup_sizes (width, height, settings) {
 
     var dims = {},
 	margins = {top: 5, right: 10, bottom: 20, left: 40};
@@ -21,6 +21,12 @@ function setup_sizes (width, height) {
     dims.height = height;
     dims.height = dims.height - margins.top - margins.bottom;
     dims.width = width - margins.left - margins.right;
+
+    // Fixed ratio
+    if (settings.fixed) {
+         dims.height = Math.min(dims.height, dims.width);
+         dims.width = dims.height;
+    }
 
     dims.total_width = dims.width + margins.left + margins.right;
     dims.total_height = dims.height + margins.top + margins.bottom;
@@ -36,16 +42,17 @@ function setup_scales (dims, data, settings) {
     var min_x, min_y, max_x, max_y, gap_x, gap_y;
     var scales = {};
 
-    if (data.length == 0) {data = [{x:50}];}
+    if (data.length == 0) {data = [{x:50, y:50}];}
 
     min_x = d3.min(data, function(d) { return(d.x);} );
     max_x = d3.max(data, function(d) { return(d.x);} );
+    min_y = d3.min(data, function(d) { return(d.y);} );
+    max_y = d3.max(data, function(d) { return(d.y);} );
     
     if (settings.x_manual) {
 	min_x = parseFloat(settings.x_min);
 	max_x = parseFloat(settings.x_max);
 	gap_x = 0;
-	gap_y = 0;
     } else {
 	gap_x = (max_x - min_x) * 0.2;
 	if (min_x == max_x) {
@@ -54,20 +61,56 @@ function setup_scales (dims, data, settings) {
 	    gap_x = 0;
 	}
     }
-	
+    if (settings.y_manual) {
+	min_y = parseFloat(settings.y_min);
+	max_y = parseFloat(settings.y_max);
+	gap_y = 0;
+    } else {
+	gap_y = (max_y - min_y) * 0.2;
+	if (min_y == max_y) {
+	    min_y = min_y * 0.8;
+	    max_y = max_y * 1.2;
+	    gap_y = 0;
+	}
+    }
+
+    min_x = min_x - gap_x;
+    max_x = max_x + gap_x;
+    min_y = min_y - gap_y;
+    max_y = max_y + gap_y;
+
+    var range_x = max_x - min_x;
+    var mid_x = (max_x + min_x) / 2;
+    var range_y = max_y - min_y;
+    var mid_y = (max_y + min_y) / 2;
+    if (settings.fixed) {
+	var ratio = (range_y / range_x);
+	if (ratio > 1) {
+	    range_x = range_x * ratio;
+	    min_x = mid_x - range_x / 2;
+	    max_x = mid_x + range_x / 2;
+	} else {
+	    range_y = range_y / ratio;
+	    min_y = mid_y - range_y / 2;
+	    max_y = mid_y + range_y / 2;
+	}
+    }
+    
     scales.x = d3.scaleLinear()
 	.range([0, dims.width])
-	.domain([min_x - gap_x, max_x + gap_x]);
-    scales.y_points = d3.scaleLinear()
-        .range(settings.graph ? [700, 400] : [300, 0])
-	.domain([-3.5, 3]);
+	.domain([min_x, max_x]);
+    scales.y = d3.scaleLinear()
+	.range([dims.height, 0])
+	.domain([min_y, max_y]);
     // Keep track of original scales
     scales.x_orig = scales.x;
-    scales.y_points_orig = scales.y_points;
+    scales.y_orig = scales.y;
     // x and y axis functions
     scales.xAxis = d3.axisBottom(scales.x)
-        .tickSize(5);
-    
+        .tickSize(-dims.height);
+    scales.yAxis = d3.axisLeft(scales.y)
+        .tickSize(-dims.width);
+  
     return scales;
 }
 

@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Univariate quantitative variable analysis</title>
+    <title>Bivariate quantitative variable analysis</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -86,10 +86,14 @@
 				<div class="tab-content">
 				    <!-- Données manuelles -->
 				    <div role="tabpanel" class="tab-pane fade in active" id="tab-data-manual">
-					<form id="form_manual_data" action="#">
-					    <div class="form-group">
-						<label for="data_manual">Number separated by commas</label>
-						<input id="data_manual" type="text" class="form-control" placeholder="Ex : 125, 57, 198, 12, 45...">
+				      <form id="form_manual_data" action="#">
+					  <div class="form-group">
+					      <label for="data_manual_x">Horizontal axis values (x)</label>
+					      <input id="data_manual_x" type="text" class="form-control" placeholder="Ex : 125, 57, 198, 12, 45...">
+					  </div>
+					  <div class="form-group">
+					      <label for="data_manual_y">Vertical axis values (y)</label>
+					      <input id="data_manual_y" type="text" class="form-control" placeholder="Ex : 120, 67, 204, 2, 25...">
 					    </div>
 					    <button type="submit" class="btn btn-primary btn-sm" id="data_manual_submit">Update</button>
 					</form>
@@ -97,41 +101,80 @@
 				    <!-- Données aléatoires -->
 				    <div role="tabpanel" class="tab-pane fade" id="tab-data-random">
 					<form id="form_random_data" action="#">
+					    <!-- X -->
 					    <div class="form-group">
-						<label for="data_law">Distribution</label>
-						<select class="form-control" id="data_law">
+						<label for="data_law_x">Horizontal axis (x) distribution</label>
+						<select class="form-control" id="data_law_x">
 						    <option value="uniforme" selected>Uniform</option>
 						    <option value="normale">Normal</option>
 						</select>
 					    </div>
-					    <div class="form-horizontal" id="data_uniform_args">
+					    <div class="form-horizontal" id="data_uniform_args_x">
 						<div class="form-group">
-						    <label for="data_uniform_min" class="col-sm-5 control-label">Minimum</label>
+						    <label for="data_uniform_min_x" class="col-sm-5 control-label">Minimum</label>
 						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_uniform_min" value="0" />
+							<input type="number" class="form-control" id="data_uniform_min_x" value="0" />
 						    </div>
 						</div>
 						<div class="form-group">
-						    <label for="data_uniform_max" class="col-sm-5 control-label">Maximum</label>
+						    <label for="data_uniform_max_x" class="col-sm-5 control-label">Maximum</label>
 						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_uniform_max" value="100" />
-						    </div>
-						</div>
-					    </div>
-					    <div class="form-horizontal" id="data_normal_args">
-						<div class="form-group">
-						    <label for="data_normal_mean" class="col-sm-5 control-label">Mean</label>
-						    <div class="col-sm-7">
-					    		<input type="number" class="form-control" id="data_normal_mean" value="50" />
-						    </div>
-						</div>
-						<div class="form-group">
-						    <label for="data_normal_sd" class="col-sm-5 control-label">Standard deviation</label>
-						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_normal_sd" value="5" />
+							<input type="number" class="form-control" id="data_uniform_max_x" value="100" />
 						    </div>
 						</div>
 					    </div>
+					    <div class="form-horizontal" id="data_normal_args_x">
+						<div class="form-group">
+						    <label for="data_normal_mean_x" class="col-sm-5 control-label">Mean</label>
+						    <div class="col-sm-7">
+					    		<input type="number" class="form-control" id="data_normal_mean_x" value="50" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_normal_sd_x" class="col-sm-5 control-label">Standard deviation</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_normal_sd_x" value="5" />
+						    </div>
+						</div>
+					    </div>
+
+					    <!-- Y -->
+					    <div class="form-group">
+						<label for="data_law_y">Vertical axis (y) distribution</label>
+						<select class="form-control" id="data_law_y">
+						    <option value="uniforme" selected>Uniform</option>
+						    <option value="normale">Normal</option>
+						</select>
+					    </div>
+					    <div class="form-horizontal" id="data_uniform_args_y">
+						<div class="form-group">
+						    <label for="data_uniform_min_y" class="col-sm-5 control-label">Minimum</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_uniform_min_y" value="0" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_uniform_max_y" class="col-sm-5 control-label">Maximum</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_uniform_max_y" value="100" />
+						    </div>
+						</div>
+					    </div>
+					    <div class="form-horizontal" id="data_normal_args_y">
+						<div class="form-group">
+						    <label for="data_normal_mean_y" class="col-sm-5 control-label">Mean</label>
+						    <div class="col-sm-7">
+					    		<input type="number" class="form-control" id="data_normal_mean_y" value="50" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_normal_sd_y" class="col-sm-5 control-label">Standard deviation</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_normal_sd_y" value="5" />
+						    </div>
+						</div>
+					    </div>
+					    
 					    <div class="form-group">
 						<label for="nb_values">Number of observations</label>
 						<input type="number" class="form-control" id="nb_values" min="2" max="5000" value="100" />
@@ -146,10 +189,6 @@
 						<label for="data_dataset">Dataset</label>
 						<select class="form-control" id="data_dataset">
 						    <option value="life_expectancy_2014" selected>Life expectancy by country (2014)</option>
-						    <option value="age_meres_2015">Mother age at child birth (France, 2015)</option>
-						    <option value="population_departements_2013">Departments population (France, 2013)</option>
-						    <option value="densite_departements_2013">Departments population density (ppl/km²) (France, 2013)</option>
-						    <option value="kung_heights">!Kung people heights (late 60's)</option>
 						</select>
 					    </div>
 					    <button type="submit" class="btn btn-primary btn-sm" id="data_dataset_submit">Load</button>
@@ -185,9 +224,9 @@
 				<label for="points_opacity">Points opacity</label>
 				<input id="points_opacity" type="range" min="0.01" max="1" value="0.8" step="0.01"/>
 			    </div>
-			    <div class="checkbox">
+			    <div class="checkbox" id="points_show_rugs">
 				<label>
-				    <input id="points_jitter" type="checkbox" value=""> Jitter
+				    <input id="show_rugs" type="checkbox" checked="checked"> Show rugs
 				</label>
 			    </div>
 			    <div class="checkbox" id="points_show_labels">
@@ -218,17 +257,12 @@
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="stats_median" type="checkbox"> Median
-				</label>
-			    </div>
-			    <div class="checkbox">
-				<label>
-				    <input id="stats_quartiles" type="checkbox"> Quartiles
-				</label>
-			    </div>
-			    <div class="checkbox">
-				<label>
 				    <input id="stats_sd" type="checkbox"> Standard deviation
+				</label>
+			    </div>
+			    <div class="checkbox">
+				<label>
+				    <input id="stats_cov" type="checkbox"> Covariance and correlation
 				</label>
 			    </div>
 			</div>
@@ -306,6 +340,11 @@
 			<div class="panel-body">
 			    <div class="checkbox">
 				<label>
+				    <input id="coord_fixed" type="checkbox" checked="checked"> Fixed ratio
+				</label>
+			    </div>
+			    <div class="checkbox">
+				<label>
 				    <input id="x_manual" type="checkbox"> Manual x limits
 				</label>
 			    </div>
@@ -371,10 +410,11 @@
     <script>String.locale = "en";</script>
     <script src="js/l10n/localizations.js"></script>
     <script src="js/lib/d3.min.js"></script>
+    <script src="js/lib/simple-statistics.min.js"></script>
     <!-- init jquery js -->
     <script src="js/bivariate/init.js"></script>
     <!-- datasets js -->
-    <script src="data/datasets.js"></script>
+    <script src="data/bivariate.js"></script>
     <!-- plot js -->
     <script src="js/bivariate/plot-utils.js"></script>
     <script src="js/bivariate/plot-export.js"></script>
@@ -383,9 +423,6 @@
     <script src="js/bivariate/plot-dots.js"></script>
     <script src="js/bivariate/plot-lines.js"></script>
     <script src="js/bivariate/plot-stats.js"></script>
-    <script src="js/bivariate/plot-histogram.js"></script>
-    <script src="js/bivariate/plot-boxplot.js"></script>
-    <script src="js/bivariate/plot-kde.js"></script>
     <script src="js/bivariate/plot.js"></script>
     
   </body>

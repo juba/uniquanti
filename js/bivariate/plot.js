@@ -96,6 +96,22 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
+
+		if (settings.reg_line) {
+		    var regression = ss.linearRegression(data.map(function(d) {
+			return [d.x, d.y];
+		    }));
+		    var reg_line_data = [{slope: regression.m,
+				      intercept: regression.b,
+				      stroke: "#F00",
+				      stroke_width: 2
+				     }];
+		    var reg_line = d3.selectAll(".regline")
+			.data(reg_line_data)
+			.call(function(sel) {
+			    line_formatting(sel, dims, scales);
+			});
+		}		
 	    }
 	})
 	.on('end', function(d) {
@@ -215,7 +231,7 @@ function plot() {
 
 	var chart_body = svg.select(".chart-body");
 
-	// Add lines
+	// Add 0 lines
 	var line = chart_body.selectAll(".line")
 	    .data(data_lines);
 	line.enter().append("path").call(line_init)
@@ -292,6 +308,52 @@ function plot() {
 	    .style("opacity", 1);
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
 
+	// Add manual line
+	var manual_line_data = [];
+	if (settings.manual_line & settings.manual_slope != "" & settings.manual_intercept != "") {
+	    manual_line_data = [{slope: parseFloat(settings.manual_slope),
+			      intercept: parseFloat(settings.manual_intercept),
+			      stroke: "#0B0",
+			      stroke_width: 2
+			     }];
+	}
+	var manual_line = chart_body.selectAll(".manualline")
+	    .data(manual_line_data);
+	manual_line.enter().append("path").call(line_init)
+	    .attr("class", "manualline line")
+	    .style("opacity", "0")
+	    .merge(manual_line)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		line_formatting(sel, dims, scales);
+	    })
+	    .style("opacity", "1");
+	manual_line.exit().transition().duration(1000).style("opacity", "0").remove();
+	
+	// Add regression line
+	var reg_line_data = [];
+	if (settings.reg_line) {
+	    var regression = ss.linearRegression(data.map(function(d) {
+		return [d.x, d.y];
+	    }));
+	    reg_line_data = [{slope: regression.m,
+			      intercept: regression.b,
+			      stroke: "#F00",
+			      stroke_width: 2
+			     }];
+	}
+	var reg_line = chart_body.selectAll(".regline")
+	    .data(reg_line_data);
+	reg_line.enter().append("path").call(line_init)
+	    .attr("class", "regline line")
+	    .style("opacity", "0")
+	    .merge(reg_line)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		line_formatting(sel, dims, scales);
+	    })
+	    .style("opacity", "1");
+	reg_line.exit().transition().duration(1000).style("opacity", "0").remove();
 	
 	// Reset zoom
 	svg.select(".root")
@@ -346,20 +408,7 @@ function plot() {
 	    .attr("transform", "translate(" + (width - 40) + "," + 10 + ")");
 	
     };
-
-
-    chart.compute_reg_line = function() {
-	var regression = ss.linearRegression(data.map(function(d) {
-	    return [d.x, d.y];
-	}));
-	console.log(regression);
-	settings.reg_slope = regression.m;
-	settings.reg_intercept = regression.b;
-	d3.select('#reg_slope').node().value = regression.m.toFixed(3);
-	d3.select('#reg_intercept').node().value = regression.b.toFixed(1);
-	update_plot();
-    };
-    
+ 
     chart.update_data_manual = function() {
 	var data_string_x = settings.data_manual_x;
 	var data_string_y = settings.data_manual_y;
@@ -547,9 +596,10 @@ function generate_settings() {
 	stats_mean: d3.select("#stats_mean").node().checked,
 	stats_sd: d3.select("#stats_sd").node().checked,
 	stats_cov: d3.select("#stats_cov").node().checked,
+	manual_line: d3.select("#manual_line").node().checked,
+	manual_slope: d3.select("#manual_slope").node().value,
+	manual_intercept: d3.select("#manual_intercept").node().value,
 	reg_line: d3.select("#reg_line").node().checked,
-	reg_slope: d3.select("#reg_slope").node().value,
-	reg_intercept: d3.select("#reg_intercept").node().value,
 	fixed: d3.select("#coord_fixed").node().checked,
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
@@ -590,11 +640,11 @@ plot = plot.settings(settings);
 var data = [];
 var data_lines = [{slope: 0,
 		   intercept: 0,
-		   stroke: "#555",
+		   stroke: "#777",
 		   stroke_dasharray: [3,3]},
 		  {slope: null,
 		   intercept: 0,
-		   stroke: "#555",
+		   stroke: "#777",
 		   stroke_dasharray: [3,3]}
 		 ];
 
@@ -637,13 +687,13 @@ d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#reg_line, #reg_slope, #reg_intercept").on("input change", function(e) {
+d3.selectAll("#manual_line, #manual_slope, #manual_intercept").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.select("#form_reg").on("submit", function(e) {
-    d3.event.preventDefault();
-    plot.compute_reg_line();
+d3.select("#reg_line").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
+    plot.update_plot();
 });
 
 // Window resize

@@ -42,7 +42,7 @@ function setup_scales (dims, data, settings) {
     var min_x, min_y, max_x, max_y, gap_x, gap_y;
     var scales = {};
 
-    if (data.length == 0) {data = [{x:50, y:50}];}
+    if (data.length == 0) {data = [{x:5, y:5}];}
 
     min_x = d3.min(data, function(d) { return(d.x);} );
     max_x = d3.max(data, function(d) { return(d.x);} );

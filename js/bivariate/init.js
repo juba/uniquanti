@@ -50,11 +50,11 @@
 	    }
 	});
 
-	$("#reg_line").on("change", function() {
+	$("#manual_line").on("change", function() {
 	    if($(this).prop('checked')) {
-		$("#reg_options").show();
+		$("#manual_line_options").show();
 	    } else {
-		$("#reg_options").hide();
+		$("#manual_line_options").hide();
 	    }
 	});
 

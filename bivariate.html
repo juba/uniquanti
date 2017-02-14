@@ -273,54 +273,37 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading" role="tab" id="headingGraphiques">
 			<h4 class="panel-title">
-			    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+			    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseGraphiques" aria-expanded="false" aria-controls="collapseGraphiques">
-				 Graphics
+				 Regression
 			    </a>
 			</h4>
 		    </div>
 		    <div id="collapseGraphiques" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGraphiques">
 			<div class="panel-body">
-			    <div class="form-group">
-				<label for="graph_type">Graphic to display</label>
-				<select class="form-control" id="graph_type">
-				    <option value="none" selected>None</option>
-				    <option value="hist">Histogram</option>
-				    <option value="boxplot">Boxplot</option>
-				    <option value="kde">Density estimator</option>
-				</select>
+			    <div class="checkbox">
+				<label>
+				    <input id="reg_line" type="checkbox"> Linear regression line
+				</label>
 			    </div>
-			    <div class="form-horizontal" id="graph_hist_args">
-				<div class="form-group">
-				    <label for="hist_classes" class="col-sm-7 control-label">Number of bins</label>
-				    <div class="col-sm-5">
-					<input type="number" class="form-control" id="hist_classes" min="2" max="1000" value="20" />
+			    <div class="form-horizontal" id="reg_options">
+				<form id="form_reg" action="#">
+				    <div class="form-group">
+					<label for="reg_slope" class="col-sm-5 control-label">Slope</label>
+					<div class="col-sm-7">
+					    <input type="number" step="0.1" class="form-control" id="reg_slope" value="0" />
+					</div>
 				    </div>
-				</div>
-				<div class="checkbox col-sm-12">
-				    <label>
-					<input id="hist_exact" type="checkbox" checked> Exact bins
-				    </label>
-				</div>
-				<div class="checkbox col-sm-12">
-				    <label>
-					<input id="hist_percent" type="checkbox"> Percentages
-				    </label>
-				</div>
-				<div class="checkbox col-sm-12">
-				    <label>
-					<input id="hist_labels" type="checkbox" checked> Show values
-				    </label>
-				</div>
-			    </div>
-			    <div class="form-horizontal" id="graph_kde_args">
-				<div class="form-group">
-				    <label for="kde_scale" class="col-sm-7 control-label">Bandwidth</label>
-				    <div class="col-sm-5">
-					<input type="number" class="form-control" id="kde_scale" min="0" value="7" />
+				    <div class="form-group">
+					<label for="reg_intercept" class="col-sm-5 control-label">Intercept</label>
+					<div class="col-sm-7">
+					    <input type="number" step="1" class="form-control" id="reg_intercept" value="100" />
+					</div>
 				    </div>
-				</div>
+				    <button type="submit" class="btn btn-primary btn-sm" id="reg_compute">Compute</button>
+				</form>
 			    </div>
+
 			</div>
 		    </div>
 		</div>

@@ -5,6 +5,7 @@
 	$("#x_limits").hide();
 	$("#y_limits").hide();
 	$("#points_show_labels").hide();
+	$("#reg_options").hide();
 	
 	
 	$("#data_law_x").on("change", function() {
@@ -49,6 +50,15 @@
 	    }
 	});
 
+	$("#reg_line").on("change", function() {
+	    if($(this).prop('checked')) {
+		$("#reg_options").show();
+	    } else {
+		$("#reg_options").hide();
+	    }
+	});
+
+	
 	
     });
   

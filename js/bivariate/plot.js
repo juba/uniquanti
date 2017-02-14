@@ -348,6 +348,18 @@ function plot() {
     };
 
 
+    chart.compute_reg_line = function() {
+	var regression = ss.linearRegression(data.map(function(d) {
+	    return [d.x, d.y];
+	}));
+	console.log(regression);
+	settings.reg_slope = regression.m;
+	settings.reg_intercept = regression.b;
+	d3.select('#reg_slope').node().value = regression.m.toFixed(3);
+	d3.select('#reg_intercept').node().value = regression.b.toFixed(1);
+	update_plot();
+    };
+    
     chart.update_data_manual = function() {
 	var data_string_x = settings.data_manual_x;
 	var data_string_y = settings.data_manual_y;
@@ -509,8 +521,6 @@ function generate_settings() {
     law_x = law_x.options[law_x.selectedIndex].value;
     var law_y = d3.select("#data_law_y").node();
     law_y = law_y.options[law_y.selectedIndex].value;
-    var graph_type = d3.select("#graph_type").node();
-    graph_type = graph_type.options[graph_type.selectedIndex].value;
     var dataset = d3.select("#data_dataset").node();
     dataset = dataset.options[dataset.selectedIndex].value;
     var settings = {
@@ -537,6 +547,9 @@ function generate_settings() {
 	stats_mean: d3.select("#stats_mean").node().checked,
 	stats_sd: d3.select("#stats_sd").node().checked,
 	stats_cov: d3.select("#stats_cov").node().checked,
+	reg_line: d3.select("#reg_line").node().checked,
+	reg_slope: d3.select("#reg_slope").node().value,
+	reg_intercept: d3.select("#reg_intercept").node().value,
 	fixed: d3.select("#coord_fixed").node().checked,
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
@@ -544,7 +557,6 @@ function generate_settings() {
 	y_manual: d3.select("#y_manual").node().checked,
 	y_min: d3.select("#y_min").node().value,
 	y_max: d3.select("#y_max").node().value,
-	graph_type: graph_type,
 	allow_dragging: true
     };
     return settings;
@@ -625,13 +637,13 @@ d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.select("#graph_type").on("input change", function (e) {
-    var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var settings = generate_settings();
-    var height = settings.graph ? 700 : 300;
-    plot = plot.settings(settings);
-    plot.width(width).height(height);
+d3.selectAll("#reg_line, #reg_slope, #reg_intercept").on("input change", function(e) {
+    plot = plot.settings(generate_settings());
     plot.update_plot();
+});
+d3.select("#form_reg").on("submit", function(e) {
+    d3.event.preventDefault();
+    plot.compute_reg_line();
 });
 
 // Window resize

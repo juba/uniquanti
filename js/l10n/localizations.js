@@ -1,5 +1,6 @@
 String.toLocaleString({
     "en": {
+	":invalid_data:": "Invalid data",
 	":median:": "Median",
 	":mean:": "Mean",
 	":sd:": "Standard deviation",
@@ -9,6 +10,7 @@ String.toLocaleString({
 	":predicted:": "Predicted"
     },
     "fr": {
+	":invalid_data:": "Données saisies invalides",
 	":median:": "Médiane",
 	":mean:": "Moyenne",
 	":sd:": "Écart-type",

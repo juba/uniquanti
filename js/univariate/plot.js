@@ -625,20 +625,22 @@ function plot() {
 
     chart.update_data_manual = function() {
 	var data_string = settings.data_manual;
-	if (!data_string.match(/^(\d+ *, *)*\d+ *$/)) {
-	    alert("Les données saisies sont invalides");
-	    return;
-	}
 	var new_data = data_string.split(/ *, */);
+	var valid = true;
 	new_data = new_data.map(function(val, i) {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
+	    if (isNaN(d.x)) { valid = false;};
 	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
 	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
 	    d.y = settings.jitter ? y : 0;
 	    return d;
 	});
+	if (!valid) {
+	    alert(":invalid_data:".toLocaleString());
+	    return;
+	}
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;

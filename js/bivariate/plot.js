@@ -693,21 +693,24 @@ function plot() {
     chart.update_data_manual = function() {
 	var data_string_x = settings.data_manual_x;
 	var data_string_y = settings.data_manual_y;
-	if (!data_string_x.match(/^(\d+ *, *)*\d+ *$/) ||
-	   !data_string_y.match(/^(\d+ *, *)*\d+ *$/)) {
-	    alert("Invalid data");
-	    return;
-	}
 	var new_data_x = data_string_x.split(/ *, */);
 	var new_data_y = data_string_y.split(/ *, */);
+	var valid = true;
 	new_data = new_data_x.map(function(val, i) {
 	    var d = {}; 
 	    d.key = i;
 	    d.x = parseFloat(val);
 	    var y = new_data_y[i];
 	    d.y = y === undefined ? 0 : parseFloat(y);
+	    if (isNaN(d.x) | isNaN(d.y)) {
+		valid = false;
+	    };
 	    return d;
 	});
+	if (!valid) {
+	    alert(":invalid_data:".toLocaleString());
+	    return;
+	}
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;

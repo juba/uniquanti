@@ -115,7 +115,7 @@
     cursor: move;
 }
 
-#plot .axis .tick line {
+#bivariate #plot .axis .tick line {
     stroke: #eee;
     z-index: -10;
 }

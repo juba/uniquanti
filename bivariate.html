@@ -299,11 +299,23 @@
 					<input type="number" step="0.1" class="form-control" id="manual_intercept" value="0" />
 				    </div>
 				</div>
+				<div class="checkbox" style="margin-left: 30px;">
+				    <label>
+					<input id="manual_errors" type="checkbox"> Show errors
+				    </label>
+				</div>
 			    </div>
 			    <div class="checkbox">
 				<label>
 				    <input id="reg_line" type="checkbox"> Linear regression line
 				</label>
+			    </div>
+			    <div class="form-horizontal" id="reg_line_options">
+				<div class="checkbox" style="margin-left: 30px;">
+				    <label>
+					<input id="reg_errors" type="checkbox">  Show errors
+				    </label>
+				</div>
 			    </div>
 			</div>
 		    </div>
@@ -406,6 +418,7 @@
     <script src="js/bivariate/plot-setup.js"></script>
     <script src="js/bivariate/plot-dots.js"></script>
     <script src="js/bivariate/plot-lines.js"></script>
+    <script src="js/bivariate/plot-errors.js"></script>
     <script src="js/bivariate/plot-stats.js"></script>
     <script src="js/bivariate/plot.js"></script>
     

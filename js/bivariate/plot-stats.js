@@ -54,6 +54,7 @@ function stats_compute(data, settings) {
 function stats_symbol_formatting(selection, scales, settings) {
     selection = selection
     	.attr("class", "stats_symbol");
+    // Mean x
     selection
 	.filter(function(d) {return d.key == "mean_x";})
     	.attr("d", function(d) {
@@ -62,6 +63,7 @@ function stats_symbol_formatting(selection, scales, settings) {
 	})
 	.style("stroke", function(d) {return d.col;})
     	.style("stroke-width", 2);
+    // Mean y
     selection
 	.filter(function(d) {return d.key == "mean_y";})
     	.attr("d", function(d) {
@@ -70,6 +72,7 @@ function stats_symbol_formatting(selection, scales, settings) {
 	})
 	.style("stroke", function(d) {return d.col;})
     	.style("stroke-width", 2);
+    // SD x
     selection
     	.filter(function(d) {return d.key == "sd_x";})
 	.attr("d", function(d) {
@@ -78,6 +81,7 @@ function stats_symbol_formatting(selection, scales, settings) {
 	})
 	.style("stroke-width", 1)
 	.style("stroke", function(d) {return d.col;});
+    // SD y
     selection
     	.filter(function(d) {return d.key == "sd_y";})
 	.attr("d", function(d) {
@@ -86,6 +90,7 @@ function stats_symbol_formatting(selection, scales, settings) {
 	})
 	.style("stroke-width", 1)
 	.style("stroke", function(d) {return d.col;});
+    // Mean point
     selection
     	.filter(function(d) {return d.key == "mean_point";})
 	.attr("d", d3.symbol()
@@ -105,6 +110,7 @@ function stats_label_formatting(selection, scales) {
 	.attr("class", "stats_label")
 	.style("font-size", "12px")
 	.style("fill", function(d) {return d.col;});
+    // Mean x
     selection
 	.filter(function(d) {return d.key == "mean_x";})
     	.attr("text-anchor", "middle")
@@ -113,6 +119,7 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + scales.x(d.mean) + "," + scales.y(scales.y.domain()[0]) + ")");
 	})
 	.attr("dy", -18);
+    // SD x
     selection
 	.filter(function(d) {return d.key == "sd_x";})
     	.attr("text-anchor", "middle")
@@ -121,6 +128,7 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + scales.x(d.mean) + "," + scales.y(scales.y.domain()[0]) + ")");
 	})
 	.attr("dy", -35);
+    // Mean y
     selection
 	.filter(function(d) {return d.key == "mean_y";})
     	.attr("text-anchor", "middle")
@@ -129,6 +137,7 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + scales.x(scales.x.domain()[0]) + "," + scales.y(d.mean) + ") rotate(-90)");
 	})
 	.attr("dy", 26);
+    // SD y
     selection
 	.filter(function(d) {return d.key == "sd_y";})
     	.attr("text-anchor", "middle")
@@ -137,6 +146,7 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + scales.x(scales.x.domain()[0]) + "," + scales.y(d.mean) + ") rotate(-90)");
 	})
 	.attr("dy", 45);
+    // Covariance
     selection
 	.filter(function(d) {return d.key == "cov";})
     	.attr("text-anchor", "middle")
@@ -146,6 +156,7 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + x_pos + ",0)");
 	})
 	.attr("dy", 15);
+    // Correlation
     selection
 	.filter(function(d) {return d.key == "cor";})
     	.attr("text-anchor", "middle")

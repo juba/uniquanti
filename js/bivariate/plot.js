@@ -47,6 +47,13 @@ function plot() {
 	chart_body.selectAll(".stats_label").call(function(sel) {
 	    stats_label_formatting(sel, scales);
 	});
+	chart_body.selectAll(".manualerror, .regerror").call(function(sel) {
+	    error_formatting(sel, dims, scales);
+	});
+	chart_body.selectAll(".manualerrorpoint, .regerrorpoint").call(function(sel) {
+	    error_dot_formatting(sel, scales, settings);
+	});
+
     }
 
     // Reset zoom function
@@ -96,7 +103,6 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
-
 		if (settings.reg_line) {
 		    var regression = ss.linearRegression(data.map(function(d) {
 			return [d.x, d.y];
@@ -110,7 +116,66 @@ function plot() {
 			.call(function(sel) {
 			    line_formatting(sel, dims, scales);
 			});
-		}		
+		}
+		// Manual line errors
+		if (settings.manual_errors) {
+		    // Update error lines
+		    var slope = parseFloat(settings.manual_slope);
+		    var intercept = parseFloat(settings.manual_intercept);
+		    var manual_errors_data = data.map(function(d) {
+			return {x: d.x,
+				ystart: d.y,
+				yend: slope * d.x + intercept,
+				stroke: "#0B0" 
+			       };
+		    });
+		    var manual_error = d3.selectAll(".manualerror")
+			.data(manual_errors_data)
+			.call(function(sel) {
+			    error_formatting(sel, dims, scales);
+			});
+		    // Update error points
+		    var manual_errors_points_data = data.map(function(d) {
+			return {x: d.x,
+				y: slope * d.x + intercept,
+				col: "#0B0" 
+			       };
+		    });
+		    var manual_error_points = d3.selectAll(".manualerrorpoint")
+			.data(manual_errors_points_data)
+			.call(function(sel) {
+			    error_dot_formatting(sel, scales, settings);
+			});
+		}
+		// Regression line errors
+		if (settings.reg_errors) {
+		    // Update error lines
+		    var reg_errors_data = data.map(function(d) {
+			return {x: d.x,
+				ystart: d.y,
+				yend: regression.m * d.x + regression.b,
+				stroke: "#D00" 
+			       };
+		    });
+		    var reg_error = d3.selectAll(".regerror")
+			.data(reg_errors_data)
+			.call(function(sel) {
+			    error_formatting(sel, dims, scales);
+			});
+		    // Update error points
+		    var reg_errors_points_data = data.map(function(d) {
+			return {x: d.x,
+				y: regression.m * d.x + regression.b,
+				col: "#D00" 
+			       };
+		    });
+		    var reg_error_points = d3.selectAll(".regerrorpoint")
+			.data(reg_errors_points_data)
+			.call(function(sel) {
+			    error_dot_formatting(sel, scales, settings);
+			});
+		}
+
 	    }
 	})
 	.on('end', function(d) {
@@ -311,8 +376,9 @@ function plot() {
 	var manual_line_data = [];
 	if (settings.manual_line & settings.manual_slope != "" & settings.manual_intercept != "") {
 	    manual_line_data = [{slope: parseFloat(settings.manual_slope),
-			      intercept: parseFloat(settings.manual_intercept),
-			      stroke: "#0B0"
+				 intercept: parseFloat(settings.manual_intercept),
+				 stroke: "#0B0",
+				 stroke_width: "2px"
 			     }];
 	}
 	var manual_line = chart_body.selectAll(".manualline")
@@ -336,7 +402,8 @@ function plot() {
 	    }));
 	    reg_line_data = [{slope: regression.m,
 			      intercept: regression.b,
-			      stroke: "#E00"
+			      stroke: "#E00",
+			      stroke_width: "2px"
 			     }];
 	}
 	var reg_line = chart_body.selectAll(".regline")
@@ -351,6 +418,108 @@ function plot() {
 	    })
 	    .style("opacity", "1");
 	reg_line.exit().transition().duration(1000).style("opacity", "0").remove();
+
+	// Add manual error lines
+	var manual_errors_data = [];
+	if (settings.manual_errors) {
+	    var slope = parseFloat(settings.manual_slope);
+	    var intercept = parseFloat(settings.manual_intercept);
+	    manual_errors_data = data.map(function(d) {
+		return {x: d.x,
+			ystart: d.y,
+			yend: slope * d.x + intercept,
+			stroke: "#0B0" 
+		       };
+	    });
+	}
+	var manual_error = chart_body.selectAll(".manualerror")
+	    .data(manual_errors_data);
+	manual_error.enter().append("path").call(error_init)
+	    .attr("class", "manualerror")
+	    .style("opacity", "0")
+	    .merge(manual_error)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		error_formatting(sel, dims, scales);
+	    })
+	    .style("opacity", "1");
+	manual_error.exit().transition().duration(1000).style("opacity", "0").remove();
+
+	// Add manual error points
+	var manual_errors_points_data = [];
+	if (settings.manual_errors) {
+	    manual_errors_points_data = data.map(function(d) {
+		return {x: d.x,
+			y: slope * d.x + intercept,
+			col: "#0B0" 
+		       };
+	    });
+	}
+	var manual_error_points = chart_body.selectAll(".manualerrorpoint")
+	    .data(manual_errors_points_data);
+	manual_error_points.enter().append("path")
+	    .call(function(sel) {
+		error_dot_init(sel, scales, settings);
+	    })
+	    .attr("class", "manualerrorpoint")
+	    .style("opacity", "0")
+	    .merge(manual_error_points)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		error_dot_formatting(sel, scales, settings);
+	    })
+	    .style("opacity", "1");
+	manual_error_points.exit().transition().duration(1000).style("opacity", "0").remove();
+	
+	// Add regression error lines
+	var reg_errors_data = [];
+	if (settings.reg_errors) {
+	    reg_errors_data = data.map(function(d) {
+		return {x: d.x,
+			ystart: d.y,
+			yend: regression.m * d.x + regression.b,
+			stroke: "#D00" 
+		       };
+	    });
+	}
+	var reg_error = chart_body.selectAll(".regerror")
+	    .data(reg_errors_data);
+	reg_error.enter().append("path").call(error_init)
+	    .attr("class", "regerror")
+	    .style("opacity", "0")
+	    .merge(reg_error)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		error_formatting(sel, dims, scales);
+	    })
+	    .style("opacity", "1");
+	reg_error.exit().transition().duration(1000).style("opacity", "0").remove();
+
+	// Add regression error points
+	var reg_errors_points_data = [];
+	if (settings.reg_errors) {
+	    reg_errors_points_data = data.map(function(d) {
+		return {x: d.x,
+			y: regression.m * d.x + regression.b,
+			col: "#D00" 
+		       };
+	    });
+	}
+	var reg_error_points = chart_body.selectAll(".regerrorpoint")
+	    .data(reg_errors_points_data);
+	reg_error_points.enter().append("path")
+	    .call(function(sel) {
+		error_dot_init(sel, scales, settings);
+	    })
+	    .attr("class", "regerrorpoint")
+	    .style("opacity", "0")
+	    .merge(reg_error_points)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		error_dot_formatting(sel, scales, settings);
+	    })
+	    .style("opacity", "1");
+	reg_error_points.exit().transition().duration(1000).style("opacity", "0").remove();
 	
 	// Reset zoom
 	svg.select(".root")
@@ -513,6 +682,10 @@ function plot() {
 	d3.selectAll(".yrug").call(function(sel) {
 	    y_rug_formatting(sel, scales, settings);
 	});
+	d3.selectAll(".manualerrorpoint, .regerrorpoint").call(function(sel) {
+	    error_dot_init(sel, scales, settings);
+	});
+	
     };
 
     chart.update_plot = function() {
@@ -602,7 +775,9 @@ function generate_settings() {
 	manual_line: d3.select("#manual_line").node().checked,
 	manual_slope: d3.select("#manual_slope").node().value,
 	manual_intercept: d3.select("#manual_intercept").node().value,
+	manual_errors: d3.select("#manual_line").node().checked & d3.select("#manual_errors").node().checked,
 	reg_line: d3.select("#reg_line").node().checked,
+	reg_errors: d3.select("#reg_line").node().checked & d3.select("#reg_errors").node().checked,
 	fixed: d3.select("#coord_fixed").node().checked,
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
@@ -691,11 +866,11 @@ d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#manual_line, #manual_slope, #manual_intercept").on("input change", function(e) {
+d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.select("#reg_line").on("input change", function(e) {
+d3.selectAll("#reg_line, #reg_errors").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });

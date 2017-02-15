@@ -5,7 +5,8 @@
 	$("#x_limits").hide();
 	$("#y_limits").hide();
 	$("#points_show_labels").hide();
-	$("#reg_options").hide();
+	$("#manual_line_options").hide();
+	$("#reg_line_options").hide();
 	
 	
 	$("#data_law_x").on("change", function() {
@@ -55,6 +56,13 @@
 		$("#manual_line_options").show();
 	    } else {
 		$("#manual_line_options").hide();
+	    }
+	});
+	$("#reg_line").on("change", function() {
+	    if($(this).prop('checked')) {
+		$("#reg_line_options").show();
+	    } else {
+		$("#reg_line_options").hide();
 	    }
 	});
 

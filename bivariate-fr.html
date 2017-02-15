@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Données, indicateurs, graphiques</title>
+    <title>Croisement de deux variables quantitatives</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -44,7 +44,7 @@
 	    <li><a href="index-fr.html">Univarié</a></li>
 	    <li class="active"><a href="#">Bivarié</a></li>
 	    <li><a href="about-fr.html">À propos</a></li>
-            </ul>
+          </ul>
 	    <ul class="nav navbar-nav navbar-right">
 		<li><a href="bivariate.html">en</a></li>
 		<li class="active"><a href="#">fr</a></li>
@@ -68,7 +68,7 @@
 			<h4 class="panel-title">
 			    <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
 			    <a role="button" data-toggle="collapse" href="#collapseData" aria-expanded="true" aria-controls="collapseData">
-				 Données
+				 Donées
 			    </a>
 			</h4>
 		    </div>
@@ -86,10 +86,14 @@
 				<div class="tab-content">
 				    <!-- Données manuelles -->
 				    <div role="tabpanel" class="tab-pane fade in active" id="tab-data-manual">
-					<form id="form_manual_data" action="#">
-					    <div class="form-group">
-						<label for="data_manual">Données séparées par des virgules</label>
-						<input id="data_manual" type="text" class="form-control" placeholder="Ex : 125, 57, 198, 12, 45...">
+				      <form id="form_manual_data" action="#">
+					  <div class="form-group">
+					      <label for="data_manual_x">Données pour l'axe horizontal (x)</label>
+					      <input id="data_manual_x" type="text" class="form-control" value="14, 16, 14, 8, 13, 4, 6, 11, 2" placeholder="Ex : 125, 57, 198, 12, 45...">
+					  </div>
+					  <div class="form-group">
+					      <label for="data_manual_y">Données pour l'axe vertical (y)</label>
+					      <input id="data_manual_y" type="text" class="form-control" value="16, 13, 3, 12, 14, 6, 10, 8, 3" placeholder="Ex : 120, 67, 204, 2, 25...">
 					    </div>
 					    <button type="submit" class="btn btn-primary btn-sm" id="data_manual_submit">Mettre à jour</button>
 					</form>
@@ -97,41 +101,80 @@
 				    <!-- Données aléatoires -->
 				    <div role="tabpanel" class="tab-pane fade" id="tab-data-random">
 					<form id="form_random_data" action="#">
+					    <!-- X -->
 					    <div class="form-group">
-						<label for="data_law">Type de loi</label>
-						<select class="form-control" id="data_law">
-						    <option value="uniforme" selected>Loi uniforme</option>
-						    <option value="normale">Loi normale</option>
+						<label for="data_law_x">Distribution pour l'axe horizontal (x)</label>
+						<select class="form-control" id="data_law_x">
+						    <option value="uniforme" selected>Uniforme</option>
+						    <option value="normale">Normale</option>
 						</select>
 					    </div>
-					    <div class="form-horizontal" id="data_uniform_args">
+					    <div class="form-horizontal" id="data_uniform_args_x">
 						<div class="form-group">
-						    <label for="data_uniform_min" class="col-sm-5 control-label">Minimum</label>
+						    <label for="data_uniform_min_x" class="col-sm-5 control-label">Minimum</label>
 						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_uniform_min" value="0" />
+							<input type="number" class="form-control" id="data_uniform_min_x" value="0" />
 						    </div>
 						</div>
 						<div class="form-group">
-						    <label for="data_uniform_max" class="col-sm-5 control-label">Maximum</label>
+						    <label for="data_uniform_max_x" class="col-sm-5 control-label">Maximum</label>
 						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_uniform_max" value="100" />
-						    </div>
-						</div>
-					    </div>
-					    <div class="form-horizontal" id="data_normal_args">
-						<div class="form-group">
-						    <label for="data_normal_mean" class="col-sm-5 control-label">Moyenne</label>
-						    <div class="col-sm-7">
-					    		<input type="number" class="form-control" id="data_normal_mean" value="50" />
-						    </div>
-						</div>
-						<div class="form-group">
-						    <label for="data_normal_sd" class="col-sm-5 control-label">Écart-type</label>
-						    <div class="col-sm-7">
-							<input type="number" class="form-control" id="data_normal_sd" value="5" />
+							<input type="number" class="form-control" id="data_uniform_max_x" value="100" />
 						    </div>
 						</div>
 					    </div>
+					    <div class="form-horizontal" id="data_normal_args_x">
+						<div class="form-group">
+						    <label for="data_normal_mean_x" class="col-sm-5 control-label">Moyenne</label>
+						    <div class="col-sm-7">
+					    		<input type="number" class="form-control" id="data_normal_mean_x" value="50" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_normal_sd_x" class="col-sm-5 control-label">Écart-type</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_normal_sd_x" value="5" />
+						    </div>
+						</div>
+					    </div>
+
+					    <!-- Y -->
+					    <div class="form-group">
+						<label for="data_law_y">Distribution pour l'axe vertical (y)</label>
+						<select class="form-control" id="data_law_y">
+						    <option value="uniforme" selected>Uniforme</option>
+						    <option value="normale">Normale</option>
+						</select>
+					    </div>
+					    <div class="form-horizontal" id="data_uniform_args_y">
+						<div class="form-group">
+						    <label for="data_uniform_min_y" class="col-sm-5 control-label">Minimum</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_uniform_min_y" value="0" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_uniform_max_y" class="col-sm-5 control-label">Maximum</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_uniform_max_y" value="100" />
+						    </div>
+						</div>
+					    </div>
+					    <div class="form-horizontal" id="data_normal_args_y">
+						<div class="form-group">
+						    <label for="data_normal_mean_y" class="col-sm-5 control-label">Moyenne</label>
+						    <div class="col-sm-7">
+					    		<input type="number" class="form-control" id="data_normal_mean_y" value="50" />
+						    </div>
+						</div>
+						<div class="form-group">
+						    <label for="data_normal_sd_y" class="col-sm-5 control-label">Écart-type</label>
+						    <div class="col-sm-7">
+							<input type="number" class="form-control" id="data_normal_sd_y" value="5" />
+						    </div>
+						</div>
+					    </div>
+					    
 					    <div class="form-group">
 						<label for="nb_values">Nombre d'observations</label>
 						<input type="number" class="form-control" id="nb_values" min="2" max="5000" value="100" />
@@ -145,11 +188,7 @@
 					    <div class="form-group">
 						<label for="data_dataset">Jeu de données</label>
 						<select class="form-control" id="data_dataset">
-						    <option value="life_expectancy_2014" selected>Espérance de vie par pays (2014)</option>
-						    <option value="age_meres_2015">Âge de la mère à la naissance (2015)</option>
-						    <option value="population_departements_2013">Population par département (2013)</option>
-						    <option value="densite_departements_2013">Densité (hab/km²) par département (2013)</option>
-						    <option value="kung_heights">Tailles de personnes de l'ethnie !Kung (années 60)</option>
+						    <option value="life_expectancy_2014" selected>Life expectancy by country (2014)</option>
 						</select>
 					    </div>
 					    <button type="submit" class="btn btn-primary btn-sm" id="data_dataset_submit">Charger</button>
@@ -185,9 +224,9 @@
 				<label for="points_opacity">Opacité des points</label>
 				<input id="points_opacity" type="range" min="0.01" max="1" value="0.8" step="0.01"/>
 			    </div>
-			    <div class="checkbox">
+			    <div class="checkbox" id="points_show_rugs">
 				<label>
-				    <input id="points_jitter" type="checkbox" value=""> Agiter les points
+				    <input id="show_rugs" type="checkbox" checked="checked"> Afficher les tapis 
 				</label>
 			    </div>
 			    <div class="checkbox" id="points_show_labels">
@@ -218,17 +257,12 @@
 			    </div>
 			    <div class="checkbox">
 				<label>
-				    <input id="stats_median" type="checkbox"> Médiane
-				</label>
-			    </div>
-			    <div class="checkbox">
-				<label>
-				    <input id="stats_quartiles" type="checkbox"> Quartiles
-				</label>
-			    </div>
-			    <div class="checkbox">
-				<label>
 				    <input id="stats_sd" type="checkbox"> Écart-type
+				</label>
+			    </div>
+			    <div class="checkbox">
+				<label>
+				    <input id="stats_cov" type="checkbox"> Covariance et corrélation
 				</label>
 			    </div>
 			</div>
@@ -239,52 +273,54 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading" role="tab" id="headingGraphiques">
 			<h4 class="panel-title">
-			    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+			    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 			    <a class="collapsed" role="button" data-toggle="collapse" href="#collapseGraphiques" aria-expanded="false" aria-controls="collapseGraphiques">
-				 Graphiques
+				 Régression
 			    </a>
 			</h4>
 		    </div>
 		    <div id="collapseGraphiques" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingGraphiques">
 			<div class="panel-body">
-			    <div class="form-group">
-				<label for="graph_type">Graphique à afficher</label>
-				<select class="form-control" id="graph_type">
-				    <option value="none" selected>Aucun</option>
-				    <option value="hist">Histogramme</option>
-				    <option value="boxplot">Boxplot</option>
-				    <option value="kde">Estimation de densité</option>
-				</select>
+			    <div class="checkbox">
+				<label>
+				    <input id="manual_line" type="checkbox"> Droite manuelle
+				</label>
 			    </div>
-			    <div class="form-horizontal" id="graph_hist_args">
+			    <div class="form-horizontal" id="manual_line_options">
 				<div class="form-group">
-				    <label for="hist_classes" class="col-sm-7 control-label">Nombre de classes</label>
-				    <div class="col-sm-5">
-					<input type="number" class="form-control" id="hist_classes" min="2" max="1000" value="20" />
+				    <label for="manual_slope" class="col-sm-5 control-label">Pente</label>
+				    <div class="col-sm-7">
+					<input type="number" step="0.01" class="form-control" id="manual_slope" value="1" />
 				    </div>
 				</div>
-				<div class="checkbox col-sm-12">
-				    <label>
-					<input id="hist_exact" type="checkbox" checked> Classes exactes
-				    </label>
+				<div class="form-group">
+				    <label for="manual_intercept" class="col-sm-5 control-label">Ordonnée à l'origine</label>
+				    <div class="col-sm-7">
+					<input type="number" step="0.1" class="form-control" id="manual_intercept" value="0" />
+				    </div>
 				</div>
-				<div class="checkbox col-sm-12">
+				<div class="checkbox" style="margin-left: 30px;">
 				    <label>
-					<input id="hist_percent" type="checkbox"> Pourcentages
-				    </label>
-				</div>
-				<div class="checkbox col-sm-12">
-				    <label>
-					<input id="hist_labels" type="checkbox" checked> Afficher les valeurs
+					<input id="manual_errors" type="checkbox"> Montrer les résidus
 				    </label>
 				</div>
 			    </div>
-			    <div class="form-horizontal" id="graph_kde_args">
+			    <div class="checkbox">
+				<label>
+				    <input id="reg_line" type="checkbox"> Droite de régression
+				</label>
+			    </div>
+			    <div class="form-horizontal" id="reg_line_options">
 				<div class="form-group">
-				    <label for="kde_scale" class="col-sm-7 control-label">Bande passante</label>
-				    <div class="col-sm-5">
-					<input type="number" class="form-control" id="kde_scale" min="0" value="7" />
+				    <label for="reg_predict" class="col-sm-5 control-label">Prévoir une valeur</label>
+				    <div class="col-sm-7">
+					<input type="number" step="0.1" class="form-control" id="reg_predict" value="" />
 				    </div>
+				</div>
+				<div class="checkbox" style="margin-left: 30px;">
+				    <label>
+					<input id="reg_errors" type="checkbox">  Montrer les résiddus
+				    </label>
 				</div>
 			    </div>
 			</div>
@@ -304,6 +340,11 @@
 		    </div>
 		    <div id="collapseAxe" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAxe">
 			<div class="panel-body">
+			    <div class="checkbox">
+				<label>
+				    <input id="coord_fixed" type="checkbox" checked="checked"> Rapport 1:1
+				</label>
+			    </div>
 			    <div class="checkbox">
 				<label>
 				    <input id="x_manual" type="checkbox"> Limites manuelles pour x
@@ -355,6 +396,33 @@
         <div class="col-md-8 col-lg-9">
 	    <div id="plot">
             </div>
+	    <div class="row">
+		<div id="manualtable" class="col-sm-6">
+		    <table class="table table-condensed">
+			<thead>
+			    <tr><th>Droite manuelle</th><th></th></tr>
+			</thead>
+			<tbody>
+			    <tr><td>Pente</td><td id="man-slope"></td></tr>
+			    <tr><td>Ordonnée à l'origine</td><td id="man-intercept"></td></tr>
+			    <tr class="warning"><td>Carrés des résidus</td><td id="man-error"></td></tr>
+			</tbody>
+		    </table>
+		</div>
+		<div id="regtable" class="col-sm-6">
+		    <table class="table table-condensed">
+			<thead>
+			    <tr><th>Droite de régression</th><th></th></tr>
+			</thead>
+			<tbody>
+			    <tr><td>Pente</td><td id="reg-slope"></td></tr>
+			    <tr><td>Ordonnée à l'origine</td><td id="reg-intercept"></td></tr>
+			    <tr class="warning"><td>Carrés des résidus</td><td id="reg-error"></td></tr>
+			    <tr class="info"><td>R<sup>2</sup></td><td id="reg-r2"></td></tr>
+			</tbody>
+		    </table>
+		</div>
+	    </div>
 	</div>
     </div>
 
@@ -368,13 +436,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/lib/l10n.js"></script>
-    <script>String.locale = "fr";</script>
-    <script src="js/l10n/localizations.js"></script>    
+    <script>String.locale = "en";</script>
+    <script src="js/l10n/localizations.js"></script>
     <script src="js/lib/d3.min.js"></script>
+    <script src="js/lib/simple-statistics.min.js"></script>
     <!-- init jquery js -->
     <script src="js/bivariate/init.js"></script>
     <!-- datasets js -->
-    <script src="data/datasets.js"></script>
+    <script src="data/bivariate.js"></script>
     <!-- plot js -->
     <script src="js/bivariate/plot-utils.js"></script>
     <script src="js/bivariate/plot-export.js"></script>
@@ -382,10 +451,9 @@
     <script src="js/bivariate/plot-setup.js"></script>
     <script src="js/bivariate/plot-dots.js"></script>
     <script src="js/bivariate/plot-lines.js"></script>
+    <script src="js/bivariate/plot-errors.js"></script>
+    <script src="js/bivariate/plot-predict.js"></script>
     <script src="js/bivariate/plot-stats.js"></script>
-    <script src="js/bivariate/plot-histogram.js"></script>
-    <script src="js/bivariate/plot-boxplot.js"></script>
-    <script src="js/bivariate/plot-kde.js"></script>
     <script src="js/bivariate/plot.js"></script>
     
   </body>

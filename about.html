@@ -58,14 +58,16 @@
 	    <div class="row">
 		<div class="col-sm-8 col-sm-offset-2 ">
 
-		    <h2>About</h2>
+		    <h1>About</h1>
 
-		    <p>The goal of this app is to provide an interactive interface to help learn and teach basic quantitative variables univariate analysis and visualization.</p>
+		    <p>The goal of this app is to provide an interactive interface to help learn and teach basic quantitative variables univariate and bivariate analysis and visualization.</p>
 		    <p>You can display basic statistics and visualizations, you can then play around with parameters, zoom, pan, drag data points, and everything should be updated dynamically with transitions.</p>
 
-		    <h3>Data sources</h3>
+		    <h2>Data sources</h2>
 		    <p>Data can be manually typed, randomly generated from several distributions, or you can load a simple included dataset. Note that when a dataset is loaded, you won't be able to drag the points (as you shouldn't be able to do that in a real analysis).</p>
-		    <p>List of included datasets :</p>
+
+		    <h3>Univariate datasets</h3>
+
 		    <table class="table table-striped">
 			<thead><tr><th>Title</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
 			<tbody>
@@ -102,12 +104,29 @@
 			</tbody>
 		    </table>
 
-		    <h3>Links and credits</h3>
+
+		    <h3>Bivariate datasets</h3>
+
+		    <table class="table table-striped">
+			<thead><tr><th>Title</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
+			<tbody>
+			    <tr>
+				<td>Life expectancy by country</td>
+				<td>Life expectancy at birth, by country, in 2014</td>
+				<td></td>
+				<td><a href="http://data.worldbank.org/indicator/SP.DYN.LE00.IN">World bank</a></td>
+			    </tr>
+			</tbody>
+		    </table>
+
+		    
+		    <h2>Links and credits</h2>
 
 		    <ul>
 			<li>The source code of this app is freely available <a href="https://github.com/juba/uniquanti">on Github</a> under an MIT license.</li>
 			<li>Interface powered by <a href="https://getbootstrap.com">Bootstrap</a></li>
 			<li>Graphics powered by <a href="https://d3js.org/">D3.js</a></li>
+			<li>Regression calculations by <a href="https://github.com/simple-statistics/simple-statistics">simple-statistics</a></li>
 		    </ul>
 
 		</div>

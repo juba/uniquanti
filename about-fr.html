@@ -8,7 +8,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Données, indicateurs, graphiques</title>
+	<title>Uniquanti</title>
 
 	<!-- Bootstrap core CSS -->
 	<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -58,14 +58,16 @@
 	    <div class="row">
 		<div class="col-sm-8 col-sm-offset-2 ">
 		    
-		    <h2>À propos</h2>
+		    <h1>À propos</h1>
 
-		    <p>Cette application à visée pédagogique a pour objectif de permettre la manipulation et l'exploration univariée interactive de variables quantitatives.</p>
+		    <p>Cette application à visée pédagogique a pour objectif de permettre la manipulation et l'exploration univariée et bivariée interactive de variables quantitatives.</p>
 		    <p>Elle permet l'affichage de différents indicateurs et représentations graphiques de base, avec la possibilité de modifier les paramètres, zoomer sur le graphique, déplacer les points de données. Chaque action entraîne une mise à jour interactive et animée de l'ensemble des résultats affichés.</p>
 		    
-		    <h3>Sources de données</h3>
+		    <h2>Sources de données</h2>
 		    <p>Les données peuvent être saisies manuellent, générées aléatoirement selon différentes distributions, ou chargées à partir de l'un des jeux de données inclus. À noter que lorsqu'un jeu de données est chargé, il n'est plus possible de déplacer les points.</p>
-		    <p>Liste des jeux de données :</p>
+
+		    <h3>Jeux de données univariés</h3>
+		    
 		    <table class="table table-striped">
 			<thead><tr><th>Nom</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
 			<tbody>
@@ -101,13 +103,30 @@
 			    </tr>
 			</tbody>
 		    </table>
+
+		    <h3>Jeux de données bivariés</h3>
 		    
-		    <h3>Liens et crédits</h3>
+		    <table class="table table-striped">
+			<thead><tr><th>Nom</th><th>Description</th><th>Note</th><th>Source</th></tr></thead>
+			<tbody>
+			    <tr>
+				<td>Espérance de vie par pays</td>
+				<td>Espérance de vie à la naissance, par pays, en 2014</td>
+				<td></td>
+				<td><a href="http://data.worldbank.org/indicator/SP.DYN.LE00.IN">Banque mondiale</a></td>
+			    </tr>
+			</tbody>
+		    </table>
+
+
+		    
+		    <h2>Liens et crédits</h2>
 		    
 		    <ul>
 			<li>Le code source de cette application est disponible <a href="https://github.com/juba/uniquanti">sur Github</a> sous licence MIT.</li>
 			<li>Interface créée avec <a href="https://getbootstrap.com">Bootstrap</a></li>
 			<li>Graphiques générés avec <a href="https://d3js.org/">D3.js</a></li>
+			<li>Calculs de régressions avec <a href="https://github.com/simple-statistics/simple-statistics">simple-statistics</a></li>
 		    </ul>
 		    
 		</div>

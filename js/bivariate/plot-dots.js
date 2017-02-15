@@ -54,12 +54,12 @@ function x_rug_init (selection, scales, settings) {
     selection
 	.style("stroke", "rgb(31, 119, 180)")
     	.style("stroke-width", "1")
-    	.style("opacity", settings.points_opacity)
 	.attr("d", "M 0 0 L 0 -10");
 }
 
 function x_rug_formatting (selection, scales, settings) {
     selection
+        .style("opacity", Math.min(1, settings.points_opacity + 0.2))
 	.attr("transform", function(d) {
 	    return "translate(" + scales.x(d.x) + "," + (scales.y(scales.y.domain()[0])) + ")";
 	});
@@ -74,6 +74,7 @@ function y_rug_init (selection, scales, settings) {
 
 function y_rug_formatting (selection, scales, settings) {
     selection
+        .style("opacity", Math.min(1, settings.points_opacity + 0.2))
 	.attr("transform", function(d) {
 	    return "translate(" + 0 + "," + scales.y(d.y) + ")";
 	});

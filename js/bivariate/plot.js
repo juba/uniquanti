@@ -1,8 +1,8 @@
 
 function plot() {
 
-    var width = 600, // default width
-	height = 600, // default height
+    var width, // default width
+	height, // default height
 	dims = {},
 	settings = {},
 	scales = {},
@@ -42,7 +42,7 @@ function plot() {
 	    line_formatting(sel, dims, scales);
 	});
 	chart_body.selectAll(".stats_symbol").call(function(sel) {
-	    stats_symbol_formatting(sel, scales);
+	    stats_symbol_formatting(sel, scales, settings);
 	});
 	chart_body.selectAll(".stats_label").call(function(sel) {
 	    stats_label_formatting(sel, scales);
@@ -89,7 +89,7 @@ function plot() {
 		d3.selectAll(".stats_symbol")
 		    .data(stats_data, key)
 		    .call(function(sel) {
-			stats_symbol_formatting(sel, scales);
+			stats_symbol_formatting(sel, scales, settings);
 		    });
 		d3.selectAll(".stats_label")
 		    .data(stats_data, key)
@@ -103,8 +103,7 @@ function plot() {
 		    }));
 		    var reg_line_data = [{slope: regression.m,
 				      intercept: regression.b,
-				      stroke: "#F00",
-				      stroke_width: 2
+				      stroke: "#E00"
 				     }];
 		    var reg_line = d3.selectAll(".regline")
 			.data(reg_line_data)
@@ -293,7 +292,7 @@ function plot() {
 	    .style("opacity", 0)
 	    .merge(stats_symbol)
 	    .transition().duration(1000)
-	    .call(function(sel) { stats_symbol_formatting(sel, scales); })
+	    .call(function(sel) { stats_symbol_formatting(sel, scales, settings); })
 	    .style("opacity", 1);
 	stats_symbol.exit().transition().duration(1000).style("opacity", "0").remove();
 	var stats_label = chart_body
@@ -313,8 +312,7 @@ function plot() {
 	if (settings.manual_line & settings.manual_slope != "" & settings.manual_intercept != "") {
 	    manual_line_data = [{slope: parseFloat(settings.manual_slope),
 			      intercept: parseFloat(settings.manual_intercept),
-			      stroke: "#0B0",
-			      stroke_width: 2
+			      stroke: "#0B0"
 			     }];
 	}
 	var manual_line = chart_body.selectAll(".manualline")
@@ -338,8 +336,7 @@ function plot() {
 	    }));
 	    reg_line_data = [{slope: regression.m,
 			      intercept: regression.b,
-			      stroke: "#F00",
-			      stroke_width: 2
+			      stroke: "#E00"
 			     }];
 	}
 	var reg_line = chart_body.selectAll(".regline")
@@ -392,9 +389,9 @@ function plot() {
         // recompute x and y scales
         scales.x.range([0, dims.width]);
         scales.x_orig.range([0, dims.width]);
-        scales.y.range([700, 0]);
-        scales.y_orig.range([700, 0]);
-	scales.xAxis = d3.axisBottom(scales.x).tickSize(5);
+        scales.y.range([dims.height, 0]);
+        scales.y_orig.range([dims.height, 0]);
+	scales.xAxis = d3.axisBottom(scales.x).tickSize(-dims.height);
 	scales.yAxis = d3.axisLeft(scales.y).tickSize(-dims.width);
 
 	svg.call(resize_plot);
@@ -510,6 +507,12 @@ function plot() {
 	    dot_init(sel, scales, settings);
 	    dot_formatting(sel, scales, settings);
 	});
+	d3.selectAll(".xrug").call(function(sel) {
+	    x_rug_formatting(sel, scales, settings);
+	});
+	d3.selectAll(".yrug").call(function(sel) {
+	    y_rug_formatting(sel, scales, settings);
+	});
     };
 
     chart.update_plot = function() {
@@ -590,7 +593,7 @@ function generate_settings() {
 	data_normal_sd_y: d3.select("#data_normal_sd_y").node().value,
 	data_dataset: dataset,
 	points_size: d3.select("#points_size").node().value,
-	points_opacity: d3.select("#points_opacity").node().value,
+	points_opacity: parseFloat(d3.select("#points_opacity").node().value),
 	show_labels: d3.select("#show_labels").node().checked,
 	rugs: d3.select("#show_rugs").node().checked,
 	stats_mean: d3.select("#stats_mean").node().checked,
@@ -615,7 +618,8 @@ function generate_settings() {
 var svg = d3.select("#plot").append("svg");
 var width = d3.select("#plot").node().getBoundingClientRect().width;
 var settings = generate_settings();
-var height = 700;
+var height = 600;
+
 svg.attr("width", width)
     .attr("height", height)
     .append("style")
@@ -700,7 +704,6 @@ d3.select("#reg_line").on("input change", function(e) {
 
 window.onresize = function() {
     var width = d3.select("#plot").node().getBoundingClientRect().width;
-    var height = 700;
     svg
 	.attr("width", width)
 	.attr("height", height);

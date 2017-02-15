@@ -53,7 +53,15 @@ function plot() {
 	chart_body.selectAll(".manualerrorpoint, .regerrorpoint").call(function(sel) {
 	    error_dot_formatting(sel, scales, settings);
 	});
-
+	chart_body.selectAll(".predict-line").call(function(sel) {
+	    predict_line_formatting(sel, scales);
+	});
+	chart_body.selectAll(".predict-dot").call(function(sel) {
+	    predict_dot_formatting(sel, scales);
+	});
+	chart_body.selectAll(".predict-label").call(function(sel) {
+	    predict_label_formatting(sel, scales);
+	});
     }
 
     // Reset zoom function
@@ -194,7 +202,30 @@ function plot() {
 			    error_dot_formatting(sel, scales, settings);
 			});
 		}
-
+		// Predicted value
+		if (settings.reg_predict) {
+		    var reg_predict_data = [{x: parseFloat(settings.reg_predict),
+					     y: parseFloat(settings.reg_predict) * regression.m + regression.b,
+					     type: "base"},
+					    {x: parseFloat(settings.reg_predict),
+					     y: parseFloat(settings.reg_predict) * regression.m + regression.b,
+					     type: "h_line"}];
+		}
+		var predict_line = d3.selectAll(".predict-line")
+		    .data(reg_predict_data)
+		    .call(function(sel) {
+			predict_line_formatting(sel, scales);
+		    });
+		var predict_dot = d3.selectAll(".predict-dot")
+		    .data(reg_predict_data)
+		    .call(function(sel) {
+			predict_dot_formatting(sel, scales);
+		    });
+		var predict_label = d3.selectAll(".predict-label")
+		    .data(reg_predict_data)
+		    .call(function(sel) {
+			predict_label_formatting(sel, scales);
+		    });
 	    }
 	})
 	.on('end', function(d) {
@@ -556,8 +587,54 @@ function plot() {
 	// Add regression predict value
 	var reg_predict_data = [];
 	if(settings.reg_predict != "" & settings.reg_line) {
-	    
+	    reg_predict_data = [{x: parseFloat(settings.reg_predict),
+				 y: parseFloat(settings.reg_predict) * regression.m + regression.b,
+				 type: "base"},
+				{x: parseFloat(settings.reg_predict),
+				 y: parseFloat(settings.reg_predict) * regression.m + regression.b,
+				type: "h_line"}];
 	}
+	var predict_line = chart_body.selectAll(".predict-line")
+	    .data(reg_predict_data);
+	predict_line.enter().append("path")
+	    .call(predict_line_init)
+	    .attr("class", "predict-line")
+	    .style("opacity", "0")
+	    .merge(predict_line)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		predict_line_formatting(sel, scales);
+	    })
+	    .style("opacity", "1");
+	predict_line.exit().transition().duration(1000).style("opacity", "0").remove();
+	var predict_dot = chart_body.selectAll(".predict-dot")
+	    .data(reg_predict_data);
+	predict_dot.enter().append("path")
+	    .call(predict_dot_init)
+	    .attr("class", "predict-dot")
+	    .style("opacity", "0")
+	    .merge(predict_dot)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		predict_dot_formatting(sel, scales);
+	    })
+	    .style("opacity", "1");
+	predict_dot.exit().transition().duration(1000).style("opacity", "0").remove();
+	var predict_label = chart_body.selectAll(".predict-label")
+	    .data(reg_predict_data);
+	predict_label.enter().append("text")
+	    .attr("class", "predict-label")
+	    .style("opacity", "0")
+	    .merge(predict_label)
+	    .transition().duration(1000)
+	    .call(function(sel) {
+		predict_label_formatting(sel, scales);
+	    })
+	    .style("opacity", "1");
+	predict_label.exit().transition().duration(1000).style("opacity", "0").remove();
+
+
+	
 	
 	// Reset zoom
 	svg.select(".root")
@@ -909,7 +986,7 @@ d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").o
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#reg_line, #reg_errors", "#reg_predict").on("input change", function(e) {
+d3.selectAll("#reg_line, #reg_errors, #reg_predict").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });

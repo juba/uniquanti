@@ -5,7 +5,8 @@ String.toLocaleString({
 	":sd:": "Standard deviation",
 	":sd_short:": "sd",
 	":correlation:": "Correlation",
-	":covariance:": "Covariance"
+	":covariance:": "Covariance",
+	":predicted:": "Predicted"
     },
     "fr": {
 	":median:": "Médiane",
@@ -13,6 +14,7 @@ String.toLocaleString({
 	":sd:": "Écart-type",
 	":sd_short:": "sd",
 	":correlation:": "Corrélation",
-	":covariance:": "Covariance"
+	":covariance:": "Covariance",
+	":predicted:": "Prévue"
     }
 });

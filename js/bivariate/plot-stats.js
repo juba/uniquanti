@@ -94,13 +94,13 @@ function stats_symbol_formatting(selection, scales, settings) {
     selection
     	.filter(function(d) {return d.key == "mean_point";})
 	.attr("d", d3.symbol()
-	      .type(d3.symbolCircle)
-	      .size(48))
+	      .type(d3.symbolCross)
+	      .size(64))
 	.attr("transform", function(d) {
 	    return("translate(" + scales.x(d.mean_x) + "," + scales.y(d.mean_y) + ")");
 	})
-	.style("stroke", function(d) {return d.col;})
-    	.style("fill", "none");
+	.style("fill", function(d) {return d.col;});
+    	//.style("fill", "none");
     return selection;
 }
 

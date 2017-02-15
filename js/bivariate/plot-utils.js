@@ -17,3 +17,26 @@ function tooltip_content(d) {
     text.push("<strong>y : </strong>" + d.y.toFixed(2));
     return text.join("<br />");
 }
+
+// Compute sum of squared errors
+function compute_error (data, slope, intercept) {
+    var errors = data.map(function (d) {
+	return Math.pow((d.y - (d.x * slope + intercept)), 2);
+    });
+    return errors.reduce(function(acc, val) {
+	return acc + val;
+    });
+}
+
+// Compute R2
+function compute_r2(data, error) {
+    var sse = error;
+    var mean_y = d3.mean(data, function(d) {return d.y;});
+    var tss = data.map(function(d) {
+	return Math.pow(d.y - mean_y, 2);
+    });
+    tss = tss.reduce(function(acc, val) {
+	return acc + val;
+    });
+    return 1 - sse / tss;
+}

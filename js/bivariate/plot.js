@@ -86,12 +86,14 @@ function plot() {
 		d3.selectAll(".label").call(function(sel) {
 		    label_formatting(sel, scales, settings);
 		});
+		// Rugs 
 		d3.selectAll(".xrug").call(function(sel) {
 		    x_rug_formatting(sel, scales, settings);
 		});
 		d3.selectAll(".yrug").call(function(sel) {
 		    y_rug_formatting(sel, scales, settings);
 		});
+		// Stats symbols and labels
 		var stats_data = stats_compute(data, settings);
 		d3.selectAll(".stats_symbol")
 		    .data(stats_data, key)
@@ -103,6 +105,17 @@ function plot() {
 		    .call(function(sel) {
 			stats_label_formatting(sel, scales);
 		    });
+		// Manual line table
+		var slope, intercept, error, r2;
+		if (settings.manual_line) {
+		    slope = parseFloat(settings.manual_slope);
+		    intercept = parseFloat(settings.manual_intercept);
+		    error = compute_error(data, slope, intercept);
+		    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toFixed(2));
+		    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toFixed(1));
+		    d3.select("#man-error").text(error.toFixed(2));
+		}
+		// Regression line
 		if (settings.reg_line) {
 		    var regression = ss.linearRegression(data.map(function(d) {
 			return [d.x, d.y];
@@ -116,12 +129,18 @@ function plot() {
 			.call(function(sel) {
 			    line_formatting(sel, dims, scales);
 			});
+		    error = compute_error(data, regression.m, regression.b);
+		    r2 = compute_r2(data, error);
+		    d3.select("#reg-slope").text(regression.m.toFixed(2));
+		    d3.select("#reg-intercept").text(regression.b.toFixed(1));
+		    d3.select("#reg-error").text(error.toFixed(2));
+		    d3.select("#reg-r2").text(r2.toFixed(3));
 		}
 		// Manual line errors
 		if (settings.manual_errors) {
 		    // Update error lines
-		    var slope = parseFloat(settings.manual_slope);
-		    var intercept = parseFloat(settings.manual_intercept);
+		    slope = parseFloat(settings.manual_slope);
+		    intercept = parseFloat(settings.manual_intercept);
 		    var manual_errors_data = data.map(function(d) {
 			return {x: d.x,
 				ystart: d.y,
@@ -154,7 +173,7 @@ function plot() {
 			return {x: d.x,
 				ystart: d.y,
 				yend: regression.m * d.x + regression.b,
-				stroke: "#D00" 
+				stroke: "#F05837" 
 			       };
 		    });
 		    var reg_error = d3.selectAll(".regerror")
@@ -166,7 +185,7 @@ function plot() {
 		    var reg_errors_points_data = data.map(function(d) {
 			return {x: d.x,
 				y: regression.m * d.x + regression.b,
-				col: "#D00" 
+				col: "#F05837" 
 			       };
 		    });
 		    var reg_error_points = d3.selectAll(".regerrorpoint")
@@ -373,13 +392,20 @@ function plot() {
 	stats_label.exit().transition().duration(1000).style("opacity", "0").remove();
 
 	// Add manual line
+	var error, r2;
 	var manual_line_data = [];
 	if (settings.manual_line & settings.manual_slope != "" & settings.manual_intercept != "") {
-	    manual_line_data = [{slope: parseFloat(settings.manual_slope),
-				 intercept: parseFloat(settings.manual_intercept),
+	    var slope = parseFloat(settings.manual_slope);
+	    var intercept = parseFloat(settings.manual_intercept);
+	    manual_line_data = [{slope: slope,
+				 intercept: intercept,
 				 stroke: "#0B0",
 				 stroke_width: "2px"
-			     }];
+				}];
+	    error = compute_error(data, slope, intercept);
+	    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toFixed(2));
+	    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toFixed(1));
+	    d3.select("#man-error").text(error.toFixed(2));
 	}
 	var manual_line = chart_body.selectAll(".manualline")
 	    .data(manual_line_data);
@@ -396,15 +422,21 @@ function plot() {
 	
 	// Add regression line
 	var reg_line_data = [];
-	if (settings.reg_line) {
+	if (settings.reg_line & data.length > 0) {
 	    var regression = ss.linearRegression(data.map(function(d) {
 		return [d.x, d.y];
 	    }));
 	    reg_line_data = [{slope: regression.m,
 			      intercept: regression.b,
-			      stroke: "#E00",
+			      stroke: "#F05837",
 			      stroke_width: "2px"
 			     }];
+	    error = compute_error(data, regression.m, regression.b);
+	    r2 = compute_r2(data, error);
+	    d3.select("#reg-slope").text(regression.m.toFixed(2));
+	    d3.select("#reg-intercept").text(regression.b.toFixed(1));
+	    d3.select("#reg-error").text(error.toFixed(2));
+	    d3.select("#reg-r2").text(r2.toFixed(2));
 	}
 	var reg_line = chart_body.selectAll(".regline")
 	    .data(reg_line_data);
@@ -478,7 +510,7 @@ function plot() {
 		return {x: d.x,
 			ystart: d.y,
 			yend: regression.m * d.x + regression.b,
-			stroke: "#D00" 
+			stroke: "#F05837" 
 		       };
 	    });
 	}
@@ -501,7 +533,7 @@ function plot() {
 	    reg_errors_points_data = data.map(function(d) {
 		return {x: d.x,
 			y: regression.m * d.x + regression.b,
-			col: "#D00" 
+			col: "#F05837" 
 		       };
 	    });
 	}
@@ -520,6 +552,12 @@ function plot() {
 	    })
 	    .style("opacity", "1");
 	reg_error_points.exit().transition().duration(1000).style("opacity", "0").remove();
+
+	// Add regression predict value
+	var reg_predict_data = [];
+	if(settings.reg_predict != "" & settings.reg_line) {
+	    
+	}
 	
 	// Reset zoom
 	svg.select(".root")
@@ -778,6 +816,7 @@ function generate_settings() {
 	manual_errors: d3.select("#manual_line").node().checked & d3.select("#manual_errors").node().checked,
 	reg_line: d3.select("#reg_line").node().checked,
 	reg_errors: d3.select("#reg_line").node().checked & d3.select("#reg_errors").node().checked,
+	reg_predict: d3.select("#reg_predict").node().value,
 	fixed: d3.select("#coord_fixed").node().checked,
 	x_manual: d3.select("#x_manual").node().checked,
 	x_min: d3.select("#x_min").node().value,
@@ -870,7 +909,7 @@ d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").o
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#reg_line, #reg_errors").on("input change", function(e) {
+d3.selectAll("#reg_line, #reg_errors", "#reg_predict").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });

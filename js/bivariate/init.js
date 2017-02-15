@@ -7,6 +7,9 @@
 	$("#points_show_labels").hide();
 	$("#manual_line_options").hide();
 	$("#reg_line_options").hide();
+	$("#manualtable").hide();
+	$("#regtable").hide();
+	
 	
 	
 	$("#data_law_x").on("change", function() {
@@ -54,15 +57,19 @@
 	$("#manual_line").on("change", function() {
 	    if($(this).prop('checked')) {
 		$("#manual_line_options").show();
+		$("#manualtable").show();
 	    } else {
 		$("#manual_line_options").hide();
+		$("#manualtable").hide();
 	    }
 	});
 	$("#reg_line").on("change", function() {
 	    if($(this).prop('checked')) {
 		$("#reg_line_options").show();
+		$("#regtable").show();
 	    } else {
 		$("#reg_line_options").hide();
+		$("#regtable").hide();		
 	    }
 	});
 

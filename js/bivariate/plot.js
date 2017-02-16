@@ -773,6 +773,8 @@ function plot() {
 		return d;
 	    });
 	    labels = true;
+	    xlab = "GDP per capita";
+	    ylab = "Life expectancy";
 	    break;
 	case "lifeexp_gdp_world_2007":
 	    csv_data = d3.csvParse(datasets(id));
@@ -785,8 +787,22 @@ function plot() {
 		return d;
 	    });
 	    labels = true;
+	    xlab = "GDP per capita";
+	    ylab = "Life expectancy";
 	    break;
-
+	case "galton_1886":
+	    csv_data = d3.csvParse(datasets(id));
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.key = i;
+		d.y = parseFloat(val.child);
+		d.x = parseFloat(val.parent);
+		xlab = "Mid-parents height (cm)";
+		ylab = "Child height (cm)";
+		return d;
+	    });
+	    labels = false;
+	    break;
 	}
 	if (labels) {
 	    d3.select("#points_show_labels").style("display", "block");
@@ -795,8 +811,6 @@ function plot() {
 	}
 	data = new_data;
 	settings.allow_dragging = false;
-	xlab = "GDP per capita";
-	ylab = "Life expectancy";
 	update_plot();
     };
     

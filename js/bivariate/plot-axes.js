@@ -1,5 +1,5 @@
 // Create and draw x and y axes
-function add_axes(selection, dims, settings, scales) {
+function add_axes(selection, dims, settings, scales, xlab, ylab) {
     // x axis
     selection.append("g")
         .attr("class", "x axis")
@@ -16,7 +16,7 @@ function add_axes(selection, dims, settings, scales) {
         .attr("transform", "translate(" + (dims.width - 5) + "," + (dims.height - 6) + ")")
         .style("text-anchor", "end")
         .style("font-size", "11px")
-        .text(settings.xlab);
+        .text(xlab);
 
     // y axis label
     selection.append("text")
@@ -25,6 +25,6 @@ function add_axes(selection, dims, settings, scales) {
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .style("font-size", "11px")
-        .text(settings.ylab);
+        .text(ylab);
     
 }

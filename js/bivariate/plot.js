@@ -7,6 +7,7 @@ function plot() {
 	settings = {},
 	scales = {},
 	data = [],
+	xlab = "x", ylab = "y",
 	bins,
 	svg,
 	zoom, points_drag;
@@ -119,9 +120,9 @@ function plot() {
 		    slope = parseFloat(settings.manual_slope);
 		    intercept = parseFloat(settings.manual_intercept);
 		    error = compute_error(data, slope, intercept);
-		    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toFixed(2));
-		    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toFixed(1));
-		    d3.select("#man-error").text(error.toFixed(2));
+		    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(2));
+		    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(2));
+		    d3.select("#man-error").text(error.toFixed(1));
 		}
 		// Regression line
 		if (settings.reg_line) {
@@ -139,10 +140,10 @@ function plot() {
 			});
 		    error = compute_error(data, regression.m, regression.b);
 		    r2 = compute_r2(data, error);
-		    d3.select("#reg-slope").text(regression.m.toFixed(2));
-		    d3.select("#reg-intercept").text(regression.b.toFixed(1));
-		    d3.select("#reg-error").text(error.toFixed(2));
-		    d3.select("#reg-r2").text(r2.toFixed(3));
+		    d3.select("#reg-slope").text(regression.m.toPrecision(2));
+		    d3.select("#reg-intercept").text(regression.b.toPrecision(2));
+		    d3.select("#reg-error").text(error.toPrecision(1));
+		    d3.select("#reg-r2").text(r2.toPrecision(3));
 		}
 		// Manual line errors
 		if (settings.manual_errors) {
@@ -258,7 +259,7 @@ function plot() {
 		.attr("width", dims.width)
 		.attr("height", dims.height);
 
-            root.call(function(sel) { add_axes(sel, dims, settings, scales); });
+            root.call(function(sel) { add_axes(sel, dims, settings, scales, xlab, ylab); });
 
             // chart body
             var chart_body = root.append("svg")
@@ -359,13 +360,13 @@ function plot() {
 	line.exit().transition().duration(1000).style("opacity", "0").remove();
 
 	// Update axes labels
-	d3.select(".x-axis-label").text(settings.xlab);
-	d3.select(".y-axis-label").text(settings.ylab);
+	d3.select(".x-axis-label").text(xlab);
+	d3.select(".y-axis-label").text(ylab);
 	
 	// Add points
 	var dot = chart_body.selectAll(".dot")
 	    .data(data, key);
-	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings);}).call(points_drag())
+	dot.enter().append("path").attr("class", "dot").call(function(sel) {dot_init(sel, scales, settings, xlab, ylab);}).call(points_drag())
 	    .merge(dot).transition().duration(1000).call(function(sel) {dot_formatting(sel, scales, settings);});
 	dot.exit().transition().duration(1000).attr("transform", "translate(0,0)").remove();
 
@@ -434,9 +435,9 @@ function plot() {
 				 stroke_width: "2px"
 				}];
 	    error = compute_error(data, slope, intercept);
-	    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toFixed(2));
-	    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toFixed(1));
-	    d3.select("#man-error").text(error.toFixed(2));
+	    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(2));
+	    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(2));
+	    d3.select("#man-error").text(error.toPrecision(1));
 	}
 	var manual_line = chart_body.selectAll(".manualline")
 	    .data(manual_line_data);
@@ -464,10 +465,10 @@ function plot() {
 			     }];
 	    error = compute_error(data, regression.m, regression.b);
 	    r2 = compute_r2(data, error);
-	    d3.select("#reg-slope").text(regression.m.toFixed(2));
-	    d3.select("#reg-intercept").text(regression.b.toFixed(1));
-	    d3.select("#reg-error").text(error.toFixed(2));
-	    d3.select("#reg-r2").text(r2.toFixed(2));
+	    d3.select("#reg-slope").text(regression.m.toPrecision(2));
+	    d3.select("#reg-intercept").text(regression.b.toPrecision(2));
+	    d3.select("#reg-error").text(error.toPrecision(1));
+	    d3.select("#reg-r2").text(r2.toPrecision(2));
 	}
 	var reg_line = chart_body.selectAll(".regline")
 	    .data(reg_line_data);
@@ -714,8 +715,8 @@ function plot() {
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;
-	settings.xlab = "x";
-	settings.ylab = "y";
+	xlab = "x";
+	ylab = "y";
 	update_plot();
     };
 
@@ -752,8 +753,8 @@ function plot() {
 	data = new_data;
 	d3.select("#points_show_labels").style("display", "none");
 	settings.allow_dragging = true;
-	settings.xlab = "x";
-	settings.ylab = "y";
+	xlab = "x";
+	ylab = "y";
 	update_plot();
     };
 
@@ -761,24 +762,32 @@ function plot() {
 	var new_data, csv_data, labels;
 	var id = settings.data_dataset;
 	switch(id) {
-	case "life_expectancy_2014":
+	case "lifeexp_gdp_europe_2007":
 	    csv_data = d3.csvParse(datasets(id));
 	    new_data = csv_data.map(function(val, i) {
 		var d = {}; 
-		d.lab = val.Country;
+		d.lab = val.country;
 		d.key = d.lab;
-		d.x = parseFloat(val.life_exp_2014);
+		d.y = parseFloat(val.lifeExp);
+		d.x = parseFloat(val.gdpPercap);
 		return d;
 	    });
 	    labels = true;
 	    break;
+	case "lifeexp_gdp_world_2007":
+	    csv_data = d3.csvParse(datasets(id));
+	    new_data = csv_data.map(function(val, i) {
+		var d = {}; 
+		d.lab = val.country;
+		d.key = d.lab;
+		d.y = parseFloat(val.lifeExp);
+		d.x = parseFloat(val.gdpPercap);
+		return d;
+	    });
+	    labels = true;
+	    break;
+
 	}
-	new_data = new_data.map(function(d, i) {
-	    var defined_y = data[i] !== undefined && data[i].y !== undefined;
-	    var y =  defined_y ? data[i].y : d3.randomUniform(-1, 1)();
-	    d.y = settings.jitter ? y : 0;
-	    return d;
-	});
 	if (labels) {
 	    d3.select("#points_show_labels").style("display", "block");
 	} else {
@@ -786,12 +795,14 @@ function plot() {
 	}
 	data = new_data;
 	settings.allow_dragging = false;
+	xlab = "GDP per capita";
+	ylab = "Life expectancy";
 	update_plot();
     };
     
     chart.update_dots = function() {
 	d3.selectAll(".dot").call(function(sel) {
-	    dot_init(sel, scales, settings);
+	    dot_init(sel, scales, settings, xlab, ylab);
 	    dot_formatting(sel, scales, settings);
 	});
 	d3.selectAll(".xrug").call(function(sel) {
@@ -869,8 +880,6 @@ function generate_settings() {
     var settings = {
 	data_manual_x: d3.select("#data_manual_x").node().value,
 	data_manual_y: d3.select("#data_manual_y").node().value,
-	xlab: "x",
-	ylab: "y",
 	data_law_x: law_x,
 	data_law_y: law_y,
 	data_nbvalues: d3.select("#nb_values").node().value,

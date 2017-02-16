@@ -10,11 +10,11 @@ function translation(d, scales) {
 }
 
 // Create tooltip content function
-function tooltip_content(d) {
+function tooltip_content(d, xlab, ylab) {
     var text = Array();
     if(d.lab !== undefined) text.push("<strong>" + d.lab + "</strong>");
-    text.push("<strong>x : </strong>" + d.x.toFixed(2));
-    text.push("<strong>y : </strong>" + d.y.toFixed(2));
+    text.push("<strong>"+xlab+" : </strong>" + d.x.toFixed(2));
+    text.push("<strong>"+ylab+" : </strong>" + d.y.toFixed(2));
     return text.join("<br />");
 }
 

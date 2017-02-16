@@ -1,5 +1,5 @@
 // Initial dot attributes
-function dot_init (selection, scales, settings) {
+function dot_init (selection, scales, settings, xlab, ylab) {
     selection
 	.style("fill", "rgb(31, 119, 180)")
     // fill color
@@ -13,7 +13,7 @@ function dot_init (selection, scales, settings) {
             .transition().duration(150)
             .attr("d", d3.symbol().size(600));
 	tooltip.style("visibility", "visible")
-	    .html(tooltip_content(d));
+	    .html(tooltip_content(d, xlab, ylab));
     });
     selection.on("mousemove", function(){
 	    tooltip.style("top", (d3.event.pageY+15)+"px").style("left",(d3.event.pageX+15)+"px");
@@ -39,15 +39,15 @@ function label_init (selection, scales, settings) {
 	.style("fill", "rgb(31, 119, 180)")
 	.style("font-size", "10px")
     	.style("font-weight", "normal")
-	.style("text-anchor", "end")
-	.attr("dy", 10)
-    	.attr("dx", -10)
+	.style("text-anchor", "middle")
+	.attr("dy", -10)
+    	.attr("dx", 0)
 	.text(function(d) {return d.lab;});
 }
 
 function label_formatting (selection, scales, settings) {
     selection
-        .attr("transform", function(d) { return translation(d, scales) + "rotate(-45)"; });
+        .attr("transform", function(d) { return translation(d, scales); });
 }
 
 function x_rug_init (selection, scales, settings) {

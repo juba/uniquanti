@@ -32,7 +32,7 @@ function error_dot_init (selection, scales, settings) {
 	.style("stroke", function(d) { return d.col;})
 	.style("opacity", settings.points_opacity)
     	.style("fill", "none")
-        .attr("d", d3.symbol().size(settings.points_size * 0.7));
+        .attr("d", d3.symbol().size(settings.points_size * 0.4));
 }
 
 // Apply format to dot

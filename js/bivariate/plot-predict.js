@@ -4,11 +4,13 @@ var draw_predict_line = d3.line()
     .x(function(d) {return d.x;})
     .y(function(d) {return d.y;});
 
+var predict_items_colors = "#0AAFF1";
+
 function predict_line_init(selection) {
     selection
 	.attr("class", "line")
     	.style("stroke-width", "1px")
-	.style("stroke", "#F05837")
+	.style("stroke", predict_items_colors)
 	.style("stroke-dasharray", function(d) {
 	    return [2,2];
 	});
@@ -34,7 +36,7 @@ function predict_line_formatting(selection, scales) {
 function predict_dot_init (selection) {
     selection
     	.filter(function(d) {return d.type == "base";})
-	.style("stroke", "#F05837")
+	.style("stroke", predict_items_colors)
 	.style("opacity", 1)
     	.style("fill", "none")
         .attr("d", d3.symbol(d3.symbolCircle).size(64));
@@ -51,7 +53,7 @@ function predict_dot_formatting(selection, scales) {
 function predict_label_init (selection) {
     selection
     	.filter(function(d) {return d.type == "base";})
-	.style("stroke", "#F05837")
+	.style("stroke", predict_items_colors)
 	.style("opacity", 1)
     	.style("fill", "none")
         .attr("d", d3.symbol(d3.symbolCircle).size(64));
@@ -61,7 +63,7 @@ function predict_label_formatting(selection, scales) {
     var sel = selection
 	.filter(function(d) {return d.type == "base";})
 	.style("font-size", "12px")
-	.style("fill", "#F05837")
+	.style("fill", predict_items_colors)
     	.attr("text-anchor", "middle")
     	.text(function(d) { return ":predicted:".toLocaleString() + ": " + d.y.toFixed(2);})
 	.attr("transform", function(d) {

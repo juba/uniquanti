@@ -91,7 +91,7 @@ function plot() {
 		d.y = scales.y.invert(d3.event.y);
 		d3.select(this).attr("transform", function(d) { return translation(d, scales); });
 		d3.select(".tooltip").style("left",(d3.mouse(d3.select("body").node())[0]) + 15 + "px")
-		    .html(tooltip_content(d));
+		    .html(tooltip_content(d, xlab, ylab));
 		d3.selectAll(".label").call(function(sel) {
 		    label_formatting(sel, scales, settings);
 		});
@@ -332,17 +332,27 @@ function plot() {
         });
     }
 
+    // Update plot dims and scales
+    function update_scales() {
+	dims = setup_sizes(width, height, settings);
+	scales = setup_scales(dims, data, settings);
+
+	svg.transition().duration(1000).call(resize_plot);
+
+	// Reset zoom
+	svg.select(".root")
+	    .transition().delay(1000).duration(0)
+	    .call(zoom.transform, d3.zoomIdentity);
+    }
+
+    
 
     // Update data with transitions
     function update_plot() {
 	
-	dims = setup_sizes(width, height, settings);
-	scales = setup_scales(dims, data, settings);
 	
 	var root = svg.select(".root");
 
-	var t0 = svg.transition().duration(1000);
-	t0.call(resize_plot);
 
 	var chart_body = svg.select(".chart-body");
 
@@ -636,11 +646,6 @@ function plot() {
 
 
 	
-	
-	// Reset zoom
-	svg.select(".root")
-	    .transition().delay(1000).duration(0)
-	    .call(zoom.transform, d3.zoomIdentity);
 	    
     };
 
@@ -717,6 +722,7 @@ function plot() {
 	settings.allow_dragging = true;
 	xlab = "x";
 	ylab = "y";
+	update_scales();
 	update_plot();
     };
 
@@ -755,6 +761,7 @@ function plot() {
 	settings.allow_dragging = true;
 	xlab = "x";
 	ylab = "y";
+	update_scales();
 	update_plot();
     };
 
@@ -811,6 +818,7 @@ function plot() {
 	}
 	data = new_data;
 	settings.allow_dragging = false;
+	update_scales();
 	update_plot();
     };
     
@@ -1006,6 +1014,7 @@ d3.selectAll("#stats_mean, #stats_sd, #stats_cov").on("input change", function(e
 });
 d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
     plot = plot.settings(generate_settings());
+    plot.update_scales();
     plot.update_plot();
 });
 d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").on("input change", function(e) {

@@ -120,8 +120,8 @@ function plot() {
 		    slope = parseFloat(settings.manual_slope);
 		    intercept = parseFloat(settings.manual_intercept);
 		    error = compute_error(data, slope, intercept);
-		    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(2));
-		    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(2));
+		    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(3));
+		    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(3));
 		    d3.select("#man-error").text(error.toFixed(1));
 		}
 		// Regression line
@@ -140,9 +140,9 @@ function plot() {
 			});
 		    error = compute_error(data, regression.m, regression.b);
 		    r2 = compute_r2(data, error);
-		    d3.select("#reg-slope").text(regression.m.toPrecision(2));
-		    d3.select("#reg-intercept").text(regression.b.toPrecision(2));
-		    d3.select("#reg-error").text(error.toPrecision(1));
+		    d3.select("#reg-slope").text(regression.m.toPrecision(3));
+		    d3.select("#reg-intercept").text(regression.b.toPrecision(3));
+		    d3.select("#reg-error").text(error.toFixed(1));
 		    d3.select("#reg-r2").text(r2.toPrecision(3));
 		}
 		// Manual line errors
@@ -445,9 +445,9 @@ function plot() {
 				 stroke_width: "2px"
 				}];
 	    error = compute_error(data, slope, intercept);
-	    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(2));
-	    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(2));
-	    d3.select("#man-error").text(error.toPrecision(1));
+	    d3.select("#man-slope").text(parseFloat(settings.manual_slope).toPrecision(3));
+	    d3.select("#man-intercept").text(parseFloat(settings.manual_intercept).toPrecision(3));
+	    d3.select("#man-error").text(parseFloat(error).toFixed(1));
 	}
 	var manual_line = chart_body.selectAll(".manualline")
 	    .data(manual_line_data);
@@ -475,10 +475,10 @@ function plot() {
 			     }];
 	    error = compute_error(data, regression.m, regression.b);
 	    r2 = compute_r2(data, error);
-	    d3.select("#reg-slope").text(regression.m.toPrecision(2));
-	    d3.select("#reg-intercept").text(regression.b.toPrecision(2));
-	    d3.select("#reg-error").text(error.toPrecision(1));
-	    d3.select("#reg-r2").text(r2.toPrecision(2));
+	    d3.select("#reg-slope").text(regression.m.toPrecision(3));
+	    d3.select("#reg-intercept").text(regression.b.toPrecision(3));
+	    d3.select("#reg-error").text(error.toFixed(1));
+	    d3.select("#reg-r2").text(r2.toPrecision(3));
 	}
 	var reg_line = chart_body.selectAll(".regline")
 	    .data(reg_line_data);

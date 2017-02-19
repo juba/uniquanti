@@ -821,6 +821,20 @@ function plot() {
 	update_scales();
 	update_plot();
     };
+
+    chart.switch_axes = function() {
+	data = data.map(function(d) {
+	    var tmp_y = d.y;
+	    d.y = d.x;
+	    d.x = tmp_y;
+	    return(d);
+	});
+	var tmp_ylab = ylab;
+	ylab = xlab;
+	xlab = tmp_ylab;
+	update_scales();
+	update_plot();
+    };
     
     chart.update_dots = function() {
 	d3.selectAll(".dot").call(function(sel) {
@@ -1020,6 +1034,9 @@ d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max
     plot = plot.settings(generate_settings());
     plot.update_scales();
     plot.update_plot();
+});
+d3.select("#coord_switch").on("click", function(e) {
+    plot.switch_axes();
 });
 d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").on("input change", function(e) {
     plot = plot.settings(generate_settings());

@@ -839,6 +839,10 @@ function plot() {
 	
     };
 
+    chart.update_scales = function() {
+	update_scales();
+    };
+    
     chart.update_plot = function() {
 	update_plot();
     };

@@ -5,9 +5,10 @@ String.toLocaleString({
 	":mean:": "Mean",
 	":sd:": "Standard deviation",
 	":sd_short:": "sd",
-	":correlation:": "Correlation",
+	":correlation:": "Correlation (Pearson)",
 	":covariance:": "Covariance",
-	":predicted:": "Predicted"
+	":predicted:": "Predicted",
+	":spearman:": "Coorelation (Spearman)"
     },
     "fr": {
 	":invalid_data:": "Données saisies invalides",
@@ -15,8 +16,9 @@ String.toLocaleString({
 	":mean:": "Moyenne",
 	":sd:": "Écart-type",
 	":sd_short:": "sd",
-	":correlation:": "Corrélation",
+	":correlation:": "Corrélation (Pearson)",
 	":covariance:": "Covariance",
-	":predicted:": "Prévue"
+	":predicted:": "Prévue",
+	":spearman:": "Corrélation (Spearman)"
     }
 });

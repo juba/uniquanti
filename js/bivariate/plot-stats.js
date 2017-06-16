@@ -1,5 +1,6 @@
 function stats_compute(data, settings) {
     var stats = [];
+    var x, y;
     if (settings.stats_sd) {
 	stats.push({sd: d3.deviation(data, function(d) { return d.x;}),
 		    mean: d3.mean(data, function(d) { return d.x;}),
@@ -31,8 +32,8 @@ function stats_compute(data, settings) {
 		    key: "mean_point"});
     };
     if (settings.stats_cov) {
-	var x = data.map(function(d) {return(d.x);});
-	var y = data.map(function(d) {return(d.y);});
+	x = data.map(function(d) {return(d.x);});
+	y = data.map(function(d) {return(d.y);});
 	stats.push({
 	    cov: ss.sampleCovariance(x, y),
 	    type: "covcor",
@@ -46,6 +47,21 @@ function stats_compute(data, settings) {
 	    lab: ":correlation:".toLocaleString(),
 	    col: "#F05837",
 	    key: "cor"
+	});
+    }
+    if (settings.stats_spearman) {
+	x = data.map(function(d) {return(d.x);});
+	var x_sorted = x.slice().sort(function(a,b) { return b - a; });
+	var x_ranks = x.slice().map(function(v) { return x_sorted.indexOf(v) + 1; });
+	y = data.map(function(d) {return(d.y);});
+	var y_sorted = y.slice().sort(function(a,b) { return b - a; });
+	var y_ranks = y.slice().map(function(v) { return y_sorted.indexOf(v) + 1; });
+	stats.push({
+	    spearman: ss.sampleCorrelation(x_ranks, y_ranks),
+	    type: "spearman",
+	    lab: ":spearman:".toLocaleString(),
+	    col: "#E53817",
+	    key: "spearman"
 	});
     }
     return stats;
@@ -166,7 +182,16 @@ function stats_label_formatting(selection, scales) {
 	    return( "translate(" + x_pos + ",0)");
 	})
 	.attr("dy", 30);
-
+    // Spearman correlation
+    selection
+	.filter(function(d) {return d.key == "spearman";})
+    	.attr("text-anchor", "middle")
+        .text(function(d) { return d.lab + ": " + d.spearman.toFixed(3);})
+	.attr("transform", function(d) {
+	    var x_pos = (scales.x(scales.x.domain()[1]) - scales.x(scales.x.domain()[0]))/2;
+	    return( "translate(" + x_pos + ",0)");
+	})
+	.attr("dy", 45);
     return selection;
 }
 

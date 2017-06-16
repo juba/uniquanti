@@ -939,6 +939,7 @@ function generate_settings() {
 	stats_mean: d3.select("#stats_mean").node().checked,
 	stats_sd: d3.select("#stats_sd").node().checked,
 	stats_cov: d3.select("#stats_cov").node().checked,
+	stats_spearman: d3.select("#stats_spearman").node().checked,
 	manual_line: d3.select("#manual_line").node().checked,
 	manual_slope: d3.select("#manual_slope").node().value,
 	manual_intercept: d3.select("#manual_intercept").node().value,
@@ -1026,7 +1027,7 @@ d3.selectAll("#show_rugs, #show_labels").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#stats_mean, #stats_sd, #stats_cov").on("input change", function(e) {
+d3.selectAll("#stats_mean, #stats_sd, #stats_cov, #stats_spearman").on("input change", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });

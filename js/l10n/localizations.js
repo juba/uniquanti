@@ -8,7 +8,7 @@ String.toLocaleString({
 	":correlation:": "Correlation (Pearson)",
 	":covariance:": "Covariance",
 	":predicted:": "Predicted",
-	":spearman:": "Coorelation (Spearman)"
+	":spearman:": "Correlation (Spearman)"
     },
     "fr": {
 	":invalid_data:": "Données saisies invalides",

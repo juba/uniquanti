@@ -61,8 +61,8 @@ function compute_kde_scales(scales, kde_data, settings, dragging) {
 function kde_init(selection, scales) {
     selection
 	.style("stroke", "#900")
-    	.style("stroke-linejoin", "round")
-    	.style("fill", "FFF5F5")
+	.style("stroke-linejoin", "round")
+	.style("fill", "#FFF5F5")
 	.attr("d", d3.line()
 	      .curve(d3.curveBasis)
 	      .x(function(d) { return scales.x(d[0]); })

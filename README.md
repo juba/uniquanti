@@ -8,7 +8,7 @@ updated dynamically with transitions.
 It is build on D3js, and can run in any modern browser (no server side
 installation needed).
 
-Live demo here : [https://rawgit.com/juba/uniquanti/master/index.html](https://rawgit.com/juba/uniquanti/master/index.html)
+Live demo here : [https://juba.github.io/uniquanti/](https://juba.github.io/uniquanti/)
 
 ### Data sources
 

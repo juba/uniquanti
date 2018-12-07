@@ -1015,23 +1015,23 @@ d3.select("#form_dataset").on("submit", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_data_dataset();
 });
-d3.select("#points_size").on("input change", function(e) {
+d3.select("#points_size").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_dots();
 });
-d3.select("#points_opacity").on("input change", function(e) {
+d3.select("#points_opacity").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_dots();
 });
-d3.selectAll("#show_rugs, #show_labels").on("input change", function(e) {
+d3.selectAll("#show_rugs, #show_labels").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#stats_mean, #stats_sd, #stats_cov, #stats_spearman").on("input change", function(e) {
+d3.selectAll("#stats_mean, #stats_sd, #stats_cov, #stats_spearman").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input change", function(e) {
+d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_scales();
     plot.update_plot();
@@ -1039,11 +1039,11 @@ d3.selectAll("#coord_fixed, #x_manual, #x_min, #x_max, #y_manual, #y_min, #y_max
 d3.select("#coord_switch").on("click", function(e) {
     plot.switch_axes();
 });
-d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").on("input change", function(e) {
+d3.selectAll("#manual_line, #manual_slope, #manual_intercept, #manual_errors").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
-d3.selectAll("#reg_line, #reg_errors, #reg_predict").on("input change", function(e) {
+d3.selectAll("#reg_line, #reg_errors, #reg_predict").on("input", function(e) {
     plot = plot.settings(generate_settings());
     plot.update_plot();
 });
